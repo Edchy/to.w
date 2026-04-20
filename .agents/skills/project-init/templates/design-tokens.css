@@ -1,0 +1,327 @@
+/**
+ * Design Tokens
+ *
+ * Single source of truth for all visual values.
+ * Never use hardcoded values for anything listed here.
+ * If you need a value that doesn't exist, add a token here first.
+ *
+ * Three layers:
+ *   1. Primitives  — raw values, named after what they are (--neutral-500, --space-4)
+ *   2. Semantic    — purposeful aliases (--color-text-primary, --color-bg-surface)
+ *   3. Component   — per-component overrides (--button-primary-bg-hover)
+ *
+ * Reference chain always goes: Component → Semantic → Primitive
+ */
+
+:root {
+
+  /* ─────────────────────────────────────────────────────────
+     1. PRIMITIVES
+     Name what it is, not what it's for.
+     Don't use these directly in components — use semantic tokens.
+  ───────────────────────────────────────────────────────── */
+
+  /* Neutral scale — off-white to almost black */
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+
+  /* Black & white */
+  --white: #ffffff;
+  --black: #0a0a0a;
+
+  /* Brand palette — starts black and white, replace with your colors */
+  --brand-50:  #ffffff;
+  --brand-100: #f5f5f5;
+  --brand-500: #0a0a0a;
+  --brand-900: #000000;
+
+  /* Feedback colors */
+  --red-400:    #f87171;
+  --red-600:    #dc2626;
+  --green-400:  #4ade80;
+  --green-600:  #16a34a;
+  --yellow-400: #facc15;
+  --yellow-600: #ca8a04;
+  --blue-400:   #60a5fa;
+  --blue-600:   #2563eb;
+
+  /* Spacing scale — base unit 4px */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Fluid type scale (Utopia)
+   *
+   * Generated with: https://utopia.fyi/type/calculator
+   * Min viewport: 320px  Max viewport: 1240px
+   * Min base: 16px (1rem)  Max base: 20px (1.25rem)
+   * Min scale: Minor Third (1.200)  Max scale: Perfect Fourth (1.333)
+   *
+   * Steps go from -2 (smallest) to 6 (largest display).
+   * Regenerate at the URL above if you change viewport range or scale.
+   */
+  --step--2: clamp(0.69rem, calc(0.69rem + 0.02vw), 0.70rem);
+  --step--1: clamp(0.83rem, calc(0.80rem + 0.18vw), 0.94rem);
+  --step-0:  clamp(1.00rem, calc(0.91rem + 0.43vw), 1.25rem);
+  --step-1:  clamp(1.20rem, calc(1.04rem + 0.81vw), 1.67rem);
+  --step-2:  clamp(1.44rem, calc(1.17rem + 1.36vw), 2.22rem);
+  --step-3:  clamp(1.73rem, calc(1.30rem + 2.15vw), 2.96rem);
+  --step-4:  clamp(2.07rem, calc(1.42rem + 3.26vw), 3.95rem);
+  --step-5:  clamp(2.49rem, calc(1.52rem + 4.83vw), 5.27rem);
+  --step-6:  clamp(2.99rem, calc(1.58rem + 7.02vw), 7.02rem);
+
+  /* Font weights */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* Line heights */
+  --leading-none:    1;
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose:   2;
+
+  /* Letter spacing */
+  --tracking-tight:  -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide:   0.025em;
+  --tracking-wider:  0.05em;
+  --tracking-widest: 0.1em;
+
+  /* Border radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* Border widths */
+  --border-1: 1px;
+  --border-2: 2px;
+  --border-4: 4px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Opacity */
+  --opacity-0:   0;
+  --opacity-10:  0.1;
+  --opacity-25:  0.25;
+  --opacity-50:  0.5;
+  --opacity-75:  0.75;
+  --opacity-90:  0.9;
+  --opacity-100: 1;
+
+  /* Motion */
+  --duration-fast:   100ms;
+  --duration-normal: 200ms;
+  --duration-slow:   300ms;
+  --ease-default:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in:         cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:        cubic-bezier(0, 0, 0.2, 1);
+
+  /* Z-index */
+  --z-below:    -1;
+  --z-base:      0;
+  --z-raised:    10;
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:   300;
+  --z-modal:     400;
+  --z-toast:     500;
+
+
+  /* ─────────────────────────────────────────────────────────
+     2. SEMANTIC TOKENS
+     Name what it's for. Reference primitives only.
+     These are what you use in components.
+  ───────────────────────────────────────────────────────── */
+
+  /* Typography — families */
+  --font-body:    system-ui, -apple-system, sans-serif;
+  --font-display: system-ui, -apple-system, sans-serif; /* Replace with your display font */
+  --font-mono:    ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+
+  /* Typography — sizes (map step names to readable aliases) */
+  --font-size-xs:      var(--step--2);  /* ~11–11px  */
+  --font-size-sm:      var(--step--1);  /* ~13–15px  */
+  --font-size-base:    var(--step-0);   /* ~16–20px  */
+  --font-size-lg:      var(--step-1);   /* ~19–27px  */
+  --font-size-xl:      var(--step-2);   /* ~23–36px  */
+  --font-size-2xl:     var(--step-3);   /* ~28–47px  */
+  --font-size-3xl:     var(--step-4);   /* ~33–63px  */
+  --font-size-4xl:     var(--step-5);   /* ~40–84px  */
+  --font-size-display: var(--step-6);   /* ~48–112px — display/hero only */
+
+  /* Typography — weights */
+  --font-weight-regular:  var(--weight-regular);
+  --font-weight-medium:   var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+  --font-weight-bold:     var(--weight-bold);
+
+  /* Typography — line height */
+  --font-leading-tight:   var(--leading-tight);
+  --font-leading-normal:  var(--leading-normal);
+  --font-leading-relaxed: var(--leading-relaxed);
+
+  /* Typography — letter spacing */
+  --font-tracking-tight:   var(--tracking-tight);
+  --font-tracking-normal:  var(--tracking-normal);
+  --font-tracking-wide:    var(--tracking-wide);
+  --font-tracking-widest:  var(--tracking-widest);
+
+  /* Color — backgrounds */
+  --color-bg-base:    var(--white);
+  --color-bg-surface: var(--neutral-100);
+  --color-bg-elevated: var(--white);
+  --color-bg-muted:   var(--neutral-200);
+  --color-bg-overlay: rgb(0 0 0 / 0.5);
+  --color-bg-inverse: var(--black);
+
+  /* Color — text */
+  --color-text-primary:   var(--neutral-900);
+  --color-text-secondary: var(--neutral-600);
+  --color-text-tertiary:  var(--neutral-400);
+  --color-text-disabled:  var(--neutral-300);
+  --color-text-inverse:   var(--white);
+  --color-text-link:      var(--brand-500);
+
+  /* Color — borders */
+  --color-border-default: var(--neutral-200);
+  --color-border-strong:  var(--neutral-400);
+  --color-border-focus:   var(--brand-500);
+
+  /* Color — brand actions */
+  --color-action-primary:          var(--brand-500);
+  --color-action-primary-hover:    var(--neutral-800);
+  --color-action-primary-active:   var(--neutral-900);
+  --color-action-primary-disabled: var(--neutral-300);
+  --color-action-primary-text:     var(--white);
+
+  /* Color — feedback */
+  --color-feedback-error:   var(--red-600);
+  --color-feedback-success: var(--green-600);
+  --color-feedback-warning: var(--yellow-600);
+  --color-feedback-info:    var(--blue-600);
+
+  /* Spacing — semantic aliases */
+  --space-xs:  var(--space-1);    /* 4px  */
+  --space-sm:  var(--space-2);    /* 8px  */
+  --space-md:  var(--space-4);    /* 16px */
+  --space-lg:  var(--space-6);    /* 24px */
+  --space-xl:  var(--space-8);    /* 32px */
+  --space-2xl: var(--space-12);   /* 48px */
+  --space-3xl: var(--space-16);   /* 64px */
+  --space-4xl: var(--space-24);   /* 96px */
+
+  /* Border */
+  --border-radius-sm:   var(--radius-sm);
+  --border-radius-md:   var(--radius-md);
+  --border-radius-lg:   var(--radius-lg);
+  --border-radius-xl:   var(--radius-xl);
+  --border-radius-full: var(--radius-full);
+  --border-width-default: var(--border-1);
+  --border-width-thick:   var(--border-2);
+
+  /* Shadow */
+  --shadow-card:   var(--shadow-sm);
+  --shadow-raised: var(--shadow-md);
+  --shadow-modal:  var(--shadow-xl);
+
+  /* Motion */
+  --transition-fast:   var(--duration-fast) var(--ease-default);
+  --transition-normal: var(--duration-normal) var(--ease-default);
+  --transition-slow:   var(--duration-slow) var(--ease-default);
+
+  /* Layout */
+  --layout-max-width:     1280px;
+  --layout-content-width: 720px;
+  --layout-padding-x:     var(--space-lg);
+
+
+  /* ─────────────────────────────────────────────────────────
+     3. COMPONENT TOKENS
+     Pattern: --[component]-[variant]-[property]-[state]
+     Reference semantic tokens only.
+     Add per-component tokens here as the system grows.
+  ───────────────────────────────────────────────────────── */
+
+  /* Button — primary */
+  --button-primary-bg-default:  var(--color-action-primary);
+  --button-primary-bg-hover:    var(--color-action-primary-hover);
+  --button-primary-bg-active:   var(--color-action-primary-active);
+  --button-primary-bg-disabled: var(--color-action-primary-disabled);
+  --button-primary-text:        var(--color-action-primary-text);
+  --button-padding-x:           var(--space-md);
+  --button-padding-y:           var(--space-sm);
+  --button-radius:              var(--border-radius-md);
+  --button-font-weight:         var(--font-weight-semibold);
+  --button-transition:          var(--transition-fast);
+
+  /* Input */
+  --input-bg:           var(--color-bg-base);
+  --input-border:       var(--color-border-default);
+  --input-border-focus: var(--color-border-focus);
+  --input-border-error: var(--color-feedback-error);
+  --input-text:         var(--color-text-primary);
+  --input-placeholder:  var(--color-text-tertiary);
+  --input-padding-x:    var(--space-md);
+  --input-padding-y:    var(--space-sm);
+  --input-radius:       var(--border-radius-md);
+
+  /* Card */
+  --card-bg:      var(--color-bg-elevated);
+  --card-border:  var(--color-border-default);
+  --card-shadow:  var(--shadow-card);
+  --card-padding: var(--space-lg);
+  --card-radius:  var(--border-radius-lg);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   Dark mode
+   Override semantic tokens only — never primitives.
+   The primitives stay the same; only their meaning shifts.
+───────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-base:     var(--neutral-900);
+    --color-bg-surface:  var(--neutral-800);
+    --color-bg-elevated: var(--neutral-800);
+    --color-bg-muted:    var(--neutral-700);
+    --color-bg-inverse:  var(--white);
+
+    --color-text-primary:   var(--neutral-100);
+    --color-text-secondary: var(--neutral-400);
+    --color-text-tertiary:  var(--neutral-500);
+    --color-text-disabled:  var(--neutral-600);
+    --color-text-inverse:   var(--black);
+
+    --color-border-default: var(--neutral-700);
+    --color-border-strong:  var(--neutral-500);
+  }
+}

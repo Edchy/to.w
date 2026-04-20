@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.malvalorensson.com)",
+      "mcp__astro-docs__search_astro_docs",
+      "Bash(node *)",
+      "Bash(npm view *)",
+      "Bash(npx astro *)",
+      "Bash(npm install *)"
+    ]
+  }
+}

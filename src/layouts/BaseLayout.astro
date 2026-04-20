@@ -1,0 +1,193 @@
+---
+import "../styles/global.css";
+import { Font } from "astro:assets";
+
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+const { title, description = "TO.W — handmade jewelry and objects." } = Astro.props;
+const pageTitle = title ? `${title} — TO.W` : "TO.W";
+
+const navLinks = [
+  { href: "/stickning", label: "Stickning" },
+  { href: "/smycken", label: "Smycken" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+    <Font cssVariable="--font-june-active" />
+    <Font cssVariable="--font-june-curious" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-wrap site-header__inner">
+        <a href="/" class="site-logo" aria-label="TO.W — home">to.w</a>
+        <nav aria-label="Main navigation">
+          <ul class="nav-list" role="list">
+            {navLinks.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  class:list={["nav-link", { "nav-link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-wrap site-footer__inner">
+        <a href="/" class="footer-wordmark" aria-label="TO.W — home">to.w</a>
+        <ul class="footer-links" role="list">
+          <li><a href="https://instagram.com/tow.studio" target="_blank" rel="noopener noreferrer">instagram</a></li>
+          <li><a href="mailto:hello@tow.studio">hello@tow.studio</a></li>
+        </ul>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-wrap {
+    width: 100%;
+    max-width: var(--layout-site-width);
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+  }
+
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-raised);
+    height: var(--nav-height);
+    background-color: color-mix(in oklch, var(--color-bg-base) 92%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .site-logo {
+    font-family: var(--brand-font-active);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-wide);
+    color: var(--color-brand);
+    line-height: 1;
+  }
+
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-24);
+  }
+
+  .nav-link {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    color: var(--color-brand);
+    transition: opacity var(--transition-fast);
+  }
+
+  .nav-link:hover {
+    opacity: 0.7;
+  }
+
+  .nav-link--active {
+    color: var(--color-brand);
+    text-decoration: none;
+    position: relative;
+  }
+
+  .nav-link--active::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    right: -2px;
+    bottom: -4px;
+    height: 3px;
+    background: var(--color-brand);
+    border-radius: 1px;
+    transform: rotate(-1.5deg);
+    transform-origin: left center;
+  }
+
+  main {
+    padding-top: var(--nav-height);
+    min-height: 100svh;
+  }
+
+  /* ── Footer ── */
+
+  .site-footer {
+    margin-top: var(--space-4xl);
+    padding-bottom: var(--space-12);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .footer-wordmark {
+    font-family: var(--brand-font-active);
+    font-size: var(--font-size-lg);
+    color: var(--color-brand);
+    letter-spacing: var(--font-tracking-wide);
+    line-height: 1;
+  }
+
+  .footer-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .footer-links a {
+    font-size: var(--font-size-sm);
+    color: var(--color-brand);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-links a:hover {
+    color: var(--color-brand);
+  }
+</style>

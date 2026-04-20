@@ -1,0 +1,183 @@
+/**
+ * Design Tokens — TO.W
+ *
+ * Three layers:
+ *   1. Primitives  — raw values, never used directly in components
+ *   2. Semantic    — purposeful aliases used in components
+ *   3. Component   — per-component overrides
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────
+     1. PRIMITIVES
+  ───────────────────────────────────────────────────────── */
+
+  /* Teal — kept for lightbox/overlay accents */
+  --teal-200: oklch(88% 0.025 168);
+
+  /* Electric blue */
+  --blue-900: oklch(34% 0.28 264);
+  --blue-500: oklch(58% 0.20 264);
+  --blue-100: oklch(82% 0.10 264);
+
+  /* Neutrals — warm-tinted (h75 amber), dark end off-black, light end beige */
+  --neutral-950: oklch(14% 0.01 75);
+  --neutral-900: oklch(20% 0.01 75);
+  --neutral-800: oklch(30% 0.01 75);
+  --neutral-700: oklch(40% 0.009 75);
+  --neutral-600: oklch(52% 0.009 75);
+  --neutral-500: oklch(62% 0.008 75);
+  --neutral-400: oklch(73% 0.008 75);
+  --neutral-300: oklch(83% 0.007 75);
+  --neutral-200: oklch(90% 0.007 75);
+  --neutral-100: oklch(95% 0.008 75);
+  --neutral-50: oklch(97.5% 0.01 75);
+
+  /* Warm beige surface */
+  --off-white: oklch(94% 0.025 80);
+
+  /* Spacing scale — 4pt base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Fluid type scale — Utopia
+   * Min 320px / Max 1400px, base 16→18px, scale 1.25→1.333
+   */
+  --step--1: clamp(0.8rem, calc(0.78rem + 0.11vw), 0.88rem);
+  --step-0: clamp(1rem, calc(0.96rem + 0.22vw), 1.13rem);
+  --step-1: clamp(1.25rem, calc(1.18rem + 0.37vw), 1.5rem);
+  --step-2: clamp(1.56rem, calc(1.44rem + 0.62vw), 2rem);
+  --step-3: clamp(1.95rem, calc(1.75rem + 1.02vw), 2.66rem);
+  --step-4: clamp(2.44rem, calc(2.12rem + 1.63vw), 3.55rem);
+  --step-5: clamp(3.05rem, calc(2.56rem + 2.5vw), 4.74rem);
+
+  /* Font weights */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+
+  /* Border radius */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 9999px;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-normal: 240ms;
+  --duration-slow: 400ms;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-quart: cubic-bezier(0.5, 0, 0.75, 0);
+
+  /* Z-index */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-overlay: 300;
+  --z-modal: 400;
+
+  /* ─────────────────────────────────────────────────────────
+     2. SEMANTIC TOKENS
+  ───────────────────────────────────────────────────────── */
+
+  /* Typography — families */
+  --font-display: "Gilda Display", Georgia, serif;
+  --font-body: "Jost", system-ui, sans-serif;
+  --brand-font-active: var(--font-june-active);
+  --brand-font-curious: var(--font-june-curious);
+
+  /* Typography — sizes */
+  --font-size-sm: var(--step--1);
+  --font-size-base: var(--step-0);
+  --font-size-lg: var(--step-1);
+  --font-size-xl: var(--step-2);
+  --font-size-2xl: var(--step-3);
+  --font-size-3xl: var(--step-4);
+  --font-size-display: var(--step-5);
+
+  /* Typography — weights */
+  --font-weight-light: var(--weight-light);
+  --font-weight-regular: var(--weight-regular);
+  --font-weight-medium: var(--weight-medium);
+
+  /* Typography — leading */
+  --font-leading-tight: 1.1;
+  --font-leading-snug: 1.35;
+  --font-leading-normal: 1.55;
+  --font-leading-relaxed: 1.7;
+
+  /* Typography — tracking */
+  --font-tracking-tight: -0.02em;
+  --font-tracking-normal: 0em;
+  --font-tracking-wide: 0.06em;
+  --font-tracking-wider: 0.12em;
+
+  /* Color — backgrounds */
+  --color-bg-base: var(--off-white);
+  --color-bg-surface: var(--neutral-50);
+  --color-bg-muted: var(--neutral-100);
+  --color-bg-inverse: var(--neutral-950);
+
+  /* Color — text */
+  --color-text-primary: var(--neutral-900);
+  --color-text-secondary: var(--neutral-600);
+  --color-text-tertiary: var(--neutral-400);
+  --color-text-inverse: var(--neutral-50);
+
+  /* Color — brand */
+  --color-brand: var(--blue-900);
+  --color-brand-mid: var(--blue-500);
+  --color-brand-subtle: var(--blue-100);
+
+  /* Color — borders */
+  --color-border-default: var(--neutral-200);
+  --color-border-subtle: var(--neutral-100);
+
+  /* Spacing — semantic */
+  --space-xs: var(--space-1);
+  --space-sm: var(--space-2);
+  --space-md: var(--space-4);
+  --space-lg: var(--space-6);
+  --space-xl: var(--space-8);
+  --space-2xl: var(--space-12);
+  --space-3xl: var(--space-16);
+  --space-4xl: var(--space-24);
+
+  /* Layout */
+  --layout-site-width: 1200px;
+  --layout-content-width: 68ch;
+  --layout-gutter: clamp(var(--space-6), 5vw, var(--space-12));
+
+  /* Motion */
+  --transition-fast: var(--duration-fast) var(--ease-out-quart);
+  --transition-normal: var(--duration-normal) var(--ease-out-quart);
+  --transition-slow: var(--duration-slow) var(--ease-out-expo);
+
+  /* ─────────────────────────────────────────────────────────
+     3. COMPONENT TOKENS
+  ───────────────────────────────────────────────────────── */
+
+  /* Image */
+  --image-border-width: 10px;
+  --image-border-color: var(--neutral-50);
+
+  /* Nav */
+  --nav-height: 100px;
+  --nav-font: var(--font-body);
+
+  /* Portfolio grid */
+  --grid-gutter: clamp(var(--space-3), 2vw, var(--space-6));
+
+  /* Lightbox */
+  --lightbox-scrim: oklch(12% 0.01 75 / 0.92);
+}

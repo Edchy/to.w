@@ -1,0 +1,415 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getImage } from "astro:assets";
+import img5234  from "../assets/img/DSC_5234_VSCO.webp";
+import img5556  from "../assets/img/DSC_5556_VSCO.webp";
+import img5564  from "../assets/img/DSC_5564_VSCO.webp";
+import img5834  from "../assets/img/DSC_5834_VSCO.jpeg";
+import img5986  from "../assets/img/DSC_5986.webp";
+import imgEdesax from "../assets/img/edesax_2022_15445___serialized4.avif";
+
+const opt5234   = await getImage({ src: img5234,   format: "webp" });
+const opt5556   = await getImage({ src: img5556,   format: "webp" });
+const opt5564   = await getImage({ src: img5564,   format: "webp" });
+const opt5834   = await getImage({ src: img5834,   format: "webp" });
+const opt5986   = await getImage({ src: img5986,   format: "webp" });
+const optEdesax = await getImage({ src: imgEdesax, format: "webp" });
+
+const works = [
+  { id: 1, title: "Ring I",   medium: "Silver, polished",     aspect: "square",   col: "1 / 6",  label: "bottom-left",  offset: "0em",     left: "-35%",  imgSrc: opt5234.src   },
+  { id: 2, title: "Ring II",  medium: "Silver, textured",     aspect: "square",   col: "9 / 13", label: "bottom-right", offset: "0em",                    imgSrc: opt5556.src   },
+  { id: 3, title: "Ring III", medium: "Silver, heart signet", aspect: "square",   col: "3 / 8",  label: "top-right",    offset: "-0.55em",               imgSrc: opt5564.src   },
+  { id: 4, title: "Rings",    medium: "Silver, worn",         aspect: "portrait", col: "8 / 13", label: "bottom-right", offset: "-0.55em",               imgSrc: opt5834.src   },
+  { id: 5, title: "Charm",    medium: "Silver, crescent",     aspect: "square",   col: "1 / 5",  label: "bottom-left",  offset: "0em",                    imgSrc: opt5986.src   },
+  { id: 6, title: "Ring IV",  medium: "Silver",               aspect: "square",   col: "5 / 10", label: "bottom-left",  offset: "-0.55em",               imgSrc: optEdesax.src },
+  { id: 7, title: "Earrings", medium: "Silver, glass",        aspect: "portrait", col: "2 / 7",  label: "top-left",     offset: "0em",                    imgSrc: null          },
+  { id: 8, title: "Brooch",   medium: "Brass",                aspect: "square",   col: "8 / 13", label: "top-left",     offset: "-0.55em",               imgSrc: null          },
+];
+---
+
+<BaseLayout description="TO.W — handmade jewelry and objects.">
+  <section class="work-grid" aria-label="Works">
+    {works.map((work, i) => (
+      <button
+        class:list={["grid-item", `grid-item--${work.aspect}`, `grid-item--label-${work.label}`]}
+        style={`grid-column: ${work.col}; --label-offset: ${work.offset};${'left' in work && work.left ? ` --label-left: ${work.left};` : ''}`}
+        data-work-index={i}
+        data-img-src={work.imgSrc ?? `https://picsum.photos/seed/tow${work.id}/${work.aspect === 'portrait' ? '600/800' : '700/700'}`}
+        data-img-alt={`${work.title} — ${work.medium}`}
+        aria-label={`View ${work.title}`}
+        type="button"
+      >
+        <div class="grid-item__img">
+          <img
+            src={work.imgSrc ?? `https://picsum.photos/seed/tow${work.id}/${work.aspect === 'portrait' ? '600/800' : '700/700'}`}
+            alt={`${work.title} — ${work.medium}`}
+            loading={i < 4 ? "eager" : "lazy"}
+            decoding="async"
+          />
+        </div>
+        <div class="grid-item__overlay" aria-hidden="true">
+          <span class="grid-item__title">{work.title}</span>
+          <span class="grid-item__medium">{work.medium}</span>
+        </div>
+      </button>
+    ))}
+  </section>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Work detail" hidden>
+    <button class="lightbox__close" id="lightbox-close" aria-label="Close" type="button">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <line x1="2" y1="2" x2="18" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="18" y1="2" x2="2" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <button class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="Previous" type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="lightbox__content">
+      <img class="lightbox__img" id="lightbox-img" src="" alt="" />
+      <div class="lightbox__caption">
+        <span class="lightbox__title" id="lightbox-title"></span>
+        <span class="lightbox__medium" id="lightbox-medium"></span>
+      </div>
+    </div>
+
+    <button class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="Next" type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</BaseLayout>
+
+<style>
+  /* ── Grid ── */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--grid-gutter);
+    padding: var(--space-8) var(--layout-gutter) 0;
+    max-width: var(--layout-site-width);
+    margin: 0 auto;
+    overflow: visible;
+  }
+
+  .grid-item {
+    position: relative;
+    overflow: visible;
+    background: var(--image-border-color);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: scale var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .grid-item:active {
+    scale: 0.96;
+  }
+
+  .grid-item--portrait .grid-item__img {
+    aspect-ratio: 3 / 4;
+  }
+
+  .grid-item--square .grid-item__img {
+    aspect-ratio: 1 / 1;
+  }
+
+  .grid-item__img {
+    width: 100%;
+    border: var(--image-border-width) solid var(--image-border-color);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .grid-item__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-out-quart);
+    will-change: transform;
+  }
+
+  .grid-item:hover .grid-item__img img {
+    transform: scale(1.02);
+  }
+
+  /* Hover label */
+  .grid-item__overlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: var(--z-raised);
+    opacity: 0;
+    transition:
+      opacity var(--duration-normal) var(--ease-out-quart),
+      transform var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .grid-item:hover .grid-item__overlay {
+    opacity: 1;
+  }
+
+  .grid-item__title {
+    display: block;
+    font-family: var(--brand-font-curious);
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+    color: var(--color-brand);
+    white-space: nowrap;
+    letter-spacing: var(--font-tracking-tight);
+  }
+
+  .grid-item__medium {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-light);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-brand);
+    white-space: nowrap;
+    margin-top: var(--space-1);
+  }
+
+
+  /* ── Label placements ── */
+
+  /* bottom-left: text sits at bottom, flows right out of frame */
+  .grid-item--label-bottom-left .grid-item__overlay {
+    bottom: var(--label-offset, -0.2em);
+    left: var(--label-left, -0.05em);
+    transform: translateY(8px);
+  }
+  .grid-item--label-bottom-left:hover .grid-item__overlay {
+    transform: translateY(0);
+  }
+
+  /* bottom-right: text sits at bottom, anchored right, flows left out */
+  .grid-item--label-bottom-right .grid-item__overlay {
+    bottom: var(--label-offset, -0.2em);
+    right: -0.05em;
+    transform: translateY(8px);
+  }
+  .grid-item--label-bottom-right:hover .grid-item__overlay {
+    transform: translateY(0);
+  }
+
+  /* top-left: text sits at top, flows right out */
+  .grid-item--label-top-left .grid-item__overlay {
+    top: var(--label-offset, -0.2em);
+    left: -0.05em;
+    transform: translateY(-8px);
+  }
+  .grid-item--label-top-left:hover .grid-item__overlay {
+    transform: translateY(0);
+  }
+
+  /* top-right: text sits at top, anchored right */
+  .grid-item--label-top-right .grid-item__overlay {
+    top: var(--label-offset, -0.2em);
+    right: -0.05em;
+    transform: translateY(-8px);
+  }
+  .grid-item--label-top-right:hover .grid-item__overlay {
+    transform: translateY(0);
+  }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--lightbox-scrim);
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .lightbox:not([hidden]) {
+    opacity: 1;
+  }
+
+  .lightbox[hidden] {
+    display: none;
+  }
+
+  .lightbox__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-height: 90vh;
+    max-width: min(700px, 90vw);
+    width: 100%;
+  }
+
+  .lightbox__img {
+    max-height: 78vh;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    transition: opacity var(--duration-fast) var(--ease-out-quart);
+    border: var(--image-border-width) solid var(--image-border-color);
+  }
+
+  .lightbox__caption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    text-align: center;
+  }
+
+  .lightbox__title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-base);
+    color: var(--neutral-50);
+    letter-spacing: var(--font-tracking-normal);
+  }
+
+  .lightbox__medium {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-light);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    color: var(--teal-200);
+  }
+
+  .lightbox__close {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+    background: none;
+    border: none;
+    padding: var(--space-2);
+    color: var(--neutral-300);
+    transition: color var(--transition-fast);
+    line-height: 0;
+  }
+
+  .lightbox__close:hover {
+    color: var(--neutral-50);
+  }
+
+  .lightbox__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: var(--space-4);
+    color: var(--neutral-400);
+    transition: color var(--transition-fast);
+    line-height: 0;
+  }
+
+  .lightbox__nav:hover {
+    color: var(--neutral-50);
+  }
+
+  .lightbox__nav--prev { left: var(--space-4); }
+  .lightbox__nav--next { right: var(--space-4); }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .work-grid {
+      grid-template-columns: repeat(2, 1fr);
+      padding-top: var(--space-4);
+    }
+
+    .grid-item {
+      grid-column: span 1 !important;
+    }
+
+    .grid-item:first-child {
+      grid-column: span 2 !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .work-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .grid-item,
+    .grid-item:first-child {
+      grid-column: span 1 !important;
+    }
+  }
+</style>
+
+<script>
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-work-index]"));
+
+  const lightbox = document.getElementById("lightbox") as HTMLDivElement;
+  const lbImg    = document.getElementById("lightbox-img") as HTMLImageElement;
+  const lbTitle  = document.getElementById("lightbox-title") as HTMLSpanElement;
+  const lbMedium = document.getElementById("lightbox-medium") as HTMLSpanElement;
+  const lbClose  = document.getElementById("lightbox-close") as HTMLButtonElement;
+  const lbPrev   = document.getElementById("lightbox-prev") as HTMLButtonElement;
+  const lbNext   = document.getElementById("lightbox-next") as HTMLButtonElement;
+
+  let currentIndex = 0;
+
+  function openLightbox(index: number) {
+    currentIndex = index;
+    showWork(index);
+    lightbox.removeAttribute("hidden");
+    document.body.style.overflow = "hidden";
+    lbClose.focus();
+  }
+
+  function closeLightbox() {
+    lightbox.setAttribute("hidden", "");
+    document.body.style.overflow = "";
+    buttons[currentIndex]?.focus();
+  }
+
+  function showWork(index: number) {
+    const btn = buttons[index];
+    lbImg.style.opacity = "0";
+    lbImg.src = btn.dataset.imgSrc ?? "";
+    lbImg.alt = btn.dataset.imgAlt ?? "";
+    lbImg.onload = () => { lbImg.style.opacity = "1"; };
+    lbTitle.textContent  = btn.querySelector(".grid-item__title")?.textContent ?? "";
+    lbMedium.textContent = btn.querySelector(".grid-item__medium")?.textContent ?? "";
+    lbPrev.style.visibility = index === 0 ? "hidden" : "visible";
+    lbNext.style.visibility = index === buttons.length - 1 ? "hidden" : "visible";
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.workIndex ?? "0", 10);
+      openLightbox(idx);
+    });
+  });
+
+  lbClose.addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  lbPrev.addEventListener("click", () => {
+    if (currentIndex > 0) showWork(--currentIndex);
+  });
+  lbNext.addEventListener("click", () => {
+    if (currentIndex < buttons.length - 1) showWork(++currentIndex);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.hasAttribute("hidden")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft"  && currentIndex > 0)                   showWork(--currentIndex);
+    if (e.key === "ArrowRight" && currentIndex < buttons.length - 1)  showWork(++currentIndex);
+  });
+</script>
