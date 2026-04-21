@@ -12,13 +12,10 @@
      1. PRIMITIVES
   ───────────────────────────────────────────────────────── */
 
-  /* Teal — kept for lightbox/overlay accents */
-  --teal-200: oklch(88% 0.025 168);
-
-  /* Electric blue */
-  --blue-900: oklch(34% 0.28 264);
-  --blue-500: oklch(58% 0.20 264);
-  --blue-100: oklch(82% 0.10 264);
+  /* Dusty rose accent */
+  --dusty-rose-dark: oklch(45% 0.08 15);
+  --dusty-rose: oklch(65% 0.08 15);
+  --dusty-rose-light: oklch(80% 0.06 15);
 
   /* Neutrals — warm-tinted (h75 amber), dark end off-black, light end beige */
   --neutral-950: oklch(14% 0.01 75);
@@ -33,8 +30,8 @@
   --neutral-100: oklch(95% 0.008 75);
   --neutral-50: oklch(97.5% 0.01 75);
 
-  /* Warm beige surface */
-  --off-white: oklch(94% 0.025 80);
+  /* Off-white surface */
+  --off-white: oklch(97% 0.005 90);
 
   /* Spacing scale — 4pt base */
   --space-1: 4px;
@@ -50,6 +47,8 @@
   --space-20: 80px;
   --space-24: 96px;
   --space-32: 128px;
+  --space-48: 192px;
+  --space-72: 288px;
 
   /* Fluid type scale — Utopia
    * Min 320px / Max 1400px, base 16→18px, scale 1.25→1.333
@@ -91,8 +90,7 @@
   ───────────────────────────────────────────────────────── */
 
   /* Typography — families */
-  --font-display: "Gilda Display", Georgia, serif;
-  --font-body: "Jost", system-ui, sans-serif;
+  --font-display: var(--font-body);
   --brand-font-active: var(--font-june-active);
   --brand-font-curious: var(--font-june-curious);
 
@@ -135,9 +133,12 @@
   --color-text-inverse: var(--neutral-50);
 
   /* Color — brand */
-  --color-brand: var(--blue-900);
-  --color-brand-mid: var(--blue-500);
-  --color-brand-subtle: var(--blue-100);
+  --color-brand: var(--neutral-800);
+  --color-brand-mid: var(--neutral-500);
+  --color-brand-subtle: var(--neutral-200);
+  --color-accent: var(--dusty-rose);
+  --color-accent-dark: var(--dusty-rose-dark);
+  --color-accent-subtle: var(--dusty-rose-light);
 
   /* Color — borders */
   --color-border-default: var(--neutral-200);
@@ -152,6 +153,7 @@
   --space-2xl: var(--space-12);
   --space-3xl: var(--space-16);
   --space-4xl: var(--space-24);
+  --space-5xl: var(--space-72);
 
   /* Layout */
   --layout-site-width: 1200px;
@@ -169,7 +171,7 @@
 
   /* Image */
   --image-border-width: 10px;
-  --image-border-color: var(--neutral-50);
+  --image-border-color: var(--dusty-rose-dark);
 
   /* Nav */
   --nav-height: 100px;
@@ -177,6 +179,7 @@
 
   /* Portfolio grid */
   --grid-gutter: clamp(var(--space-3), 2vw, var(--space-6));
+  --grid-row-gap: clamp(var(--space-32), 10vw, var(--space-72));
 
   /* Lightbox */
   --lightbox-scrim: oklch(12% 0.01 75 / 0.92);

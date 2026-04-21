@@ -1,415 +1,908 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getImage } from "astro:assets";
-import img5234  from "../assets/img/DSC_5234_VSCO.webp";
-import img5556  from "../assets/img/DSC_5556_VSCO.webp";
-import img5564  from "../assets/img/DSC_5564_VSCO.webp";
-import img5834  from "../assets/img/DSC_5834_VSCO.jpeg";
-import img5986  from "../assets/img/DSC_5986.webp";
-import imgEdesax from "../assets/img/edesax_2022_15445___serialized4.avif";
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import gazaVideo from "../assets/img/v-gaza.web.mp4";
+import gazaPoster from "../assets/img/v-gaza-poster.jpg";
+import d1handImg from "../assets/img/d1hand.avif";
 
-const opt5234   = await getImage({ src: img5234,   format: "webp" });
-const opt5556   = await getImage({ src: img5556,   format: "webp" });
-const opt5564   = await getImage({ src: img5564,   format: "webp" });
-const opt5834   = await getImage({ src: img5834,   format: "webp" });
-const opt5986   = await getImage({ src: img5986,   format: "webp" });
-const optEdesax = await getImage({ src: imgEdesax, format: "webp" });
+const gazaReelUrl = "https://www.instagram.com/reel/DRMmx_ODFXL/?igsh=MTEwdzV6d3Frc3F5ZQ==";
 
-const works = [
-  { id: 1, title: "Ring I",   medium: "Silver, polished",     aspect: "square",   col: "1 / 6",  label: "bottom-left",  offset: "0em",     left: "-35%",  imgSrc: opt5234.src   },
-  { id: 2, title: "Ring II",  medium: "Silver, textured",     aspect: "square",   col: "9 / 13", label: "bottom-right", offset: "0em",                    imgSrc: opt5556.src   },
-  { id: 3, title: "Ring III", medium: "Silver, heart signet", aspect: "square",   col: "3 / 8",  label: "top-right",    offset: "-0.55em",               imgSrc: opt5564.src   },
-  { id: 4, title: "Rings",    medium: "Silver, worn",         aspect: "portrait", col: "8 / 13", label: "bottom-right", offset: "-0.55em",               imgSrc: opt5834.src   },
-  { id: 5, title: "Charm",    medium: "Silver, crescent",     aspect: "square",   col: "1 / 5",  label: "bottom-left",  offset: "0em",                    imgSrc: opt5986.src   },
-  { id: 6, title: "Ring IV",  medium: "Silver",               aspect: "square",   col: "5 / 10", label: "bottom-left",  offset: "-0.55em",               imgSrc: optEdesax.src },
-  { id: 7, title: "Earrings", medium: "Silver, glass",        aspect: "portrait", col: "2 / 7",  label: "top-left",     offset: "0em",                    imgSrc: null          },
-  { id: 8, title: "Brooch",   medium: "Brass",                aspect: "square",   col: "8 / 13", label: "top-left",     offset: "-0.55em",               imgSrc: null          },
+const allJewelry  = await getCollection("jewelry");
+const allKnitting = await getCollection("knitting");
+
+const decoImports = import.meta.glob<{ default: ImageMetadata }>(
+  "../content/decorative/*.{jpg,jpeg,webp,avif,png}",
+  { eager: true }
+);
+const allDeco = Object.values(decoImports).map((m) => m.default);
+const decoSrcs = JSON.stringify(allDeco.map((img) => img.src));
+
+const byDate = (a: { data: { date: string } }, b: { data: { date: string } }) =>
+  b.data.date.localeCompare(a.data.date);
+
+const jewelry  = allJewelry.sort(byDate);
+const knitting = allKnitting.sort(byDate);
+
+
+type ProductEntry = typeof jewelry[0] | typeof knitting[0];
+type GridItem =
+  | { kind: "jewelry" | "knitting"; entry: ProductEntry; img?: undefined; span?: number }
+  | { kind: "decorative"; entry?: undefined; img: ImageMetadata; span?: number }
+  | { kind: "empty"; entry?: undefined; img?: undefined; span?: number };
+
+const J = (i: number, span = 1): GridItem => ({ kind: "jewelry",    entry: jewelry[i],  span });
+const K = (i: number, span = 1): GridItem => ({ kind: "knitting",   entry: knitting[i], span });
+const D = (i: number, span = 1): GridItem => ({ kind: "decorative", img:   allDeco[i],  span });
+
+const gridA: GridItem[] = [
+  // Row 1
+  J(0), D(0), K(0),
+  // Row 2
+  D(1), K(1), J(1),
 ];
+
+const gridB: GridItem[] = [
+  // Row 3
+  D(2), J(2), K(2),
+  // Row 4
+  J(3), D(3), J(4),
+];
+
+const gridC: GridItem[] = [
+  // Row 5
+  D(4), J(5), D(5),
+];
+
+// 3-column grid slots — fixed pattern, rows always sum to 3
+const slots: { span: number; nudge: string }[] = [
+  { span: 1, nudge: "0px"  },
+  { span: 1, nudge: "28px" },
+  { span: 1, nudge: "12px" },
+  { span: 2, nudge: "0px"  },
+  { span: 1, nudge: "36px" },
+  { span: 1, nudge: "20px" },
+  { span: 1, nudge: "8px"  },
+  { span: 1, nudge: "32px" },
+  { span: 1, nudge: "16px" },
+  { span: 1, nudge: "0px"  },
+  { span: 2, nudge: "16px" },
+  { span: 1, nudge: "44px" },
+  { span: 1, nudge: "8px"  },
+];
+
+// Asymmetric image padding (top right bottom left)
+const borderPaddings: string[] = [
+  "0 0 12% 0",
+  "0 14% 0 0",
+  "13% 0 0 0",
+  "0 0 0 14%",
+  "0 10% 12% 0",
+  "11% 0 0 10%",
+  "0 0 13% 11%",
+  "10% 12% 0 0",
+  "13% 0 11% 0",
+  "0 11% 0 13%",
+];
+
+const insets: [number, number, number, number][] = [
+  [3.5, 2.8, 4.2, 3.1],
+  [4.1, 2.6, 3.0, 4.4],
+  [3.8, 3.2, 2.7, 3.5],
+  [2.4, 4.0, 3.7, 2.8],
+  [3.0, 3.5, 4.3, 2.6],
+  [4.5, 2.9, 3.2, 3.8],
+  [2.6, 3.7, 4.0, 2.9],
+  [3.6, 2.7, 3.3, 4.2],
+  [4.0, 3.1, 2.5, 3.9],
+];
+
+const cornerOffsets: [number,number,number,number,number,number,number,number][] = [
+  [ 0.3, 0.2,-0.2, 0.4, 0.1,-0.3,-0.4, 0.1],
+  [-0.2, 0.3, 0.4,-0.1,-0.3, 0.2, 0.2,-0.4],
+  [ 0.1,-0.4, 0.3, 0.2,-0.2, 0.4,-0.3,-0.1],
+  [-0.3, 0.1,-0.1, 0.4, 0.4,-0.2, 0.2, 0.3],
+  [ 0.4,-0.2, 0.1, 0.3,-0.4, 0.1, 0.3,-0.3],
+  [-0.1, 0.4,-0.3,-0.2, 0.2, 0.3,-0.4, 0.1],
+  [ 0.2, 0.3, 0.4,-0.3,-0.1, 0.2, 0.3,-0.4],
+  [-0.4, 0.1, 0.2, 0.4, 0.3,-0.1,-0.2, 0.3],
+  [ 0.3,-0.3,-0.2, 0.1, 0.4, 0.2,-0.1,-0.4],
+];
+
+
+const textOffsets: { bottom: string; left?: string; right?: string; textAlign?: string }[] = [
+  { bottom: "-2.4em",  left: "0"                             },
+  { bottom: "-4.8em",  left: "0"                             },
+  { bottom: "-2.8em",  right: "0",      textAlign: "right"   },
+  { bottom: "-2.0em",  left: "30%"                           },
+  { bottom: "-4.0em",  left: "0"                             },
+  { bottom: "-5.6em",  right: "0",      textAlign: "right"   },
+  { bottom: "-1.6em",  left: "60%"                           },
+  { bottom: "-3.2em",  left: "0"                             },
+  { bottom: "-4.8em",  right: "0",      textAlign: "right"   },
+  { bottom: "-3.2em",  right: "20%",    textAlign: "right"   },
+];
+
+const fmt = new Intl.NumberFormat("sv-SE").format;
+
+function overlayStyle(idx: number): string {
+  const o = textOffsets[idx % textOffsets.length];
+  const parts = [`bottom:${o.bottom}`];
+  if (o.left  !== undefined) parts.push(`left:${o.left}`);
+  if (o.right !== undefined) parts.push(`right:${o.right}`);
+  if (o.textAlign)           parts.push(`text-align:${o.textAlign}`);
+  return parts.join(";");
+}
+
+function makeClip(
+  [top, right, bottom, left]: [number, number, number, number],
+  [o0, o1, o2, o3, o4, o5, o6, o7]: [number,number,number,number,number,number,number,number]
+): string {
+  const t = top, r = 100 - right, b = 100 - bottom, l = left;
+  return [
+    `${l + o0}% ${t + o1}%`,
+    `${r + o2}% ${t + o3}%`,
+    `${r + o4}% ${b + o5}%`,
+    `${l + o6}% ${b + o7}%`,
+  ].join(", ");
+}
+
+function makeClipHover(
+  [top, right, bottom, left]: [number, number, number, number],
+  [o0, o1, o2, o3, o4, o5, o6, o7]: [number,number,number,number,number,number,number,number]
+): string {
+  // Expand outward: reduce insets by ~65%
+  const f = 0.35;
+  const t = top * f, r = 100 - right * f, b = 100 - bottom * f, l = left * f;
+  return [
+    `${l + o0 * f}% ${t + o1 * f}%`,
+    `${r + o2 * f}% ${t + o3 * f}%`,
+    `${r + o4 * f}% ${b + o5 * f}%`,
+    `${l + o6 * f}% ${b + o7 * f}%`,
+  ].join(", ");
+}
 ---
 
-<BaseLayout description="TO.W — handmade jewelry and objects.">
-  <section class="work-grid" aria-label="Works">
-    {works.map((work, i) => (
-      <button
-        class:list={["grid-item", `grid-item--${work.aspect}`, `grid-item--label-${work.label}`]}
-        style={`grid-column: ${work.col}; --label-offset: ${work.offset};${'left' in work && work.left ? ` --label-left: ${work.left};` : ''}`}
-        data-work-index={i}
-        data-img-src={work.imgSrc ?? `https://picsum.photos/seed/tow${work.id}/${work.aspect === 'portrait' ? '600/800' : '700/700'}`}
-        data-img-alt={`${work.title} — ${work.medium}`}
-        aria-label={`View ${work.title}`}
-        type="button"
-      >
-        <div class="grid-item__img">
-          <img
-            src={work.imgSrc ?? `https://picsum.photos/seed/tow${work.id}/${work.aspect === 'portrait' ? '600/800' : '700/700'}`}
-            alt={`${work.title} — ${work.medium}`}
-            loading={i < 4 ? "eager" : "lazy"}
-            decoding="async"
-          />
-        </div>
-        <div class="grid-item__overlay" aria-hidden="true">
-          <span class="grid-item__title">{work.title}</span>
-          <span class="grid-item__medium">{work.medium}</span>
-        </div>
-      </button>
-    ))}
-  </section>
+<BaseLayout description="to.w — handmade jewelry and objects.">
+  <div class="page-flow">
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Work detail" hidden>
-    <button class="lightbox__close" id="lightbox-close" aria-label="Close" type="button">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <line x1="2" y1="2" x2="18" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="18" y1="2" x2="2" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </button>
+    <section class="collage" aria-label="Works — part 1">
+      {gridA.map((item, i) => {
+        const slot          = slots[i % slots.length];
+        const inset         = insets[i % insets.length];
+        const offsets       = cornerOffsets[i % cornerOffsets.length];
+        const clipRest      = `polygon(${makeClip(inset, offsets)})`;
+        const clipHover     = `polygon(${makeClipHover(inset, offsets)})`;
+        const borderPadding = borderPaddings[i % borderPaddings.length];
+        const itemStyle     = `grid-column: span ${item.span}; margin-top: ${slot.nudge};`;
+        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};clip-path:var(--clip-rest);`;
+        if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
+        if (item.kind === "decorative") return (
+          <div class="collage__deco" style={itemStyle} data-deco-imgs={decoSrcs}>
+            <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
+              <img src={item.img.src} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+            </div>
+          </div>
+        );
+        const { entry, kind } = item;
+        const href = kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`;
+        return (
+          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+            <div class="collage__item-img collage__item-img--bordered" style={imgStyle}>
+              <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
+            </div>
+            <div class="collage__item-overlay" style={overlayStyle(i)} aria-hidden="true">
+              <span class="collage__item-title">{entry.data.title}</span>
+              {entry.data.material && <span class="collage__item-meta">{entry.data.material}</span>}
+              <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
+            </div>
+          </a>
+        );
+      })}
+    </section>
 
-    <button class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="Previous" type="button">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
 
-    <div class="lightbox__content">
-      <img class="lightbox__img" id="lightbox-img" src="" alt="" />
-      <div class="lightbox__caption">
-        <span class="lightbox__title" id="lightbox-title"></span>
-        <span class="lightbox__medium" id="lightbox-medium"></span>
-      </div>
-    </div>
+    <section class="collage" aria-label="Works — part 2">
+      {gridB.map((item, i) => {
+        const si            = i + gridA.length;
+        const slot          = slots[si % slots.length];
+        const inset         = insets[si % insets.length];
+        const offsets       = cornerOffsets[si % cornerOffsets.length];
+        const clipRest      = `polygon(${makeClip(inset, offsets)})`;
+        const clipHover     = `polygon(${makeClipHover(inset, offsets)})`;
+        const borderPadding = borderPaddings[si % borderPaddings.length];
+        const itemStyle     = `grid-column: span ${item.span}; margin-top: ${slot.nudge};`;
+        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};clip-path:var(--clip-rest);`;
+        if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
+        if (item.kind === "decorative") return (
+          <div class="collage__deco" style={itemStyle} data-deco-imgs={decoSrcs}>
+            <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
+              <img src={item.img.src} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+            </div>
+          </div>
+        );
+        const { entry, kind } = item;
+        const href = kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`;
+        return (
+          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+            <div class="collage__item-img collage__item-img--bordered" style={imgStyle}>
+              <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
+            </div>
+            <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
+              <span class="collage__item-title">{entry.data.title}</span>
+              {entry.data.material && <span class="collage__item-meta">{entry.data.material}</span>}
+              <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
+            </div>
+          </a>
+        );
+      })}
+    </section>
 
-    <button class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="Next" type="button">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
+    <!-- Endeavours -->
+    {(() => {
+      const e0inset   = insets[0];
+      const e0offsets = cornerOffsets[0];
+      const e1inset   = insets[3];
+      const e1offsets = cornerOffsets[3];
+      const e0clip    = `polygon(${makeClip(e0inset, e0offsets)})`;
+      const e1clip    = `polygon(${makeClip(e1inset, e1offsets)})`;
+      return (
+        <section class="endeavours" aria-label="Endeavours">
+            <div class="endeavour">
+            <div class="collage__item-img collage__item-img--bordered gaza-media" style={`clip-path:${e0clip};`}>
+              <Image class="gaza-media__poster" src={gazaPoster} alt="Gaza-halsbandet" loading="lazy" width={600} height={750} />
+              <button class="gaza-media__play" type="button" aria-label="Spela Gaza-video"></button>
+              <video
+                class="gaza-media__video"
+                data-src={gazaVideo}
+                poster={gazaPoster.src}
+                aria-label="Gaza-halsbandet"
+                muted
+                playsinline
+                controls
+                preload="metadata"
+              ></video>
+            </div>
+            <div class="endeavour__text">
+              <p class="collage__item-title">Victor & Gaza</p>
+              <p class="endeavour__body">Ett halsband graverat på återvunnet sterling silver, skapat i samarbete med <a class="endeavour__inline-link" href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. 20 exemplar — alla intäkter gick till Rädda Barnen och deras arbete för barn i Gaza. <a class="endeavour__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se reel</a></p>
+            </div>
+          </div>
+          <div class="endeavour endeavour--reversed">
+            <div class="endeavour__text">
+              <p class="collage__item-title">Typ Ett</p>
+              <p class="endeavour__body">En tunn ring med en knut högst upp, designad exklusivt för <a class="endeavour__inline-link" href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes — ett projekt som ligger mig varmt om hjärtat som förälder till ett barn med diabetes.</p>
+            </div>
+            <div class="collage__item-img collage__item-img--bordered" style={`clip-path:${e1clip};`}>
+              <Image src={d1handImg} alt="D1-ringen" loading="lazy" width={600} height={750} />
+            </div>
+          </div>
+        </section>
+      );
+    })()}
+
+    <section class="collage collage--final" aria-label="Works — part 3">
+      {gridC.map((item, i) => {
+        const si            = i + gridA.length + gridB.length;
+        const slot          = slots[si % slots.length];
+        const inset         = insets[si % insets.length];
+        const offsets       = cornerOffsets[si % cornerOffsets.length];
+        const clipRest      = `polygon(${makeClip(inset, offsets)})`;
+        const clipHover     = `polygon(${makeClipHover(inset, offsets)})`;
+        const borderPadding = borderPaddings[si % borderPaddings.length];
+        const itemStyle     = `grid-column: span ${item.span}; margin-top: ${slot.nudge};`;
+        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};clip-path:var(--clip-rest);`;
+        if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
+        if (item.kind === "decorative") return (
+          <div class="collage__deco" style={itemStyle} data-deco-imgs={decoSrcs}>
+            <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
+              <img src={item.img.src} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+            </div>
+          </div>
+        );
+        const { entry, kind } = item;
+        const href = kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`;
+        return (
+          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+            <div class="collage__item-img collage__item-img--bordered" style={imgStyle}>
+              <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
+            </div>
+            <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
+              <span class="collage__item-title">{entry.data.title}</span>
+              {entry.data.material && <span class="collage__item-meta">{entry.data.material}</span>}
+              <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
+            </div>
+          </a>
+        );
+      })}
+    </section>
+
   </div>
 </BaseLayout>
 
 <style>
-  /* ── Grid ── */
-  .work-grid {
+  /* ── Page wrapper ── */
+  .page-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5xl);
+  }
+
+  /* ── Collage grid ── */
+  .collage {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--grid-gutter);
-    padding: var(--space-8) var(--layout-gutter) 0;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: var(--grid-gutter);
+    row-gap: var(--space-5xl);
+    padding: 0 var(--layout-gutter);
     max-width: var(--layout-site-width);
     margin: 0 auto;
-    overflow: visible;
-  }
-
-  .grid-item {
-    position: relative;
-    overflow: visible;
-    background: var(--image-border-color);
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: scale var(--duration-fast) var(--ease-out-quart);
-  }
-
-  .grid-item:active {
-    scale: 0.96;
-  }
-
-  .grid-item--portrait .grid-item__img {
-    aspect-ratio: 3 / 4;
-  }
-
-  .grid-item--square .grid-item__img {
-    aspect-ratio: 1 / 1;
-  }
-
-  .grid-item__img {
+    align-items: start;
     width: 100%;
-    border: var(--image-border-width) solid var(--image-border-color);
     box-sizing: border-box;
-    overflow: hidden;
   }
 
-  .grid-item__img img {
+  /* ── Shared interlude shell ── */
+  .interlude {
+    width: 100%;
+    max-width: var(--layout-site-width);
+    margin: 0 auto;
+    padding: 0 var(--layout-gutter);
+    box-sizing: border-box;
+  }
+
+  .interlude__eyebrow {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-4);
+  }
+
+  .interlude__body {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--font-leading-relaxed);
+    max-width: 44ch;
+  }
+
+
+  /* ── About interlude ── */
+  .interlude--about {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: var(--space-4);
+    max-height: 80vh;
+  }
+
+  .about__photo-wrap {
+    grid-column: 4 / 7;
+    grid-row: 1 / 4;
+    position: relative;
+    z-index: 0;
+  }
+
+  .about__photo-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, var(--color-bg-base) 0%, transparent 60%);
+  }
+
+  .about__photo {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--duration-slow) var(--ease-out-quart);
-    will-change: transform;
+    display: block;
   }
 
-  .grid-item:hover .grid-item__img img {
-    transform: scale(1.02);
+  .about__headline {
+    grid-column: 2 / 6;
+    grid-row: 2 / 3;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-light);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--color-accent);
+    margin: 0;
+    align-self: start;
+    position: relative;
+    z-index: 1;
   }
 
-  /* Hover label */
-  .grid-item__overlay {
+  .about__body {
+    grid-column: 2 / 6;
+    grid-row: 3 / 4;
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    position: relative;
+    z-index: 1;
+    line-height: var(--font-leading-snug);
+    max-width: none;
+  }
+
+  /* ── Endeavours ── */
+  .endeavours {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-48);
+    max-width: var(--layout-site-width);
+    margin: 0 auto;
+    padding: 0 var(--layout-gutter);
+    box-sizing: border-box;
+  }
+
+  .endeavour {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--space-10);
+    align-items: center;
+  }
+
+  .endeavour .collage__item-img {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    filter: contrast(1.08) saturate(0.7);
+  }
+
+  .endeavour .collage__item-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, var(--dusty-rose-light) 0%, transparent 60%);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .endeavour__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .endeavour--reversed {
+    grid-template-columns: 1fr 300px;
+  }
+
+  .endeavour--reversed .collage__item-img {
+    order: 1;
+  }
+
+  .endeavour__text .collage__item-title {
+    font-family: var(--brand-font-curious);
+  }
+
+  .endeavour__body {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--font-leading-relaxed);
+    margin-top: 0;
+    max-width: 44ch;
+  }
+
+  .endeavour__inline-link {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 760px) {
+    .page-flow {
+      gap: var(--space-24);
+    }
+
+    .collage {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: var(--space-32);
+    }
+
+    .collage__deco {
+      display: none;
+    }
+
+    .collage--final {
+      display: none;
+    }
+
+    .endeavours {
+      gap: var(--space-32);
+      padding: var(--space-16) var(--layout-gutter);
+    }
+
+    .interlude--about { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; max-height: none; }
+    .about__photo-wrap { grid-column: 2; grid-row: 1 / 3; }
+    .about__photo { width: 100%; height: auto; }
+    .about__headline { grid-column: 1 / 3; grid-row: 1; position: relative; z-index: 1; }
+    .about__body { grid-column: 1 / 3; grid-row: 2; position: relative; z-index: 1; }
+    .endeavour,
+    .endeavour--reversed {
+      --endeavour-label-width: var(--space-16);
+      --endeavour-media-width: min(
+        calc(var(--space-32) * 2),
+        calc(100vw - (var(--layout-gutter) * 2) - var(--endeavour-label-width) - var(--space-10))
+      );
+      grid-template-columns: var(--endeavour-label-width) var(--endeavour-media-width);
+      gap: var(--space-10);
+      position: relative;
+      justify-content: center;
+      align-items: start;
+      width: fit-content;
+      max-width: 100%;
+      align-self: center;
+    }
+    .endeavour .collage__item-img {
+      grid-column: 2;
+      grid-row: 1;
+      width: var(--endeavour-media-width);
+      max-width: 100%;
+      justify-self: start;
+    }
+    .endeavour--reversed .collage__item-img { order: -1; }
+
+    .endeavour__text {
+      display: contents;
+    }
+
+    .endeavour__text .collage__item-title {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+      justify-self: end;
+      padding-top: var(--space-2);
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      color: var(--color-brand);
+      z-index: var(--z-raised);
+    }
+
+    .endeavour--reversed .endeavour__text .collage__item-title {
+      grid-column: 2;
+      justify-self: start;
+      transform: none;
+    }
+
+    .endeavour--reversed {
+      grid-template-columns: var(--endeavour-media-width) var(--endeavour-label-width);
+    }
+
+    .endeavour--reversed .collage__item-img {
+      grid-column: 1;
+    }
+
+    .endeavour__body {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+  }
+
+  @media (max-width: 560px) {
+    .page-flow {
+      gap: var(--space-16);
+    }
+
+    .collage {
+      row-gap: var(--space-20);
+    }
+
+    .endeavours {
+      gap: var(--space-24);
+      padding-top: var(--space-20);
+      padding-bottom: var(--space-20);
+    }
+
+    .endeavour,
+    .endeavour--reversed {
+      --endeavour-label-width: var(--space-12);
+      --endeavour-media-width: min(
+        calc(var(--space-32) + var(--space-24)),
+        calc(100vw - (var(--layout-gutter) * 2) - var(--endeavour-label-width) - var(--space-6))
+      );
+      grid-template-columns: var(--endeavour-label-width) var(--endeavour-media-width);
+      gap: var(--space-6);
+    }
+
+    .endeavour--reversed {
+      grid-template-columns: var(--endeavour-media-width) var(--endeavour-label-width);
+    }
+
+    .endeavour .collage__item-img {
+      width: var(--endeavour-media-width);
+    }
+
+    .endeavour__text .collage__item-title {
+      padding-top: var(--space-1);
+    }
+
+    .collage__item,
+    .collage__deco { grid-column: span 1 !important; margin-top: 0 !important; }
+  }
+
+  @media (max-width: 420px) {
+    .page-flow {
+      gap: var(--space-20);
+    }
+
+    .collage {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-24);
+    }
+
+    .endeavours {
+      gap: var(--space-24);
+    }
+
+    .endeavour,
+    .endeavour--reversed {
+      --endeavour-label-width: var(--space-10);
+      --endeavour-media-width: min(
+        calc(var(--space-32) + var(--space-24)),
+        calc(100vw - (var(--layout-gutter) * 2) - var(--endeavour-label-width) - var(--space-8))
+      );
+      gap: var(--space-8);
+    }
+
+  }
+
+  /* ── Product links ── */
+  .collage__item {
+    position: relative;
+    overflow: visible;
+    display: block;
+    text-decoration: none;
+    transition: scale var(--duration-fast) var(--ease-out-quart);
+    align-self: start;
+  }
+
+  .collage__item:active { scale: 0.97; }
+
+  /* ── Decorative ── */
+  .collage__deco {
+    align-self: start;
+    cursor: default;
+  }
+
+  /* ── Shared image wrapper ── */
+  .collage__item-img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: var(--image-border-color);
+    position: relative;
+    transition: clip-path var(--duration-normal) var(--ease-out-expo);
+  }
+
+  .collage__item-img--deco {
+    aspect-ratio: 2 / 3;
+  }
+
+  .collage__item:hover .collage__item-img {
+    clip-path: var(--clip-hover) !important;
+  }
+
+  .collage__item-img--bordered::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--color-bg-base) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .collage__item-img--bordered {
+    background: var(--color-accent-subtle);
+  }
+
+  .collage__item-img img,
+  .collage__item-img video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-sizing: border-box;
+    display: block;
+  }
+
+  .collage__item-img--bordered img,
+  .collage__item-img--bordered video {
+    object-fit: contain !important;
+  }
+
+  .gaza-media__video {
+    display: none;
+  }
+
+  .endeavour__reel {
+    display: none;
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .endeavour__reel:hover {
+    color: var(--color-accent-dark);
+  }
+
+  .gaza-media__play {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--space-12);
+    height: var(--space-12);
+    padding: 0;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-inverse);
+    cursor: pointer;
+    place-items: center;
+    transform: translate(-50%, -50%);
+    transition: scale var(--transition-fast), opacity var(--transition-fast);
+    z-index: var(--z-raised);
+  }
+
+  .gaza-media__play::before {
+    content: "";
+    margin-left: var(--space-1);
+    border-top: var(--space-2) solid transparent;
+    border-bottom: var(--space-2) solid transparent;
+    border-left: var(--space-3) solid var(--color-text-inverse);
+  }
+
+  .gaza-media__play:hover {
+    scale: 1.04;
+  }
+
+  .gaza-media__play:active {
+    scale: 0.96;
+  }
+
+  @media (min-width: 761px) {
+    .gaza-media__play {
+      display: grid;
+    }
+
+    .gaza-media--loaded .gaza-media__poster,
+    .gaza-media--loaded .gaza-media__play {
+      display: none !important;
+    }
+
+    .gaza-media--loaded .gaza-media__video {
+      display: block;
+    }
+  }
+
+  /* ── Overlay (products only) ── */
+  .collage__item-overlay {
     position: absolute;
     pointer-events: none;
     z-index: var(--z-raised);
-    opacity: 0;
-    transition:
-      opacity var(--duration-normal) var(--ease-out-quart),
-      transform var(--duration-normal) var(--ease-out-quart);
   }
 
-  .grid-item:hover .grid-item__overlay {
-    opacity: 1;
-  }
 
-  .grid-item__title {
+  .collage__item-title {
     display: block;
     font-family: var(--brand-font-curious);
     font-size: var(--font-size-display);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
-    color: var(--color-brand);
+    color: var(--color-accent);
     white-space: nowrap;
     letter-spacing: var(--font-tracking-tight);
+    transition: color var(--transition-fast);
   }
 
-  .grid-item__medium {
+  .collage__item-meta {
     display: block;
     font-family: var(--font-body);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-light);
     letter-spacing: var(--font-tracking-wide);
     text-transform: uppercase;
-    color: var(--color-brand);
+    color: var(--color-accent);
     white-space: nowrap;
     margin-top: var(--space-1);
-  }
-
-
-  /* ── Label placements ── */
-
-  /* bottom-left: text sits at bottom, flows right out of frame */
-  .grid-item--label-bottom-left .grid-item__overlay {
-    bottom: var(--label-offset, -0.2em);
-    left: var(--label-left, -0.05em);
-    transform: translateY(8px);
-  }
-  .grid-item--label-bottom-left:hover .grid-item__overlay {
-    transform: translateY(0);
-  }
-
-  /* bottom-right: text sits at bottom, anchored right, flows left out */
-  .grid-item--label-bottom-right .grid-item__overlay {
-    bottom: var(--label-offset, -0.2em);
-    right: -0.05em;
-    transform: translateY(8px);
-  }
-  .grid-item--label-bottom-right:hover .grid-item__overlay {
-    transform: translateY(0);
-  }
-
-  /* top-left: text sits at top, flows right out */
-  .grid-item--label-top-left .grid-item__overlay {
-    top: var(--label-offset, -0.2em);
-    left: -0.05em;
-    transform: translateY(-8px);
-  }
-  .grid-item--label-top-left:hover .grid-item__overlay {
-    transform: translateY(0);
-  }
-
-  /* top-right: text sits at top, anchored right */
-  .grid-item--label-top-right .grid-item__overlay {
-    top: var(--label-offset, -0.2em);
-    right: -0.05em;
-    transform: translateY(-8px);
-  }
-  .grid-item--label-top-right:hover .grid-item__overlay {
-    transform: translateY(0);
-  }
-
-  /* ── Lightbox ── */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-modal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--lightbox-scrim);
-    opacity: 0;
-    transition: opacity var(--duration-normal) var(--ease-out-quart);
-  }
-
-  .lightbox:not([hidden]) {
-    opacity: 1;
-  }
-
-  .lightbox[hidden] {
-    display: none;
-  }
-
-  .lightbox__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-4);
-    max-height: 90vh;
-    max-width: min(700px, 90vw);
-    width: 100%;
-  }
-
-  .lightbox__img {
-    max-height: 78vh;
-    max-width: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-    transition: opacity var(--duration-fast) var(--ease-out-quart);
-    border: var(--image-border-width) solid var(--image-border-color);
-  }
-
-  .lightbox__caption {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-1);
-    text-align: center;
-  }
-
-  .lightbox__title {
-    font-family: var(--font-display);
-    font-size: var(--font-size-base);
-    color: var(--neutral-50);
-    letter-spacing: var(--font-tracking-normal);
-  }
-
-  .lightbox__medium {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-light);
-    letter-spacing: var(--font-tracking-wider);
-    text-transform: uppercase;
-    color: var(--teal-200);
-  }
-
-  .lightbox__close {
-    position: absolute;
-    top: var(--space-6);
-    right: var(--space-6);
-    background: none;
-    border: none;
-    padding: var(--space-2);
-    color: var(--neutral-300);
     transition: color var(--transition-fast);
-    line-height: 0;
   }
 
-  .lightbox__close:hover {
-    color: var(--neutral-50);
+  .collage__item:hover .collage__item-title,
+  .collage__item:hover .collage__item-meta {
+    color: var(--color-accent-dark);
   }
 
-  .lightbox__nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    padding: var(--space-4);
-    color: var(--neutral-400);
-    transition: color var(--transition-fast);
-    line-height: 0;
-  }
-
-  .lightbox__nav:hover {
-    color: var(--neutral-50);
-  }
-
-  .lightbox__nav--prev { left: var(--space-4); }
-  .lightbox__nav--next { right: var(--space-4); }
-
-  /* ── Responsive ── */
-  @media (max-width: 700px) {
-    .work-grid {
-      grid-template-columns: repeat(2, 1fr);
-      padding-top: var(--space-4);
+  @media (max-width: 760px) {
+    .collage__item-overlay {
+      position: static;
+      margin-top: var(--space-3);
+      text-align: left !important;
     }
 
-    .grid-item {
-      grid-column: span 1 !important;
+    .collage__item-title {
+      font-size: var(--font-size-3xl);
+      white-space: normal;
     }
 
-    .grid-item:first-child {
-      grid-column: span 2 !important;
+    .collage__item-meta {
+      white-space: normal;
+    }
+
+    .gaza-media .gaza-media__poster {
+      height: 118%;
+      object-fit: cover !important;
+      object-position: top center;
+    }
+
+    .endeavour__reel {
+      display: inline;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .collage__item-title {
+      font-size: var(--font-size-2xl);
     }
   }
 
   @media (max-width: 420px) {
-    .work-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .grid-item,
-    .grid-item:first-child {
-      grid-column: span 1 !important;
+    .collage__item-title {
+      font-size: var(--font-size-3xl);
     }
   }
 </style>
 
 <script>
-  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-work-index]"));
+  const INTERVAL = 80;
+  const desktopMedia = window.matchMedia("(min-width: 761px)");
+  const gazaMedia = document.querySelector<HTMLElement>(".gaza-media");
+  const gazaVideo = document.querySelector<HTMLVideoElement>(".gaza-media__video[data-src]");
+  const gazaPlay = document.querySelector<HTMLButtonElement>(".gaza-media__play");
 
-  const lightbox = document.getElementById("lightbox") as HTMLDivElement;
-  const lbImg    = document.getElementById("lightbox-img") as HTMLImageElement;
-  const lbTitle  = document.getElementById("lightbox-title") as HTMLSpanElement;
-  const lbMedium = document.getElementById("lightbox-medium") as HTMLSpanElement;
-  const lbClose  = document.getElementById("lightbox-close") as HTMLButtonElement;
-  const lbPrev   = document.getElementById("lightbox-prev") as HTMLButtonElement;
-  const lbNext   = document.getElementById("lightbox-next") as HTMLButtonElement;
+  function unloadGazaVideoOnMobile() {
+    if (!gazaVideo || !gazaMedia || desktopMedia.matches) return;
 
-  let currentIndex = 0;
-
-  function openLightbox(index: number) {
-    currentIndex = index;
-    showWork(index);
-    lightbox.removeAttribute("hidden");
-    document.body.style.overflow = "hidden";
-    lbClose.focus();
+    gazaVideo.pause();
+    gazaVideo.removeAttribute("src");
+    gazaVideo.load();
+    gazaMedia.classList.remove("gaza-media--loaded");
   }
 
-  function closeLightbox() {
-    lightbox.setAttribute("hidden", "");
-    document.body.style.overflow = "";
-    buttons[currentIndex]?.focus();
-  }
+  gazaPlay?.addEventListener("click", () => {
+    if (!gazaVideo || !gazaMedia || !desktopMedia.matches) return;
 
-  function showWork(index: number) {
-    const btn = buttons[index];
-    lbImg.style.opacity = "0";
-    lbImg.src = btn.dataset.imgSrc ?? "";
-    lbImg.alt = btn.dataset.imgAlt ?? "";
-    lbImg.onload = () => { lbImg.style.opacity = "1"; };
-    lbTitle.textContent  = btn.querySelector(".grid-item__title")?.textContent ?? "";
-    lbMedium.textContent = btn.querySelector(".grid-item__medium")?.textContent ?? "";
-    lbPrev.style.visibility = index === 0 ? "hidden" : "visible";
-    lbNext.style.visibility = index === buttons.length - 1 ? "hidden" : "visible";
-  }
+    if (!gazaVideo.src) gazaVideo.src = gazaVideo.dataset.src ?? "";
+    gazaMedia.classList.add("gaza-media--loaded");
+    gazaVideo.play().catch(() => {});
+  });
 
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const idx = parseInt(btn.dataset.workIndex ?? "0", 10);
-      openLightbox(idx);
+  unloadGazaVideoOnMobile();
+  desktopMedia.addEventListener("change", unloadGazaVideoOnMobile);
+
+  document.querySelectorAll<HTMLElement>(".collage__deco[data-deco-imgs]").forEach((deco) => {
+    const imgs: string[] = JSON.parse(deco.dataset.decoImgs!);
+    const el = deco.querySelector<HTMLImageElement>("img");
+    if (!el || imgs.length < 2) return;
+
+    const originalSrc = el.src;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    let idx = 0;
+
+    deco.addEventListener("mouseenter", () => {
+      timer = setInterval(() => {
+        idx = (idx + 1) % imgs.length;
+        el.src = imgs[idx];
+      }, INTERVAL);
     });
-  });
 
-  lbClose.addEventListener("click", closeLightbox);
-  lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  lbPrev.addEventListener("click", () => {
-    if (currentIndex > 0) showWork(--currentIndex);
-  });
-  lbNext.addEventListener("click", () => {
-    if (currentIndex < buttons.length - 1) showWork(++currentIndex);
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (lightbox.hasAttribute("hidden")) return;
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowLeft"  && currentIndex > 0)                   showWork(--currentIndex);
-    if (e.key === "ArrowRight" && currentIndex < buttons.length - 1)  showWork(++currentIndex);
+    deco.addEventListener("mouseleave", () => {
+      if (timer) { clearInterval(timer); timer = null; }
+      el.src = originalSrc;
+      idx = 0;
+    });
   });
 </script>

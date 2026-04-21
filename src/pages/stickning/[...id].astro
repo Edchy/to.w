@@ -1,0 +1,192 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const items = await getCollection("knitting");
+  return items.map((item) => ({ params: { id: item.id }, props: { entry: item } }));
+}
+
+const { entry } = Astro.props;
+
+const { title, price, sizes, description, material, technique, design, images } = entry.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="product">
+    <div class="product__images">
+      {images.map((img) => (
+        <div class="product__img-wrap">
+          <Image src={img} alt={title} width={900} height={900} />
+        </div>
+      ))}
+    </div>
+
+    <div class="product__info">
+      <h1 class="product__title">{title}</h1>
+      <p class="product__price">{price} kr</p>
+
+      <div class="product__field">
+        <span class="product__label">Material</span>
+        <span class="product__value">{material}</span>
+      </div>
+      <div class="product__field">
+        <span class="product__label">Teknik</span>
+        <span class="product__value">{technique}</span>
+      </div>
+      <div class="product__field">
+        <span class="product__label">Design</span>
+        <span class="product__value">{design}</span>
+      </div>
+
+      <p class="product__description">{description}</p>
+
+      <div class="product__sizes">
+        <span class="product__label">Storlek</span>
+        <div class="product__size-options">
+          {sizes.map((size) => (
+            <button class="product__size-btn" type="button">{size}</button>
+          ))}
+        </div>
+      </div>
+
+      <button class="product__buy" type="button">Beställ</button>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+    max-width: var(--layout-site-width);
+    margin: 0 auto;
+    padding: var(--space-8) var(--layout-gutter) var(--space-16);
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .product { grid-template-columns: 1fr; }
+  }
+
+  .product__images {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .product__img-wrap {
+    background: var(--image-border-color);
+    overflow: hidden;
+  }
+
+  .product__img-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
+    padding: 6%;
+    box-sizing: border-box;
+    object-fit: cover;
+  }
+
+  .product__info {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-8));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .product__title {
+    font-family: var(--brand-font-curious);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-tight);
+    color: var(--color-brand);
+    margin: 0;
+  }
+
+  .product__price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-light);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .product__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .product__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-light);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  .product__value {
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+  }
+
+  .product__description {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-primary);
+    margin: 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  .product__sizes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .product__size-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .product__size-btn {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-default);
+    background: none;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+  }
+
+  .product__size-btn:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand-subtle);
+  }
+
+  .product__buy {
+    margin-top: var(--space-2);
+    padding: var(--space-4) var(--space-8);
+    background: var(--color-brand);
+    color: var(--neutral-50);
+    border: none;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+  }
+
+  .product__buy:hover { opacity: 0.85; }
+</style>

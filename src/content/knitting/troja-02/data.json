@@ -1,0 +1,11 @@
+{
+  "title": "Kajsa",
+  "price": 1950,
+  "sizes": ["XS", "S", "M", "L", "XL"],
+  "description": "Grovstickad tröja i obehandlad ull med naturlig mörkare fläcktextur.",
+  "material": "100% ull, ofärgad",
+  "technique": "Rundstickning, grovt garn",
+  "design": "Boxy fit, hög hals, naturliga ulfläckar",
+  "images": ["./troja.jpeg"],
+  "date": "2026-04-14"
+}

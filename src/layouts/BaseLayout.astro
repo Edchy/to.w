@@ -7,12 +7,13 @@ type Props = {
   description?: string;
 };
 
-const { title, description = "TO.W — handmade jewelry and objects." } = Astro.props;
-const pageTitle = title ? `${title} — TO.W` : "TO.W";
+const { title, description = "to.w — handmade jewelry and objects." } = Astro.props;
+const pageTitle = title ? `${title} — to.w` : "to.w";
 
 const navLinks = [
-  { href: "/stickning", label: "Stickning" },
-  { href: "/smycken", label: "Smycken" },
+  { href: "/stickning", label: "knitting" },
+  { href: "/smycken", label: "jewelry" },
+
 ];
 
 const currentPath = Astro.url.pathname;
@@ -26,13 +27,14 @@ const currentPath = Astro.url.pathname;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{pageTitle}</title>
+    <Font cssVariable="--font-body" />
     <Font cssVariable="--font-june-active" />
     <Font cssVariable="--font-june-curious" />
   </head>
   <body>
     <header class="site-header">
       <div class="site-wrap site-header__inner">
-        <a href="/" class="site-logo" aria-label="TO.W — home">to.w</a>
+        <a href="/" class="site-logo" aria-label="to.w — home">to.w</a>
         <nav aria-label="Main navigation">
           <ul class="nav-list" role="list">
             {navLinks.map(({ href, label }) => (
@@ -56,7 +58,7 @@ const currentPath = Astro.url.pathname;
 
     <footer class="site-footer">
       <div class="site-wrap site-footer__inner">
-        <a href="/" class="footer-wordmark" aria-label="TO.W — home">to.w</a>
+        <a href="/" class="footer-wordmark" aria-label="to.w — home">to.w</a>
         <ul class="footer-links" role="list">
           <li><a href="https://instagram.com/tow.studio" target="_blank" rel="noopener noreferrer">instagram</a></li>
           <li><a href="mailto:hello@tow.studio">hello@tow.studio</a></li>
@@ -75,11 +77,7 @@ const currentPath = Astro.url.pathname;
   }
 
   .site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: var(--z-raised);
+    position: relative;
     height: var(--nav-height);
     background-color: color-mix(in oklch, var(--color-bg-base) 92%, transparent);
     backdrop-filter: blur(8px);
@@ -107,19 +105,20 @@ const currentPath = Astro.url.pathname;
     margin: 0;
     padding: 0;
     display: flex;
-    gap: var(--space-24);
+    gap: var(--space-8);
   }
 
   .nav-link {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     color: var(--color-brand);
-    transition: opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   .nav-link:hover {
+    color: var(--color-accent-dark);
     opacity: 0.7;
   }
 
@@ -150,7 +149,7 @@ const currentPath = Astro.url.pathname;
   /* ── Footer ── */
 
   .site-footer {
-    margin-top: var(--space-4xl);
+    padding-top: var(--space-5xl);
     padding-bottom: var(--space-12);
   }
 
@@ -188,6 +187,6 @@ const currentPath = Astro.url.pathname;
   }
 
   .footer-links a:hover {
-    color: var(--color-brand);
+    color: var(--color-accent-dark);
   }
 </style>

@@ -1,0 +1,11 @@
+{
+  "title": "Mossa",
+  "price": 480,
+  "sizes": ["En storlek"],
+  "description": "Stickad mössa i naturvit merinoull. Enkel form, mjuk känsla mot huden.",
+  "material": "100% merinoull, naturvit",
+  "technique": "Rundstickning",
+  "design": "Slät, klassisk form utan vikt",
+  "images": ["./hat.jpg"],
+  "date": "2026-04-12"
+}

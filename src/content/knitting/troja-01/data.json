@@ -1,0 +1,11 @@
+{
+  "title": "Troja I",
+  "price": 1800,
+  "sizes": ["XS", "S", "M", "L"],
+  "description": "Oversized tröja i havremjölksfärgad lambull. Vid passform, långa ärmar.",
+  "material": "100% lambull, obehandlad",
+  "technique": "Rundstickning, ribba vid mudd",
+  "design": "Oversized, dropped shoulders, rund hals",
+  "images": ["./sweater.jpg"],
+  "date": "2026-04-13"
+}
