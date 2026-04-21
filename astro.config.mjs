@@ -1,6 +1,8 @@
 import { defineConfig, fontProviders } from "astro/config";
 
 export default defineConfig({
+  site: "https://edchy.github.io",
+  base: "/to.w",
   fonts: [
     {
       provider: fontProviders.local(),

@@ -124,6 +124,8 @@ const textOffsets: { bottom: string; left?: string; right?: string; textAlign?: 
 ];
 
 const fmt = new Intl.NumberFormat("sv-SE").format;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
 function overlayStyle(idx: number): string {
   const o = textOffsets[idx % textOffsets.length];
@@ -185,7 +187,7 @@ function makeClipHover(
           </div>
         );
         const { entry, kind } = item;
-        const href = kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`;
+        const href = withBase(kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`);
         return (
           <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle}>
@@ -222,7 +224,7 @@ function makeClipHover(
           </div>
         );
         const { entry, kind } = item;
-        const href = kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`;
+        const href = withBase(kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`);
         return (
           <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle}>
@@ -301,7 +303,7 @@ function makeClipHover(
           </div>
         );
         const { entry, kind } = item;
-        const href = kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`;
+        const href = withBase(kind === "jewelry" ? `/smycken/${entry.id}` : `/stickning/${entry.id}`);
         return (
           <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle}>
