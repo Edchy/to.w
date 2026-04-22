@@ -1,0 +1,387 @@
+---
+import { Image } from "astro:assets";
+import { CONTACT_EMAIL_HREF } from "../config/site";
+
+type Props = {
+  title: string;
+  price: number;
+  sizes: string[];
+  description?: string;
+  material?: string;
+  technique?: string;
+  design?: string;
+  images: ImageMetadata[];
+  transitionName?: string;
+};
+
+const {
+  title,
+  price,
+  sizes,
+  description,
+  material,
+  technique,
+  design,
+  images,
+  transitionName,
+} = Astro.props;
+
+const fmt = new Intl.NumberFormat("sv-SE").format;
+const details = [material, technique, design].filter((value): value is string => Boolean(value));
+const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}`;
+---
+
+<div class="pd">
+
+  <!-- ── Left: image stage ── -->
+  <div class="pd__stage" data-gallery transition:name={transitionName} aria-label={`${title} bilder`}>
+    {images.map((img, i) => (
+      <div class="pd__slide" data-slide aria-hidden={i !== 0}>
+        <Image
+          src={img}
+          alt={i === 0 ? title : ""}
+          width={1600}
+          height={1200}
+          loading={i === 0 ? "eager" : "lazy"}
+        />
+      </div>
+    ))}
+
+    {images.length > 1 && (
+      <div class="pd__thumbs" aria-hidden="true">
+        {images.map((img, i) => (
+          <button class="pd__thumb" data-thumb={i} aria-pressed={i === 0} tabindex="-1">
+            <Image src={img} alt="" width={120} height={120} loading="lazy" />
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <!-- ── Right: info panel ── -->
+  <div class="pd__info">
+
+    <h1
+      class="pd__title"
+      transition:name={transitionName ? `${transitionName.replace("product-", "product-title-")}` : undefined}
+      transition:animate="none"
+    >
+      {title}
+    </h1>
+    <span class="pd__price">{fmt(price)} kr</span>
+
+    <div class="pd__meta">
+      {details.length > 0 && (
+        <ul class="pd__details" role="list">
+          {details.map((v) => <li class="pd__detail">{v}</li>)}
+        </ul>
+      )}
+
+
+    </div>
+
+    <div class="pd__body">
+      {description && <p class="pd__description">{description}</p>}
+
+
+    </div>
+    {sizes.length > 0 && (
+      <div class="pd__sizes" aria-label="Tillgängliga storlekar">
+        <!-- <span class="pd__label">storlek</span> -->
+        <div class="pd__size-row">
+          {sizes.map((s) => <span class="pd__size">{s}</span>)}
+        </div>
+      </div>
+    )}
+
+    <a class="pd__buy" href={orderHref}>
+      <span class="pd__buy-text">Beställ</span>
+      <span class="pd__buy-arrow" aria-hidden="true">↗</span>
+    </a>
+
+  </div>
+
+</div>
+
+
+<style>
+  /* ── Split screen wrapper ── */
+
+  .pd {
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ── Left: image stage ── */
+
+  .pd__stage {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg-muted);
+    cursor: e-resize;
+    user-select: none;
+  }
+
+  .pd__stage.is-left { cursor: w-resize; }
+
+  .pd__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out-quart);
+  }
+
+  .pd__slide:first-child { opacity: 1; }
+  .pd__slide[aria-hidden="false"] { opacity: 1; }
+  .pd__slide[aria-hidden="true"] { opacity: 0; }
+
+  .pd__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  /* ── Thumbnails ── */
+
+  .pd__thumbs {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    z-index: 10;
+  }
+
+  .pd__thumb {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1.5px solid transparent;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0.5;
+    transition: opacity var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .pd__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  .pd__thumb:hover { opacity: 0.8; }
+
+  .pd__thumb[aria-pressed="true"] {
+    opacity: 1;
+    border-color: var(--color-text-inverse);
+  }
+
+  /* ── Right: info panel ── */
+
+  .pd__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: var(--space-12) var(--layout-gutter);
+    gap: var(--space-5);
+    min-height: 0;
+  }
+
+  .pd__title {
+    font-family: var(--font-heading-text);
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-tight);
+    color: var(--color-brand);
+    margin: 0;
+  }
+
+  .pd__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  .pd__price {
+    font-family: var(--font-body-text);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-light);
+    letter-spacing: var(--font-tracking-wide);
+    color: var(--color-accent);
+  }
+
+  .pd__sizes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .pd__label {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .pd__size-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .pd__size {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
+    color: var(--color-text-secondary);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border-default);
+  }
+
+  .pd__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .pd__description {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .pd__details {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .pd__detail {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--font-tracking-wide);
+  }
+
+  /* ── CTA ── */
+
+  .pd__buy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: var(--space-48);
+    padding: var(--space-4) var(--space-6);
+    background-color: var(--color-brand);
+    border: 1.5px solid var(--color-brand);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body-text);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition:
+      background-color var(--transition-normal),
+      border-color var(--transition-normal),
+      color var(--transition-normal);
+  }
+
+  .pd__buy:hover {
+    background-color: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+    color: var(--color-text-inverse);
+  }
+
+  .pd__buy-text,
+  .pd__buy-arrow {
+    position: relative;
+  }
+
+  .pd__buy-arrow {
+    font-size: var(--font-size-base);
+    transition: transform var(--transition-fast);
+  }
+
+  .pd__buy:hover .pd__buy-arrow { transform: translate(2px, -2px); }
+
+  /* ── Mobile ── */
+
+  @media (max-width: 760px) {
+    .pd {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+
+    .pd__stage {
+      aspect-ratio: 4 / 5;
+    }
+
+    .pd__info {
+      padding: var(--space-8) var(--layout-gutter) var(--space-16);
+      gap: var(--space-6);
+    }
+
+    .pd__title {
+      font-size: var(--font-size-3xl);
+      margin-top: 0;
+    }
+
+    .pd__buy {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((gallery) => {
+      const slides = Array.from(gallery.querySelectorAll<HTMLElement>("[data-slide]"));
+      if (slides.length < 2) return;
+
+      const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>("[data-thumb]"));
+      let current = 0;
+
+      const show = (next: number) => {
+        slides[current].setAttribute("aria-hidden", "true");
+        thumbs[current]?.setAttribute("aria-pressed", "false");
+        current = ((next % slides.length) + slides.length) % slides.length;
+        slides[current].setAttribute("aria-hidden", "false");
+        thumbs[current]?.setAttribute("aria-pressed", "true");
+      };
+
+      gallery.addEventListener("click", (e) => {
+        if ((e.target as HTMLElement).closest("[data-thumb]")) return;
+        const left = (e.clientX - gallery.getBoundingClientRect().left) < gallery.offsetWidth / 2;
+        show(left ? current - 1 : current + 1);
+      });
+
+      thumbs.forEach((btn) => {
+        btn.addEventListener("click", () => show(Number(btn.dataset.thumb)));
+      });
+
+      gallery.addEventListener("mousemove", (e) => {
+        if ((e.target as HTMLElement).closest("[data-thumb]")) return;
+        const left = (e.clientX - gallery.getBoundingClientRect().left) < gallery.offsetWidth / 2;
+        gallery.classList.toggle("is-left", left);
+      });
+    });
+  });
+</script>

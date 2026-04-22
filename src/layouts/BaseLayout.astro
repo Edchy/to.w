@@ -1,16 +1,20 @@
 ---
 import "../styles/global.css";
 import { Font } from "astro:assets";
+import { ClientRouter } from "astro:transitions";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
 
 type Props = {
   title?: string;
   description?: string;
+  noPadding?: boolean;
 };
 
-const { title, description = "to.w — handmade jewelry and objects." } = Astro.props;
+const { title, description = "to.w — handmade jewelry and objects.", noPadding = false } = Astro.props;
 const pageTitle = title ? `${title} — to.w` : "to.w";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+const currentYear = new Date().getFullYear();
 
 const navLinks = [
   { href: "/stickning", label: "knitting" },
@@ -33,8 +37,23 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <Font cssVariable="--font-body" />
     <Font cssVariable="--font-june-active" />
     <Font cssVariable="--font-june-curious" />
+    <ClientRouter />
   </head>
   <body>
+    <div class="shop-banner" role="note" aria-live="polite" transition:persist>
+      <p class="shop-banner__full">
+        the webshop is under reconstruction — you can still order by <a href={CONTACT_EMAIL_HREF}>mailing</a> and paying via swish.
+      </p>
+      <div class="shop-banner__carousel" aria-hidden="true">
+        <span class="shop-banner__track">
+          <span class="shop-banner__item">the webshop is under reconstruction — order by <a href={CONTACT_EMAIL_HREF}>mailing</a> and pay via swish</span>
+          <span class="shop-banner__sep" aria-hidden="true">·</span>
+          <span class="shop-banner__item">the webshop is under reconstruction — order by <a href={CONTACT_EMAIL_HREF}>mailing</a> and pay via swish</span>
+          <span class="shop-banner__sep" aria-hidden="true">·</span>
+        </span>
+      </div>
+    </div>
+
     <header class="site-header">
       <div class="site-wrap site-header__inner">
         <a href={baseUrl} class="site-logo" aria-label="to.w — home">to.w</a>
@@ -55,24 +74,63 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       </div>
     </header>
 
-    <main>
+    <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />
     </main>
 
-    <div class="theme-picker" role="group" aria-label="Theme">
+    <div class="theme-picker" role="group" aria-label="Theme" transition:persist>
       <button data-theme-btn="a">A</button>
       <button data-theme-btn="b">B</button>
       <button data-theme-btn="c">C</button>
       <button data-theme-btn="d">D</button>
     </div>
 
-    <footer class="site-footer">
+    <footer class:list={["site-footer", { "site-footer--hidden": noPadding }]}>
       <div class="site-wrap site-footer__inner">
-        <a href={baseUrl} class="footer-wordmark" aria-label="to.w — home">to.w</a>
-        <ul class="footer-links" role="list">
-          <li><a href="https://instagram.com/tow.studio" target="_blank" rel="noopener noreferrer">instagram</a></li>
-          <li><a href="mailto:hello@tow.studio">hello@tow.studio</a></li>
-        </ul>
+        <div class="footer-brand">
+          <a href={baseUrl} class="footer-wordmark" aria-label="to.w — home">to.w</a>
+          <ul class="footer-socials footer-socials--mobile" role="list">
+            <li>
+              <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">Instagram</a>
+            </li>
+            <li>
+              <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer-directory">
+          <nav class="footer-group" aria-label="Footer navigation">
+            <ul class="footer-links" role="list">
+              {navLinks.map(({ href, label }) => (
+                <li>
+                  <a
+                    href={withBase(href)}
+                    class:list={["footer-link", { "footer-link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div class="footer-group">
+            <ul class="footer-socials" role="list">
+              <li>
+                <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">Instagram</a>
+              </li>
+              <li>
+                <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-colophon">
+          <p>&copy; {currentYear} to.w</p>
+          <p>
+            website by
+            <a href="https://nope.digital" target="_blank" rel="noopener noreferrer">nope digital</a>
+          </p>
+        </div>
       </div>
     </footer>
   </body>
@@ -151,31 +209,134 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     transform-origin: left center;
   }
 
+  .shop-banner {
+    position: relative;
+    z-index: var(--z-raised);
+    background: var(--color-accent-subtle);
+    text-align: center;
+    padding: var(--space-1) 0;
+  }
+
+  .shop-banner p,
+  .shop-banner__slide {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    letter-spacing: var(--font-tracking-wide);
+    margin: 0;
+  }
+
+  .shop-banner a {
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .shop-banner a:hover {
+    color: var(--color-accent-dark);
+  }
+
+  .shop-banner__carousel {
+    display: none;
+    overflow: hidden;
+  }
+
+  .shop-banner__track {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    white-space: nowrap;
+    animation: banner-scroll 18s linear infinite;
+  }
+
+  .shop-banner__item,
+  .shop-banner__sep {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    letter-spacing: var(--font-tracking-wide);
+    flex-shrink: 0;
+  }
+
+  .shop-banner__sep {
+    opacity: 0.4;
+  }
+
+  @keyframes banner-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @media (max-width: 1000px) {
+    .shop-banner__full {
+      display: none;
+    }
+
+    .shop-banner__carousel {
+      display: block;
+    }
+  }
+
   main {
     padding-top: var(--nav-height);
-    min-height: 100svh;
+    flex: 1;
+  }
+
+  main.main--no-padding {
+    padding-top: var(--space-6);
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(::view-transition-old(root)),
+  :global(::view-transition-new(root)) {
+    animation-duration: var(--duration-slow);
+    animation-timing-function: var(--ease-out-quart);
+    mix-blend-mode: normal;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(::view-transition-old(root)),
+    :global(::view-transition-new(root)) {
+      animation: none;
+    }
   }
 
   /* ── Footer ── */
 
+  .site-footer--hidden {
+    display: none;
+  }
+
   .site-footer {
-    padding-top: var(--space-5xl);
+    margin-top: var(--space-24);
     padding-bottom: var(--space-12);
   }
 
   .site-footer__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    row-gap: var(--space-12);
+    column-gap: var(--space-12);
+  }
+
+  .footer-brand {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--space-3);
+    justify-content: flex-start;
   }
 
   .footer-wordmark {
     font-family: var(--font-brand-text);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-display);
     color: var(--color-brand);
-    letter-spacing: var(--font-tracking-wide);
-    line-height: 1;
+    letter-spacing: var(--font-tracking-normal);
+    line-height: var(--font-leading-tight);
+  }
+
+  .footer-directory {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+    padding-top: var(--space-2);
   }
 
   .footer-links {
@@ -184,7 +345,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: var(--space-1);
   }
 
@@ -193,11 +353,107 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-brand);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    transition: color var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   .footer-links a:hover {
     color: var(--color-accent-dark);
+    opacity: 0.7;
+  }
+
+  .footer-socials {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .footer-socials a {
+    font-size: var(--font-size-sm);
+    color: var(--color-brand);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  .footer-socials a:hover {
+    color: var(--color-accent-dark);
+    opacity: 0.7;
+  }
+
+
+  .footer-link--active {
+    color: var(--color-accent-dark);
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  .footer-colophon {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+  }
+
+  .footer-colophon p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-brand);
+    letter-spacing: var(--font-tracking-wide);
+    line-height: var(--font-leading-snug);
+    text-transform: lowercase;
+  }
+
+  .footer-colophon a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  .footer-colophon a:hover {
+    color: var(--color-accent-dark);
+    opacity: 0.7;
+  }
+
+  .footer-socials--mobile {
+    display: none;
+  }
+
+  @media (min-width: 761px) {
+    .site-footer {
+      padding-top: var(--space-24);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .site-footer {
+      margin-top: var(--space-48);
+    }
+
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-8);
+    }
+
+    .footer-directory,
+    .footer-colophon {
+      display: none;
+    }
+
+    .footer-socials--mobile {
+      display: flex;
+      flex-direction: row;
+      gap: var(--space-6);
+      margin-top: var(--space-4);
+    }
+
+    .footer-wordmark {
+      font-size: var(--font-size-3xl);
+    }
   }
 
   .theme-picker {
@@ -251,4 +507,5 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   });
 
   setTheme(html.dataset.theme ?? 'a');
+
 </script>

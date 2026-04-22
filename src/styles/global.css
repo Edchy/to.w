@@ -23,6 +23,13 @@ body {
   line-height: var(--font-leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+html {
+  height: 100%;
 }
 
 img,

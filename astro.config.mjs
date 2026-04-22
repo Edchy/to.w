@@ -1,8 +1,10 @@
 import { defineConfig, fontProviders } from "astro/config";
 
+const base = process.env.PUBLIC_BASE_PATH ?? "/";
+
 export default defineConfig({
   site: "https://edchy.github.io",
-  base: "/to.w",
+  base,
   fonts: [
     {
       provider: fontProviders.local(),

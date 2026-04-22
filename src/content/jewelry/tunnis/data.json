@@ -1,9 +1,9 @@
 {
   "title": "tunnis",
   "price": 220,
-  "sizes": ["En storlek"],
+  "sizes": ["one size"],
   "description": "Månhalsbandet är tillverkad av spill som blivit över efter andra smycken. Silvret smälts ner för att sen bankas och slipas och tillslut bli ett nytt smycke.",
   "material": "Sterling silver",
-  "images": ["./tunnis.webp"],
+  "images": ["./tunnis.webp", "./frost.webp", "./golden.webp", "./DSC_5234_VSCO.webp", "./DSC_5564_VSCO.webp"],
   "date": "2026-04-22"
 }

@@ -13,9 +13,9 @@
   ───────────────────────────────────────────────────────── */
 
   /*save for later */
-  /*--brand-700: oklch(45% 0.08 15);
-  --brand-400: oklch(65% 0.08 15);
-  --brand-100: oklch(80% 0.06 15);*/
+  --brand-2-700: oklch(45% 0.08 15);
+  --brand-2-400: oklch(65% 0.08 15);
+  --brand-2-100: oklch(80% 0.06 15);
 
   /* Brand accent — ochre */
   --brand-700: oklch(42% 0.1 85);
@@ -202,42 +202,48 @@
   --lightbox-scrim: oklch(12% 0.01 75 / 0.92);
 }
 
-/* ─── Theme A: white bg, purple text, orange-red accents ─── */
+/* ─── Theme A: off-white bg, purple text and accents ─── */
 [data-theme="a"] {
-  --color-bg-base: var(--off-white);
-  --color-bg-surface: oklch(95% 0.01 0);
-  --color-bg-muted: oklch(92% 0.02 0);
+  --color-bg-base: oklch(94% 0.005 75);
+  --color-bg-surface: oklch(91% 0.005 75);
+  --color-bg-muted: oklch(92% 0.005 75);
   --color-text-primary: var(--omni-5);
   --color-text-secondary: oklch(52% 0.15 295);
   --color-text-tertiary: oklch(65% 0.1 295);
   --color-text-inverse: var(--off-white);
   --color-brand: var(--omni-5);
-  --color-accent: var(--omni-1);
-  --color-accent-dark: var(--omni-3);
-  --color-accent-subtle: oklch(93% 0.04 0);
-  --color-border-default: oklch(88% 0.03 0);
-  --color-border-subtle: oklch(93% 0.02 0);
-  --image-border-color: var(--omni-1);
+  --color-accent: var(--omni-5);
+  --color-accent-dark: oklch(60% 0.18 295);
+  --color-accent-subtle: white;
+  --color-border-default: oklch(88% 0.04 295);
+  --color-border-subtle: oklch(93% 0.02 295);
+  --image-border-color: white;
   --lightbox-scrim: oklch(30% 0.15 295 / 0.92);
+  --endeavours-bg: var(--color-bg-muted);
+  --endeavours-color: var(--omni-5);
+  --endeavours-text: var(--omni-5);
 }
 
-/* ─── Theme B: white bg, cyan text, hot pink accents ─── */
+/* ─── Theme B: white bg, brand-2 dusty rose text and accents ─── */
 [data-theme="b"] {
   --color-bg-base: var(--off-white);
-  --color-bg-surface: oklch(95% 0.01 215);
-  --color-bg-muted: oklch(92% 0.02 215);
-  --color-text-primary: oklch(40% 0.18 215);
-  --color-text-secondary: oklch(52% 0.14 215);
-  --color-text-tertiary: oklch(65% 0.1 215);
+  --color-bg-surface: var(--brand-2-100);
+  --color-bg-muted: oklch(83% 0.04 15);
+  --color-text-primary: var(--brand-2-700);
+  --color-text-secondary: var(--brand-2-400);
+  --color-text-tertiary: oklch(72% 0.05 15);
   --color-text-inverse: var(--off-white);
-  --color-brand: oklch(40% 0.18 215);
-  --color-accent: var(--omni-3);
-  --color-accent-dark: var(--omni-5);
-  --color-accent-subtle: oklch(92% 0.03 215);
-  --color-border-default: oklch(88% 0.04 215);
-  --color-border-subtle: oklch(93% 0.02 215);
-  --image-border-color: var(--omni-3);
-  --lightbox-scrim: oklch(20% 0.15 215 / 0.92);
+  --color-brand: var(--brand-2-700);
+  --color-accent: var(--brand-2-400);
+  --color-accent-dark: var(--brand-2-700);
+  --color-accent-subtle: var(--brand-2-100);
+  --color-border-default: oklch(75% 0.05 15);
+  --color-border-subtle: var(--brand-2-100);
+  --image-border-color: var(--brand-2-400);
+  --lightbox-scrim: oklch(35% 0.06 15 / 0.85);
+  --endeavours-bg: var(--brand-2-100);
+  --endeavours-color: var(--brand-2-700);
+  --endeavours-text: var(--brand-2-700);
 }
 
 /* ─── Theme C: white bg, orange-red text, cyan + pink pops ─── */
