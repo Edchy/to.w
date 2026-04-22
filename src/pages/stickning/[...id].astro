@@ -15,6 +15,6 @@ const { title, description } = entry.data;
 const productSlug = getProductSlug(entry.id);
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noPadding>
   <ProductDetail {...entry.data} transitionName={`product-${productSlug}`} />
 </BaseLayout>

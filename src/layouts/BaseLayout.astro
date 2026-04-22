@@ -286,6 +286,12 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     flex-direction: column;
   }
 
+  @media (max-width: 1000px) {
+    main.main--no-padding {
+      padding-top: 0;
+    }
+  }
+
   :global(::view-transition-old(root)),
   :global(::view-transition-new(root)) {
     animation-duration: var(--duration-slow);
@@ -308,7 +314,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-footer {
     margin-top: var(--space-24);
+    padding-top: var(--space-12);
     padding-bottom: var(--space-12);
+    background-color: var(--color-bg-muted);
   }
 
   .site-footer__inner {
@@ -425,6 +433,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   @media (min-width: 761px) {
     .site-footer {
+      margin-top: var(--space-72);
       padding-top: var(--space-24);
     }
   }
@@ -432,6 +441,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   @media (max-width: 760px) {
     .site-footer {
       margin-top: var(--space-48);
+      background-color: transparent;
     }
 
     .site-footer__inner {
