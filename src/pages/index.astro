@@ -5,6 +5,7 @@ import { getCollection } from "astro:content";
 import gazaVideo from "../assets/img/v-gaza.web.mp4";
 import gazaPoster from "../assets/img/v-gaza-poster.jpg";
 import d1handImg from "../assets/img/d1hand.avif";
+import toveImg from "../assets/img/tove.avif";
 
 const gazaReelUrl = "https://www.instagram.com/reel/DRMmx_ODFXL/?igsh=MTEwdzV6d3Frc3F5ZQ==";
 
@@ -35,14 +36,11 @@ const J = (i: number, span = 1): GridItem => ({ kind: "jewelry",    entry: jewel
 const K = (i: number, span = 1): GridItem => ({ kind: "knitting",   entry: knitting[i], span });
 const D = (i: number, span = 1): GridItem => ({ kind: "decorative", img:   allDeco[i],  span });
 
-const gridA: GridItem[] = [
+const gridAB: GridItem[] = [
   // Row 1
   J(0), D(0), K(0),
   // Row 2
-  D(1), K(1), J(1),
-];
-
-const gridB: GridItem[] = [
+  K(1), J(1), D(1),
   // Row 3
   D(2), J(2), K(2),
   // Row 4
@@ -114,7 +112,7 @@ const textOffsets: { bottom: string; left?: string; right?: string; textAlign?: 
   { bottom: "-2.4em",  left: "0"                             },
   { bottom: "-4.8em",  left: "0"                             },
   { bottom: "-2.8em",  right: "0",      textAlign: "right"   },
-  { bottom: "-2.0em",  left: "30%"                           },
+  { bottom: "-2.0em",  left: "0",      textAlign: "left"   },
   { bottom: "-4.0em",  left: "0"                             },
   { bottom: "-5.6em",  right: "0",      textAlign: "right"   },
   { bottom: "-1.6em",  left: "60%"                           },
@@ -167,9 +165,10 @@ function makeClipHover(
 
 <BaseLayout description="to.w — handmade jewelry and objects.">
   <div class="page-flow">
+    <h1 class="sr-only">Tove Wätte — handmade jewelry and knitting</h1>
 
     <section class="collage" aria-label="Works — part 1">
-      {gridA.map((item, i) => {
+      {gridAB.slice(0, 3).map((item, i) => {
         const slot          = slots[i % slots.length];
         const inset         = insets[i % insets.length];
         const offsets       = cornerOffsets[i % cornerOffsets.length];
@@ -194,7 +193,7 @@ function makeClipHover(
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
             <div class="collage__item-overlay" style={overlayStyle(i)} aria-hidden="true">
-              <span class="collage__item-title">{entry.data.title}</span>
+              <h2 class="collage__item-title">{entry.data.title}</h2>
               {entry.data.material && <span class="collage__item-meta">{entry.data.material}</span>}
               <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
             </div>
@@ -203,10 +202,28 @@ function makeClipHover(
       })}
     </section>
 
+    <!-- About -->
+    <section class="interlude interlude--about" aria-label="About">
+      <div class="about__photo-wrap">
+        <Image class="about__photo" src={toveImg} alt="Portrait of the artist" loading="lazy" width={400} height={500} />
+      </div>
+      <p class="about__headline">
+      Hello,
+      </p>
+      <p class="about__body">
+      My name is Tove Wätte. I make jewelry and knitwear from my studio in Järna, outside Stockholm. Self-taught, and at it for over ten years now.
+        I work with silver and wool, often recycled. Every piece is made by hand and takes time, love and care. That means every piece is a little different. In a world full of mass production, I think that matters.
+      </p>
+      <ul class="about__socials" role="list">
+        <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">instagram</a></li>
+        <li><a href="https://pinterest.com" target="_blank" rel="noopener noreferrer">pinterest</a></li>
+        <li><a href="mailto:hello@tow.studio">hello@tow.studio</a></li>
+      </ul>
+    </section>
 
-    <section class="collage" aria-label="Works — part 2">
-      {gridB.map((item, i) => {
-        const si            = i + gridA.length;
+    <section class="collage" aria-label="Works — part 1b">
+      {gridAB.slice(3, 6).map((item, i) => {
+        const si            = i + 3;
         const slot          = slots[si % slots.length];
         const inset         = insets[si % insets.length];
         const offsets       = cornerOffsets[si % cornerOffsets.length];
@@ -231,7 +248,7 @@ function makeClipHover(
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
             <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
-              <span class="collage__item-title">{entry.data.title}</span>
+              <h2 class="collage__item-title">{entry.data.title}</h2>
               {entry.data.material && <span class="collage__item-meta">{entry.data.material}</span>}
               <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
             </div>
@@ -259,20 +276,19 @@ function makeClipHover(
                 data-src={gazaVideo}
                 poster={gazaPoster.src}
                 aria-label="Gaza-halsbandet"
-                muted
                 playsinline
                 controls
                 preload="metadata"
               ></video>
             </div>
             <div class="endeavour__text">
-              <p class="collage__item-title">Victor & Gaza</p>
+              <h2 class="collage__item-title">Victor & Gaza</h2>
               <p class="endeavour__body">Ett halsband graverat på återvunnet sterling silver, skapat i samarbete med <a class="endeavour__inline-link" href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. 20 exemplar — alla intäkter gick till Rädda Barnen och deras arbete för barn i Gaza. <a class="endeavour__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se reel</a></p>
             </div>
           </div>
           <div class="endeavour endeavour--reversed">
             <div class="endeavour__text">
-              <p class="collage__item-title">Typ Ett</p>
+              <h2 class="collage__item-title">Typ Ett</h2>
               <p class="endeavour__body">En tunn ring med en knut högst upp, designad exklusivt för <a class="endeavour__inline-link" href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes — ett projekt som ligger mig varmt om hjärtat som förälder till ett barn med diabetes.</p>
             </div>
             <div class="collage__item-img collage__item-img--bordered" style={`clip-path:${e1clip};`}>
@@ -283,9 +299,9 @@ function makeClipHover(
       );
     })()}
 
-    <section class="collage collage--final" aria-label="Works — part 3">
-      {gridC.map((item, i) => {
-        const si            = i + gridA.length + gridB.length;
+    <section class="collage collage--final" aria-label="Works — part 2">
+      {[...gridAB.slice(6), ...gridC].map((item, i) => {
+        const si            = i + 6;
         const slot          = slots[si % slots.length];
         const inset         = insets[si % insets.length];
         const offsets       = cornerOffsets[si % cornerOffsets.length];
@@ -310,7 +326,7 @@ function makeClipHover(
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
             <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
-              <span class="collage__item-title">{entry.data.title}</span>
+              <h2 class="collage__item-title">{entry.data.title}</h2>
               {entry.data.material && <span class="collage__item-meta">{entry.data.material}</span>}
               <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
             </div>
@@ -320,6 +336,7 @@ function makeClipHover(
     </section>
 
   </div>
+
 </BaseLayout>
 
 <style>
@@ -335,7 +352,7 @@ function makeClipHover(
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: var(--grid-gutter);
-    row-gap: var(--space-5xl);
+    row-gap: var(--space-4xl);
     padding: 0 var(--layout-gutter);
     max-width: var(--layout-site-width);
     margin: 0 auto;
@@ -371,18 +388,20 @@ function makeClipHover(
 
   /* ── About interlude ── */
   .interlude--about {
-    padding-top: var(--space-8);
-    padding-bottom: var(--space-16);
+    padding: var(--space-4xl) var(--layout-gutter);
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: 1fr auto auto auto;
     gap: var(--space-4);
-    max-height: 80vh;
+    max-width: var(--layout-site-width);
+    margin: 0 auto;
+    box-sizing: border-box;
+    background-color: var(--endeavours-bg);
   }
 
   .about__photo-wrap {
-    grid-column: 4 / 7;
-    grid-row: 1 / 4;
+    grid-column: 5 / 7;
+    grid-row: 1 / 5;
     position: relative;
     z-index: 0;
   }
@@ -391,7 +410,7 @@ function makeClipHover(
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, var(--color-bg-base) 0%, transparent 60%);
+    background: linear-gradient(to right, var(--endeavours-bg) 0%, transparent 60%);
   }
 
   .about__photo {
@@ -402,14 +421,14 @@ function makeClipHover(
   }
 
   .about__headline {
-    grid-column: 2 / 6;
+    grid-column: 2 / 5;
     grid-row: 2 / 3;
-    font-family: var(--font-body);
+    font-family: var(--font-brand-text);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-light);
     line-height: 1.1;
     letter-spacing: -0.01em;
-    color: var(--color-accent);
+    color: var(--endeavours-text);
     margin: 0;
     align-self: start;
     position: relative;
@@ -417,14 +436,41 @@ function makeClipHover(
   }
 
   .about__body {
-    grid-column: 2 / 6;
+    grid-column: 2 / 5;
     grid-row: 3 / 4;
+    font-family: var(--font-body-text);
     font-size: var(--font-size-base);
-    color: var(--color-text-primary);
+    color: var(--endeavours-text);
     position: relative;
     z-index: 1;
     line-height: var(--font-leading-snug);
     max-width: none;
+  }
+
+  .about__socials {
+    grid-column: 2 / 5;
+    grid-row: 4 / 5;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-6);
+    position: relative;
+    z-index: 1;
+  }
+
+  .about__socials a {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    color: var(--endeavours-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+  }
+
+  .about__socials a:hover {
+    opacity: 0.75;
   }
 
   /* ── Endeavours ── */
@@ -434,8 +480,10 @@ function makeClipHover(
     gap: var(--space-48);
     max-width: var(--layout-site-width);
     margin: 0 auto;
-    padding: 0 var(--layout-gutter);
+    padding: var(--space-4xl) var(--layout-gutter);
     box-sizing: border-box;
+    background-color: var(--endeavours-bg);
+    color: var(--endeavours-color);
   }
 
   .endeavour {
@@ -455,7 +503,7 @@ function makeClipHover(
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(160deg, var(--dusty-rose-light) 0%, transparent 60%);
+    background: linear-gradient(160deg, var(--brand-100) 0%, transparent 60%);
     mix-blend-mode: multiply;
     pointer-events: none;
     z-index: 2;
@@ -464,7 +512,7 @@ function makeClipHover(
   .endeavour__text {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: var(--space-4);
   }
 
   .endeavour--reversed {
@@ -476,19 +524,20 @@ function makeClipHover(
   }
 
   .endeavour__text .collage__item-title {
-    font-family: var(--brand-font-curious);
+    font-family: var(--font-heading-text);
+    color: var(--endeavours-text);
   }
 
   .endeavour__body {
     font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+    color: var(--endeavours-text);
     line-height: var(--font-leading-relaxed);
     margin-top: 0;
     max-width: 44ch;
   }
 
   .endeavour__inline-link {
-    color: var(--color-text-secondary);
+    color: var(--endeavours-text);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
@@ -508,26 +557,26 @@ function makeClipHover(
       display: none;
     }
 
-    .collage--final {
-      display: none;
-    }
 
     .endeavours {
       gap: var(--space-32);
       padding: var(--space-16) var(--layout-gutter);
+      max-width: 100%;
+      margin: 0;
     }
 
-    .interlude--about { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; max-height: none; }
+    .interlude--about { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto; min-height: 0; }
     .about__photo-wrap { grid-column: 2; grid-row: 1 / 3; }
     .about__photo { width: 100%; height: auto; }
     .about__headline { grid-column: 1 / 3; grid-row: 1; position: relative; z-index: 1; }
     .about__body { grid-column: 1 / 3; grid-row: 2; position: relative; z-index: 1; }
+    .about__socials { grid-column: 1 / 3; grid-row: 3; }
     .endeavour,
     .endeavour--reversed {
       --endeavour-label-width: var(--space-16);
       --endeavour-media-width: min(
         calc(var(--space-32) * 2),
-        calc(100vw - (var(--layout-gutter) * 2) - var(--endeavour-label-width) - var(--space-10))
+        calc(100vw - var(--endeavour-label-width) - var(--space-10))
       );
       grid-template-columns: var(--endeavour-label-width) var(--endeavour-media-width);
       gap: var(--space-10);
@@ -559,7 +608,7 @@ function makeClipHover(
       padding-top: var(--space-2);
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-      color: var(--color-brand);
+      color: var(--endeavours-text);
       z-index: var(--z-raised);
     }
 
@@ -595,8 +644,9 @@ function makeClipHover(
 
     .endeavours {
       gap: var(--space-24);
-      padding-top: var(--space-20);
-      padding-bottom: var(--space-20);
+      padding: var(--space-20) var(--layout-gutter);
+      max-width: 100%;
+      margin: 0;
     }
 
     .endeavour,
@@ -604,7 +654,7 @@ function makeClipHover(
       --endeavour-label-width: var(--space-12);
       --endeavour-media-width: min(
         calc(var(--space-32) + var(--space-24)),
-        calc(100vw - (var(--layout-gutter) * 2) - var(--endeavour-label-width) - var(--space-6))
+        calc(100vw - var(--endeavour-label-width) - var(--space-6))
       );
       grid-template-columns: var(--endeavour-label-width) var(--endeavour-media-width);
       gap: var(--space-6);
@@ -631,13 +681,12 @@ function makeClipHover(
       gap: var(--space-20);
     }
 
-    .collage {
-      grid-template-columns: 1fr;
-      row-gap: var(--space-24);
-    }
-
     .endeavours {
       gap: var(--space-24);
+      padding-left: var(--layout-gutter);
+      padding-right: var(--layout-gutter);
+      max-width: 100%;
+      margin: 0;
     }
 
     .endeavour,
@@ -645,7 +694,7 @@ function makeClipHover(
       --endeavour-label-width: var(--space-10);
       --endeavour-media-width: min(
         calc(var(--space-32) + var(--space-24)),
-        calc(100vw - (var(--layout-gutter) * 2) - var(--endeavour-label-width) - var(--space-8))
+        calc(100vw - var(--endeavour-label-width) - var(--space-8))
       );
       gap: var(--space-8);
     }
@@ -722,13 +771,13 @@ function makeClipHover(
 
   .endeavour__reel {
     display: none;
-    color: var(--color-brand);
+    color: var(--endeavours-text);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
   .endeavour__reel:hover {
-    color: var(--color-accent-dark);
+    opacity: 0.75;
   }
 
   .gaza-media__play {
@@ -754,7 +803,7 @@ function makeClipHover(
     margin-left: var(--space-1);
     border-top: var(--space-2) solid transparent;
     border-bottom: var(--space-2) solid transparent;
-    border-left: var(--space-3) solid var(--color-text-inverse);
+    border-left: var(--space-3) solid var(--endeavours-text);
   }
 
   .gaza-media__play:hover {
@@ -783,6 +832,8 @@ function makeClipHover(
   /* ── Overlay (products only) ── */
   .collage__item-overlay {
     position: absolute;
+    left: 0;
+    right: 0;
     pointer-events: none;
     z-index: var(--z-raised);
   }
@@ -790,7 +841,7 @@ function makeClipHover(
 
   .collage__item-title {
     display: block;
-    font-family: var(--brand-font-curious);
+    font-family: var(--font-heading-text);
     font-size: var(--font-size-display);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
@@ -802,7 +853,7 @@ function makeClipHover(
 
   .collage__item-meta {
     display: block;
-    font-family: var(--font-body);
+    font-family: var(--font-body-text);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-light);
     letter-spacing: var(--font-tracking-wide);
@@ -820,18 +871,26 @@ function makeClipHover(
 
   @media (max-width: 760px) {
     .collage__item-overlay {
-      position: static;
-      margin-top: var(--space-3);
+      position: absolute;
+      bottom: -1.6em !important;
+      left: 0 !important;
+      right: 0 !important;
       text-align: left !important;
     }
 
-    .collage__item-title {
-      font-size: var(--font-size-3xl);
+    .collage__item .collage__item-title {
+      font-size: var(--font-size-xl);
       white-space: normal;
     }
 
     .collage__item-meta {
       white-space: normal;
+      font-size: 0.55rem;
+      font-family: var(--font-body-text);
+      letter-spacing: var(--font-tracking-wide);
+      text-transform: uppercase;
+      color: var(--color-accent);
+      opacity: 0.5;
     }
 
     .gaza-media .gaza-media__poster {
@@ -845,17 +904,7 @@ function makeClipHover(
     }
   }
 
-  @media (max-width: 560px) {
-    .collage__item-title {
-      font-size: var(--font-size-2xl);
-    }
-  }
 
-  @media (max-width: 420px) {
-    .collage__item-title {
-      font-size: var(--font-size-3xl);
-    }
-  }
 </style>
 
 <script>

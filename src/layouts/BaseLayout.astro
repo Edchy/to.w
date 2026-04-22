@@ -23,7 +23,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="a">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
@@ -58,6 +58,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <main>
       <slot />
     </main>
+
+    <div class="theme-picker" role="group" aria-label="Theme">
+      <button data-theme-btn="a">A</button>
+      <button data-theme-btn="b">B</button>
+      <button data-theme-btn="c">C</button>
+      <button data-theme-btn="d">D</button>
+    </div>
 
     <footer class="site-footer">
       <div class="site-wrap site-footer__inner">
@@ -95,7 +102,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   }
 
   .site-logo {
-    font-family: var(--brand-font-active);
+    font-family: var(--font-brand-text);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
@@ -137,7 +144,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     left: -1px;
     right: -2px;
     bottom: -4px;
-    height: 3px;
+    height: 1.5px;
     background: var(--color-brand);
     border-radius: 1px;
     transform: rotate(-1.5deg);
@@ -164,7 +171,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   }
 
   .footer-wordmark {
-    font-family: var(--brand-font-active);
+    font-family: var(--font-brand-text);
     font-size: var(--font-size-lg);
     color: var(--color-brand);
     letter-spacing: var(--font-tracking-wide);
@@ -192,4 +199,56 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .footer-links a:hover {
     color: var(--color-accent-dark);
   }
+
+  .theme-picker {
+    position: fixed;
+    bottom: var(--space-6);
+    right: var(--space-6);
+    display: flex;
+    gap: var(--space-2);
+    z-index: var(--z-overlay);
+  }
+
+  .theme-picker button {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--color-brand);
+    background: var(--color-bg-base);
+    color: var(--color-brand);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-body-text);
+    letter-spacing: var(--font-tracking-wide);
+    opacity: 0.5;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .theme-picker button:hover {
+    opacity: 1;
+  }
+
+  .theme-picker button[aria-pressed="true"] {
+    opacity: 1;
+    background: var(--color-brand);
+    color: var(--color-bg-base);
+    transform: scale(1.1);
+  }
 </style>
+
+<script>
+  const html = document.documentElement;
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-btn]');
+
+  function setTheme(theme: string) {
+    html.dataset.theme = theme;
+    buttons.forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
+    });
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => setTheme(btn.dataset.themeBtn!));
+  });
+
+  setTheme(html.dataset.theme ?? 'a');
+</script>
