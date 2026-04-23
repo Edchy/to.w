@@ -40,6 +40,11 @@ const workRows = [
 const fmt = new Intl.NumberFormat("sv-SE").format;
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+const captionSideBySlug: Record<string, "left" | "right"> = {
+  bark: "left",
+  frost: "left",
+  golden: "left",
+};
 ---
 
 <BaseLayout description="to.w — handgjorda smycken och objekt.">
@@ -52,9 +57,18 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
           {row.map(({ kind, entry }, i) => {
             const globalIndex = rowIndex * 2 + i;
             const productSlug = getProductSlug(entry.id);
+            const captionSide = captionSideBySlug[productSlug];
             const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
             return (
-              <a class="work-card" href={href} aria-label={`Visa ${entry.data.title}`}>
+              <a
+                class:list={[
+                  "work-card",
+                  captionSide && "work-card--caption-side",
+                  captionSide && `work-card--caption-${captionSide}`,
+                ]}
+                href={href}
+                aria-label={`Visa ${entry.data.title}`}
+              >
                 <figure class="work-card__figure">
                   <div class="work-card__media" transition:name={`product-${productSlug}`}>
                     <Image
@@ -70,10 +84,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
                     <h2 class="work-card__title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
                     <span class="work-card__price">{fmt(entry.data.price)} kr</span>
                     {entry.data.description && (
-                      <>
-                        <p class="work-card__description">{entry.data.description}</p>
-                        <span class="work-card__read-more" aria-hidden="true">läs mer</span>
-                      </>
+                      <p class="work-card__description">{entry.data.description}</p>
                     )}
                   </figcaption>
                 </figure>
@@ -98,35 +109,41 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
               ></video>
             </div>
             <div class="project__text">
-              <h2>Gaza</h2>
+              <h2 class="project__heading">barnen</h2>
               <p>Ett halsband graverat på återvunnet sterling silver, skapat i samarbete med <a href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. 20 exemplar — alla intäkter gick till Rädda Barnen och deras arbete för barn i Gaza. <a class="project__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se video</a></p>
             </div>
           </article>
         )}
 
         {rowIndex === 1 && (
-          <article class="project project--reverse" aria-label="Projekt Typ Ett">
+          <article class="project project--typett" aria-label="Projekt Typ Ett">
             <div class="project__media project__media--pair">
-              <Image src={d1handImg} alt="D1-ringen" loading="lazy" width={640} height={800} />
               <Image src={typ1Img} alt="Typ Ett-ringen" loading="lazy" width={640} height={800} />
             </div>
+            <Image class="typett-hero" src={d1handImg} alt="D1-ringen på ett barns hand" loading="lazy" width={640} height={800} />
             <div class="project__text">
-              <h2>Typ Ett</h2>
+              <h2 class="project__heading">knuten</h2>
               <p>En tunn ring med en knut högst upp, designad exklusivt för <a href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes.</p>
             </div>
           </article>
         )}
 
         {rowIndex === 2 && (
-          <article class="project" aria-label="Projekt hoop hoop">
+          <article class="project project--hoop" aria-label="Projekt hoop hoop">
+            <Image class="hoop-hero" src={broderJohnImg} alt="Broder John" loading="lazy" width={640} height={640} />
             <div class="project__media project__media--quad">
-              <Image src={broderJohnImg} alt="Broder John" loading="lazy" width={640} height={640} />
-              <Image src={bjInstaImg} alt="Broder John på Instagram" loading="lazy" width={640} height={640} />
+              <a href="https://www.instagram.com/broderjohn" target="_blank" rel="noopener noreferrer" aria-label="Broder John på Instagram">
+                <Image src={bjInstaImg} alt="Broder John på Instagram" loading="lazy" width={640} height={640} />
+                <span class="project__media-label">instagram</span>
+              </a>
               <Image src={bjLolImg} alt="Broder John" loading="lazy" width={640} height={640} />
-              <Image src={dontFollowMeImg} alt="Broder John-ring" loading="lazy" width={640} height={640} />
+              <a href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer" aria-label="Broder John på Spotify">
+                <Image src={dontFollowMeImg} alt="Broder John-ring" loading="lazy" width={640} height={640} />
+                <span class="project__media-label">spotify</span>
+              </a>
             </div>
             <div class="project__text">
-              <h2>hoop hoop</h2>
+              <h2 class="project__heading">hoop hoop</h2>
               <p>Har haft den stora äran att få göra ett par ringar åt <a href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer">Broder John</a> och hans <a href="https://www.hoopdiggas.com/" target="_blank" rel="noopener noreferrer">Hoopdiggas</a>.</p>
             </div>
           </article>
@@ -134,20 +151,23 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       </>
     ))}
 
-    <section class="about" aria-label="Om">
-      <Image class="about__photo" src={toveImg} alt="Porträtt av konstnären" loading="lazy" width={420} height={520} />
-      <div class="about__text">
-        <p class="about__intro">Hej, jag heter Tove Wätte och gör smycken i min studio i Järna, utanför Stockholm.</p>
-        <p>Jag arbetar främst med silver, ofta återvunnet. Allt görs för hand med omsorg och kärlek, vilket gör att varje del blir lite unik.</p>
-        <p>Jag designar även stickmönster som ett sätt att utforska form och struktur på ett annat sätt än i metallen.</p>
+    <section class="about" id="kontakt" aria-label="Om">
+      <div class="about__photo-wrap">
+        <Image class="about__photo" src={toveImg} alt="Porträtt av konstnären" loading="lazy" width={420} height={520} />
         <div class="about__links">
-          <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer" aria-label="Instagram" data-label="@tovewatte">
             <Fragment set:html={iconInstagram} />
           </a>
-          <a href={CONTACT_EMAIL_HREF} aria-label={`E-post: ${CONTACT_EMAIL}`}>
+          <a href={CONTACT_EMAIL_HREF} aria-label={`E-post: ${CONTACT_EMAIL}`} data-label={CONTACT_EMAIL}>
             <Fragment set:html={iconEmail} />
           </a>
         </div>
+      </div>
+      <div class="about__text">
+        <p class="about__intro">Hej, jag heter Tove Wätte och gör smycken i min studio i Järna, utanför Stockholm.</p>
+        <p>Jag arbetar främst med silver, ofta återvunnet. Allt görs för hand med omsorg och kärlek, vilket gör att varje del blir lite unik. <br/> Jag designar även stickmönster som ett sätt att utforska form och struktur på ett annat sätt än i silvret.</p>
+        <p class="about__cta">För det senaste, kommande workshops och allt däremellan — se min <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>.</p>
+        <p class="about__cta">För frågor, specialbeställningar eller annat — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.</p>
       </div>
     </section>
   </div>
@@ -183,6 +203,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     --work-tilt: -1.5deg;
     --reveal-x: 0;
     --reveal-rot: 0deg;
+    --caption-default-width: min(56ch, calc(100vw - (var(--layout-gutter) * 2)));
+    --caption-width: var(--caption-default-width);
+    --ring: none;
     grid-column: span 3;
     display: block;
     color: var(--color-text-primary);
@@ -194,6 +217,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     --work-tilt: 1.4deg;
     --reveal-x: calc(var(--space-6) * -1);
     --reveal-rot: -1.6deg;
+    --ring: 0 0 0 6px color-mix(in oklch, var(--clay-400) 22%, transparent);
     grid-column: 1 / span 4;
   }
 
@@ -203,6 +227,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     --work-tilt: -2.2deg;
     --reveal-x: var(--space-8);
     --reveal-rot: 1.2deg;
+    --ring: inset 0 0 0 1px color-mix(in oklch, var(--brand-700) 30%, transparent);
     grid-column: 8 / span 3;
     margin-top: var(--space-20);
   }
@@ -262,6 +287,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     --work-tilt: -1.3deg;
     --reveal-x: var(--space-6);
     --reveal-rot: 1.5deg;
+    --ring: 0 0 0 5px color-mix(in oklch, var(--brand-2-400) 28%, transparent);
     grid-column: 7 / span 4;
     margin-top: var(--space-24);
   }
@@ -272,6 +298,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     --work-tilt: 1.8deg;
     --reveal-x: calc(var(--space-8) * -1);
     --reveal-rot: -1deg;
+    --ring: inset 0 0 0 1px color-mix(in oklch, var(--clay-400) 25%, transparent);
     grid-column: 2 / span 3;
     margin-top: var(--space-12);
   }
@@ -282,6 +309,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     --work-tilt: -1deg;
     --reveal-x: var(--space-4);
     --reveal-rot: 0.8deg;
+    --ring: 0 0 0 8px color-mix(in oklch, var(--brand-700) 18%, transparent);
     grid-column: 9 / span 3;
   }
 
@@ -300,7 +328,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     border-bottom-width: var(--space-4);
     border-radius: var(--radius-sm);
     padding: var(--space-2);
-    box-shadow: 0 var(--space-2) 0 color-mix(in oklch, var(--color-text-primary) 8%, transparent);
+    box-shadow:
+      0 var(--space-2) 0 color-mix(in oklch, var(--color-text-primary) 8%, transparent),
+      var(--ring);
     transform-origin: 50% 62%;
     position: relative;
     z-index: 1;
@@ -331,6 +361,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     object-fit: contain;
     display: block;
     border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-bg-inverse) 9%, transparent);
     transition:
       filter var(--transition-slow),
       transform var(--transition-slow);
@@ -345,6 +376,28 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     margin-top: calc(var(--space-8) * -1);
     transform: translateX(calc(var(--space-3) * -1));
     transition: transform var(--transition-slow);
+  }
+
+  .work-card--caption-side {
+    --caption-width: min(30ch, calc(100vw - (var(--layout-gutter) * 2)));
+  }
+
+  .work-card--caption-side .work-card__caption {
+    position: absolute;
+    top: 50%;
+    width: var(--caption-width);
+    margin-top: 0;
+    transform: translateY(-50%);
+  }
+
+  .work-card--caption-right .work-card__caption {
+    left: calc(100% - var(--space-8));
+  }
+
+  .work-card--caption-left .work-card__caption {
+    right: calc(100% - var(--space-8));
+    justify-items: end;
+    text-align: right;
   }
 
   .work-card__title {
@@ -376,7 +429,6 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .work-card__price {
     width: fit-content;
     padding: var(--space-1) var(--space-2);
-    background: var(--color-bg-base);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
@@ -388,32 +440,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .work-card__description {
-    max-width: 30ch;
+    width: var(--caption-width);
     margin: var(--space-2) 0 0;
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-snug);
     color: var(--color-text-secondary);
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
     text-wrap: pretty;
     transition:
       color var(--transition-normal),
-      transform var(--transition-slow);
-  }
-
-  .work-card__read-more {
-    width: fit-content;
-    margin-top: var(--space-2);
-    font-size: var(--font-size-sm);
-    line-height: var(--font-leading-tight);
-    color: var(--color-brand);
-    text-decoration: underline;
-    text-underline-offset: var(--underline-offset);
-    transition:
-      color var(--transition-normal),
-      opacity var(--transition-normal),
       transform var(--transition-slow);
   }
 
@@ -440,6 +474,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
     }
 
+    .work-card--caption-side:hover .work-card__caption {
+      transform: translate(calc(var(--space-1) * -1), calc(-50% - var(--space-2)));
+    }
+
     .work-card:hover .work-card__title::after {
       opacity: 0.55;
       transform: scaleX(1);
@@ -455,10 +493,11 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       transform: translateX(var(--space-1));
     }
 
-    .work-card:hover .work-card__read-more {
-      color: var(--color-accent);
-      transform: translateX(var(--space-1));
+    .work-card--caption-left:hover .work-card__description,
+    .work-card--caption-left:hover .work-card__price {
+      transform: translateX(calc(var(--space-1) * -1));
     }
+
   }
 
   .about {
@@ -467,10 +506,17 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     gap: clamp(var(--space-8), 6vw, var(--space-24));
     align-items: start;
     max-width: var(--layout-statement-width);
+    scroll-margin-top: calc(var(--nav-height) + var(--space-4));
+  }
+
+  .about__photo-wrap {
+    position: relative;
+    width: min(100%, 320px);
   }
 
   .about__photo {
-    width: min(100%, 320px);
+    display: block;
+    width: 100%;
     height: auto;
     border-radius: var(--radius-sm);
     filter: saturate(0.86);
@@ -490,10 +536,30 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     line-height: var(--font-leading-snug);
   }
 
+  .about__cta {
+    color: var(--color-contact-accent);
+  }
+
+  .about__inline-link {
+    color: var(--color-contact-accent);
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+    text-underline-offset: var(--underline-offset);
+    transition: color var(--transition-normal), opacity var(--transition-normal);
+  }
+
+  .about__inline-link:hover {
+    color: var(--color-brand);
+    opacity: 0.82;
+  }
+
   .about__links {
+    position: absolute;
+    right: var(--space-3);
+    bottom: calc(var(--space-3) * -1);
+    z-index: var(--z-raised);
     display: flex;
-    gap: var(--space-4);
-    padding-top: var(--space-2);
+    gap: var(--space-2);
   }
 
   .about__links a {
@@ -503,118 +569,75 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     min-width: 44px;
     min-height: 44px;
     color: var(--color-brand);
-    transition: opacity var(--transition-fast);
+    position: relative;
+    transition: opacity var(--transition-fast), transform var(--transition-normal);
+  }
+
+  .about__links a::after {
+    content: attr(data-label);
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    color: var(--color-text-primary);
+    font-family: var(--font-heading-text);
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-tight);
+    opacity: 0;
+    pointer-events: none;
+    text-align: right;
+    transform: translateY(calc(var(--space-2) * -1));
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
+    white-space: nowrap;
   }
 
   .about__links a:hover {
     opacity: 0.7;
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+
+  .about__links a:hover::after,
+  .about__links a:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .about__links :global(svg) {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     fill: currentColor;
   }
 
+  /* ── Project articles ─────────────────────────────────── */
+
   .project {
-    display: grid;
-    grid-template-columns: minmax(280px, 0.92fr) minmax(0, 0.72fr);
-    gap: clamp(var(--space-8), 6vw, var(--space-24));
-    align-items: center;
-    padding-top: clamp(var(--space-12), 5vw, var(--space-20));
-    border-top: 1px solid var(--color-border-subtle);
     max-width: var(--layout-wide-width);
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
+    border-radius: var(--radius-md);
   }
 
-  .project--reverse {
-    grid-template-columns: minmax(0, 0.72fr) minmax(280px, 0.92fr);
+  .project--gaza {
+    background: var(--color-accent-subtle);
   }
 
-  .project--reverse .project__media {
-    order: 2;
+  .project--typett {
+    background: var(--color-brand-subtle);
   }
 
-  .project__media {
-    width: 100%;
-    aspect-ratio: 5 / 4;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    background: var(--color-bg-surface);
-    filter: saturate(0.88);
-    transition:
-      background-color var(--transition-slow),
-      filter var(--transition-slow),
-      transform var(--transition-slow);
+  .project--hoop {
+    background: var(--color-bg-inverse);
   }
 
-  img.project__media {
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .project__media--pair,
-  .project__media--quad {
-    display: grid;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    border: var(--space-2) solid var(--color-bg-muted);
-    border-top-width: var(--space-4);
-  }
-
-  .project__media--pair {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  }
-
-  .project__media--quad {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .project__media--pair img,
-  .project__media--quad img {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    object-fit: cover;
-    border-radius: var(--radius-sm);
-    transition:
-      filter var(--transition-slow),
-      transform var(--transition-slow);
-  }
-
-  .project__media--pair img {
-    object-fit: contain;
-    background: color-mix(in oklch, var(--color-bg-base) 76%, var(--color-bg-surface));
-  }
-
-  .project__text {
-    max-width: 58ch;
-    display: grid;
-    gap: var(--space-5);
-    position: relative;
-    z-index: 2;
-  }
-
-  .project__text h2 {
-    width: max-content;
-    max-width: 7ch;
+  .project__heading {
     font-size: clamp(3.8rem, 9vw, 9.4rem);
     font-weight: var(--font-weight-regular);
-    line-height: 0.82;
-    transform: translateX(calc(var(--space-20) * -1));
-    transition:
-      color var(--transition-slow),
-      transform var(--transition-slow);
-  }
-
-  .project--reverse .project__text h2 {
-    transform: translateX(var(--space-20));
-    justify-self: end;
-    text-align: right;
+    line-height: 0.88;
+    letter-spacing: var(--font-tracking-tightest);
   }
 
   .project__text p {
     color: var(--color-text-secondary);
     line-height: var(--font-leading-relaxed);
+    max-width: 46ch;
   }
 
   .project__text a {
@@ -625,30 +648,43 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   @media (hover: hover) {
-    .project:hover .project__text h2 {
-      color: var(--color-accent);
-      transform: translateX(calc(var(--space-16) * -1));
-    }
-
-    .project--reverse:hover .project__text h2 {
-      transform: translateX(var(--space-16));
-    }
-
-    .project:hover .project__media {
-      filter: saturate(1);
-    }
-
     .project__text a:hover {
       color: var(--color-brand);
       opacity: 0.82;
     }
   }
 
+  /* ── Gaza ─────────────────────────────────────────────── */
+
+  .project--gaza {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: clamp(var(--space-8), 5vw, var(--space-20));
+    align-items: end;
+    justify-items: end;
+  }
+
+  .project--gaza .project__text {
+    justify-self: start;
+    padding-bottom: var(--space-6);
+    display: grid;
+    gap: var(--space-5);
+    padding-bottom: var(--space-5);
+    border-bottom: 2px solid var(--color-accent);
+  }
+
+  .project--gaza .project__heading {
+    margin-bottom: var(--space-3);
+    color: var(--color-accent);
+  }
+
   .gaza-media {
     position: relative;
-    border: var(--space-2) solid var(--color-bg-muted);
-    border-top-width: var(--space-4);
-    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-bg-surface);
+    aspect-ratio: 3 / 4;
+    max-height: 60vh;
   }
 
   .gaza-media__poster,
@@ -657,10 +693,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     height: 100%;
     object-fit: contain;
     background: var(--color-bg-surface);
-    border-radius: var(--radius-sm);
-    transition:
-      filter var(--transition-slow),
-      transform var(--transition-slow);
+    outline: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
+    outline-offset: -6px;
+    transition: filter var(--transition-slow);
   }
 
   .gaza-media__video {
@@ -675,16 +710,16 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     width: var(--space-12);
     height: var(--space-12);
     padding: 0;
-    border: 1px solid var(--color-border-default);
+    border: 1px solid color-mix(in oklch, var(--color-text-inverse) 30%, transparent);
     border-radius: var(--radius-full);
-    background: var(--color-bg-inverse);
+    background: color-mix(in oklch, var(--color-bg-inverse) 72%, transparent);
+    backdrop-filter: blur(4px);
     cursor: pointer;
     place-items: center;
     transform: translate(-50%, -50%);
     transition:
       opacity var(--transition-fast),
-      scale var(--transition-fast),
-      transform var(--transition-normal);
+      scale var(--transition-fast);
     z-index: var(--z-raised);
   }
 
@@ -717,24 +752,225 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   @media (hover: hover) {
-    .project:hover .project__media--pair img:first-child,
-    .project:hover .project__media--quad img:nth-child(2),
-    .project:hover .gaza-media__poster {
-      transform: scale(1.035) rotate(-0.6deg);
+    .gaza-media__play:hover {
+      scale: 1.08;
+      opacity: 0.9;
     }
 
-    .project:hover .project__media--pair img:last-child,
-    .project:hover .project__media--quad img:nth-child(3),
-    .project:hover .gaza-media__video {
-      transform: scale(1.035) rotate(0.6deg);
+    /* Warm darkroom tint slides in over the image */
+    .project--gaza .gaza-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: color-mix(in oklch, var(--clay-400) 18%, transparent);
+      mix-blend-mode: multiply;
+      opacity: 0;
+      transition: opacity var(--transition-slow);
+      pointer-events: none;
     }
 
-    .project:hover .project__media--quad img:first-child {
-      transform: scale(1.025) rotate(0.4deg);
+    .project--gaza:hover .gaza-media::after {
+      opacity: 1;
+    }
+  }
+
+  /* ── Typ Ett ──────────────────────────────────────────── */
+
+  .project--typett {
+    display: grid;
+    grid-template-columns: minmax(0, 0.52fr) minmax(0, 1fr);
+    gap: clamp(var(--space-10), 7vw, var(--space-32));
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .typett-hero {
+    position: absolute;
+    bottom: -14%;
+    right: 0;
+    width: clamp(180px, 32%, 380px);
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    z-index: var(--z-raised);
+  }
+
+  .project--typett .project__text {
+    display: grid;
+    gap: var(--space-5);
+    padding-left: var(--space-5);
+    border-left: 2px solid var(--color-brand);
+  }
+
+  .project--typett .project__heading {
+    margin-bottom: var(--space-2);
+    color: var(--color-brand);
+  }
+
+  .project__media--pair {
+    aspect-ratio: 3 / 4;
+  }
+
+  .project__media--pair img {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    object-position: center 30%;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition-slow);
+  }
+
+  @media (hover: hover) {
+    .project--typett:hover .project__media--pair img:first-child {
+      transform: rotate(1.2deg) scale(1.02);
     }
 
-    .project:hover .project__media--quad img:last-child {
-      transform: scale(1.025) rotate(-0.4deg);
+    .project--typett:hover .project__media--pair img:last-child {
+      transform: rotate(-1.2deg) scale(1.02);
+    }
+  }
+
+  /* ── hoop hoop ────────────────────────────────────────── */
+
+  .project--hoop {
+    display: grid;
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+    gap: clamp(var(--space-10), 6vw, var(--space-24));
+    align-items: center;
+    position: relative;
+  }
+
+  .hoop-hero {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: clamp(220px, 40%, 480px);
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    z-index: var(--z-raised);
+  }
+
+  .project--hoop .project__text {
+    display: grid;
+    gap: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 2px solid var(--brand-2-400);
+    position: relative;
+    z-index: calc(var(--z-raised) + 1);
+    color: var(--color-text-inverse);
+  }
+
+  .project--hoop .project__text p {
+    color: var(--color-text-inverse);
+    opacity: 0.85;
+  }
+
+  .project--hoop .project__text a {
+    color: var(--color-text-inverse);
+  }
+
+  .project--hoop .project__heading {
+    margin-bottom: var(--space-2);
+    color: var(--color-text-inverse);
+  }
+
+  .project__media--quad {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+    aspect-ratio: 1 / 1;
+  }
+
+  .project__media--quad > :nth-child(1) {
+    grid-row: 1 / 3;
+  }
+
+  .project__media--quad > :nth-child(1) img {
+    object-position: 25% center;
+  }
+
+  .project__media--quad img {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition-slow);
+  }
+
+  .project__media--quad > a {
+    position: relative;
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: transform var(--transition-slow);
+  }
+
+  .project__media--quad > a img {
+    display: block;
+  }
+
+  .project__media-label {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: var(--z-raised);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-base);
+    color: var(--brand-2-400);
+    font-size: var(--font-size-xs);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: uppercase;
+    transition:
+      background-color var(--transition-normal),
+      color var(--transition-normal),
+      transform var(--transition-normal);
+  }
+
+  .project__media--quad > :nth-child(1) img,
+  .project__media--quad > :nth-child(1):is(img) {
+    outline: 1px solid color-mix(in oklch, var(--brand-2-400) 45%, transparent);
+    outline-offset: -4px;
+  }
+
+  .project__media--quad > :nth-child(2) img,
+  .project__media--quad > :nth-child(2):is(img),
+  .project__media--quad > :nth-child(3) img,
+  .project__media--quad > :nth-child(3):is(img) {
+    outline: 1px solid color-mix(in oklch, var(--brand-2-400) 45%, transparent);
+    outline-offset: 5px;
+  }
+
+  @media (hover: hover) {
+    .project__media--quad > a:hover .project__media-label,
+    .project__media--quad > a:focus-visible .project__media-label {
+      background: var(--brand-2-100);
+      color: var(--brand-2-700);
+      transform: translate(var(--space-1), calc(var(--space-1) * -1));
+    }
+
+    .project--hoop:hover .project__media--quad > :nth-child(1) {
+      transform: scale(1.04);
+    }
+
+    .project--hoop:hover .project__media--quad > :nth-child(2) {
+      transform: scale(0.97);
+    }
+
+    .project--hoop:hover .project__media--quad > :nth-child(3) {
+      transform: scale(0.97);
+    }
+
+    .project--hoop:hover .project__media--quad > :nth-child(4) {
+      transform: scale(1.04);
     }
   }
 
@@ -785,28 +1021,43 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       margin-top: var(--space-16);
     }
 
-    .about,
-    .project {
-      grid-template-columns: 1fr;
-    }
-
-    .project--reverse {
-      grid-template-columns: 1fr;
-    }
-
-    .project--reverse .project__media {
-      order: 0;
-    }
-
-    .project__text h2,
-    .project--reverse .project__text h2 {
-      transform: none;
-      justify-self: start;
+    .work-card--caption-side .work-card__caption {
+      position: relative;
+      top: auto;
+      right: auto;
+      left: auto;
+      width: auto;
+      margin-top: calc(var(--space-8) * -1);
+      transform: translateX(calc(var(--space-3) * -1));
+      justify-items: start;
       text-align: left;
     }
 
-    .about__photo,
-    .project__media {
+    .work-card--caption-side .work-card__description {
+      --caption-width: var(--caption-default-width);
+    }
+
+    .work-card--caption-side:hover .work-card__caption {
+      transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
+    }
+
+    .about {
+      grid-template-columns: 1fr;
+    }
+
+    .project--gaza,
+    .project--typett,
+    .project--hoop {
+      grid-template-columns: 1fr;
+    }
+
+    .about__photo-wrap {
+      max-width: 640px;
+    }
+
+    .project__media--pair,
+    .project__media--quad,
+    .gaza-media {
       max-width: 640px;
     }
   }
@@ -828,6 +1079,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     .work.work--row-3 .work-card:nth-child(n),
     .work.work--row-4 .work-card:nth-child(n),
     .work.work--row-5 .work-card:nth-child(n) {
+      --caption-default-width: min(40ch, calc(100vw - (var(--layout-gutter) * 2)));
       grid-column: span 1;
       margin-top: 0;
     }
@@ -847,12 +1099,6 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     }
 
     .work-card__description {
-      max-width: 24ch;
-      font-size: var(--font-size-xs);
-      -webkit-line-clamp: 2;
-    }
-
-    .work-card__read-more {
       font-size: var(--font-size-xs);
     }
 
@@ -864,16 +1110,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       font-size: var(--font-size-xl);
     }
 
-    .project {
-      padding-top: var(--space-12);
-    }
-
-    .project__text h2 {
+    .project__heading {
       font-size: var(--font-size-2xl);
-    }
-
-    .project__media {
-      aspect-ratio: 4 / 5;
     }
 
     .project__media--pair {

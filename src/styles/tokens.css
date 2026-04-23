@@ -23,6 +23,7 @@
   --brand-100: oklch(87% 0.030 118);
 
   /* Secondary accent — fired clay */
+  --signal-red-700: oklch(50% 0.24 29);
   --clay-700: oklch(43% 0.055 38);
   --clay-400: oklch(64% 0.048 42);
   --clay-100: oklch(88% 0.028 48);
@@ -159,6 +160,7 @@
   --color-brand-subtle: var(--brand-100);
   --color-accent: var(--clay-700);
   --color-accent-dark: var(--neutral-950);
+  --color-contact-accent: var(--signal-red-700);
   --color-accent-subtle: var(--clay-100);
 
   /* Color — borders */

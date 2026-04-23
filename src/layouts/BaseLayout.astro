@@ -16,10 +16,14 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 const currentYear = new Date().getFullYear();
 
-const navLinks = [
+const footerNavLinks = [
   { href: "/stickning", label: "stickning" },
   { href: "/smycken", label: "smycken" },
-
+  { href: "/gallery", label: "galleri" },
+];
+const headerNavLinks = [
+  ...footerNavLinks,
+  { href: "/#kontakt", label: "kontakt" },
 ];
 
 const basePath = new URL(baseUrl, "https://example.com").pathname.replace(/\/$/, "");
@@ -58,7 +62,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
         <a href={baseUrl} class="site-logo" aria-label="to.w — hem">to.w</a>
         <nav aria-label="Huvudnavigering">
           <ul class="nav-list" role="list">
-            {navLinks.map(({ href, label }) => (
+            {headerNavLinks.map(({ href, label }) => (
               <li>
                 <a
                   href={withBase(href)}
@@ -93,7 +97,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
         <div class="footer-directory">
           <nav class="footer-group" aria-label="Sidfotsnavigering">
             <ul class="footer-links" role="list">
-              {navLinks.map(({ href, label }) => (
+              {footerNavLinks.map(({ href, label }) => (
                 <li>
                   <a
                     href={withBase(href)}
@@ -156,13 +160,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     letter-spacing: var(--font-tracking-normal);
     color: var(--color-text-primary);
     line-height: 1;
-    transition: color var(--transition-normal), opacity var(--transition-normal);
+    transition:
+      letter-spacing var(--transition-normal),
+      opacity var(--transition-normal);
   }
 
   @media (hover: hover) {
     .site-logo:hover,
     .footer-wordmark:hover {
-      color: var(--color-brand);
+      letter-spacing: var(--font-tracking-wide);
       opacity: 0.82;
     }
   }
@@ -343,7 +349,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-text-primary);
     letter-spacing: var(--font-tracking-normal);
     line-height: 1;
-    transition: color var(--transition-normal), opacity var(--transition-normal);
+    transition:
+      letter-spacing var(--transition-normal),
+      opacity var(--transition-normal);
   }
 
   .footer-directory {

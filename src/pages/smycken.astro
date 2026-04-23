@@ -10,216 +10,395 @@ const jewelry = allJewelry.sort((a, b) => b.data.date.localeCompare(a.data.date)
 const fmt = new Intl.NumberFormat("sv-SE").format;
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
-
-const insets: [number, number, number, number][] = [
-  [3.5, 2.8, 4.2, 3.1],
-  [4.1, 2.6, 3.0, 4.4],
-  [3.8, 3.2, 2.7, 3.5],
-  [2.4, 4.0, 3.7, 2.8],
-  [3.0, 3.5, 4.3, 2.6],
-  [4.5, 2.9, 3.2, 3.8],
-  [2.6, 3.7, 4.0, 2.9],
-  [3.6, 2.7, 3.3, 4.2],
-];
-
-const cornerOffsets: [number,number,number,number,number,number,number,number][] = [
-  [ 0.3, 0.2,-0.2, 0.4, 0.1,-0.3,-0.4, 0.1],
-  [-0.2, 0.3, 0.4,-0.1,-0.3, 0.2, 0.2,-0.4],
-  [ 0.1,-0.4, 0.3, 0.2,-0.2, 0.4,-0.3,-0.1],
-  [-0.3, 0.1,-0.1, 0.4, 0.4,-0.2, 0.2, 0.3],
-  [ 0.4,-0.2, 0.1, 0.3,-0.4, 0.1, 0.3,-0.3],
-  [-0.1, 0.4,-0.3,-0.2, 0.2, 0.3,-0.4, 0.1],
-  [ 0.2, 0.3, 0.4,-0.3,-0.1, 0.2, 0.3,-0.4],
-  [-0.4, 0.1, 0.2, 0.4, 0.3,-0.1,-0.2, 0.3],
-];
-
-const nudges = ["0px", "16px", "6px", "20px", "4px", "12px", "24px", "8px"];
-
-function makeClip(
-  [top, right, bottom, left]: [number, number, number, number],
-  [o0, o1, o2, o3, o4, o5, o6, o7]: [number,number,number,number,number,number,number,number]
-): string {
-  const t = top, r = 100 - right, b = 100 - bottom, l = left;
-  return [`${l+o0}% ${t+o1}%`, `${r+o2}% ${t+o3}%`, `${r+o4}% ${b+o5}%`, `${l+o6}% ${b+o7}%`].join(", ");
-}
-
-function makeClipHover(
-  [top, right, bottom, left]: [number, number, number, number],
-  [o0, o1, o2, o3, o4, o5, o6, o7]: [number,number,number,number,number,number,number,number]
-): string {
-  const f = 0.35;
-  const t = top*f, r = 100 - right*f, b = 100 - bottom*f, l = left*f;
-  return [`${l+o0*f}% ${t+o1*f}%`, `${r+o2*f}% ${t+o3*f}%`, `${r+o4*f}% ${b+o5*f}%`, `${l+o6*f}% ${b+o7*f}%`].join(", ");
-}
+const jewelryRows = [
+  jewelry.slice(0, 2),
+  jewelry.slice(2, 4),
+  jewelry.slice(4, 6),
+  jewelry.slice(6, 8),
+].filter((row) => row.length > 0);
+const captionSideBySlug: Record<string, "left" | "right"> = {
+  bark: "left",
+  frost: "left",
+  golden: "left",
+};
 ---
 
 <BaseLayout title="Smycken" description="Handgjorda smycken av Tove Wätte.">
   <div class="listing">
     <h1 class="sr-only">Smycken</h1>
 
-    <ul class="grid" role="list">
-      {jewelry.map((entry, i) => {
-        const inset   = insets[i % insets.length];
-        const offsets = cornerOffsets[i % cornerOffsets.length];
-        const clip      = `polygon(${makeClip(inset, offsets)})`;
-        const clipHover = `polygon(${makeClipHover(inset, offsets)})`;
-        const nudge   = nudges[i % nudges.length];
-        const productSlug = getProductSlug(entry.id);
-        const href    = withBase(`/smycken/${productSlug}`);
-        return (
-          <li class="grid__cell" style={`--card-nudge:${nudge}`}>
-            <a class="card" href={href} aria-label={`${entry.data.title} — ${fmt(entry.data.price)} kr`}>
-              <div class="card__img" style={`--clip-rest:${clip};--clip-hover:${clipHover};`} transition:name={`product-${productSlug}`}>
-                <Image
-                  src={entry.data.images[0]}
-                  alt={entry.data.title}
-                  width={600}
-                  height={600}
-                  loading={i < 3 ? "eager" : "lazy"}
-                  fetchpriority={i === 0 ? "high" : "auto"}
-                />
-              </div>
-              <div class="card__info" aria-hidden="true">
-                <span class="card__meta">{fmt(entry.data.price)} kr</span>
-                <span class="card__name" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</span>
-              </div>
+    {jewelryRows.map((row, rowIndex) => (
+      <section class:list={["work", `work--row-${rowIndex + 1}`]} aria-label={`Smycken rad ${rowIndex + 1}`}>
+        {row.map((entry, i) => {
+          const globalIndex = rowIndex * 2 + i;
+          const productSlug = getProductSlug(entry.id);
+          const captionSide = captionSideBySlug[productSlug];
+          const href = withBase(`/smycken/${productSlug}`);
+          return (
+            <a
+              class:list={[
+                "work-card",
+                captionSide && "work-card--caption-side",
+                captionSide && `work-card--caption-${captionSide}`,
+              ]}
+              href={href}
+              aria-label={`Visa ${entry.data.title}`}
+            >
+              <figure class="work-card__figure">
+                <div class="work-card__media" transition:name={`product-${productSlug}`}>
+                  <Image
+                    src={entry.data.images[0]}
+                    alt={entry.data.title}
+                    width={720}
+                    height={900}
+                    loading={globalIndex < 4 ? "eager" : "lazy"}
+                    fetchpriority={globalIndex === 0 ? "high" : "auto"}
+                  />
+                </div>
+                <figcaption class="work-card__caption">
+                  <h2 class="work-card__title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
+                  <span class="work-card__price">{fmt(entry.data.price)} kr</span>
+                  {entry.data.description && (
+                    <p class="work-card__description">{entry.data.description}</p>
+                  )}
+                </figcaption>
+              </figure>
             </a>
-          </li>
-        );
-      })}
-    </ul>
+          );
+        })}
+      </section>
+    ))}
   </div>
 </BaseLayout>
 
 <style>
   .listing {
-    max-width: var(--layout-site-width);
+    max-width: var(--layout-wide-width);
     margin: 0 auto;
-    padding: var(--space-8) var(--layout-gutter) var(--space-3xl);
+    padding: var(--space-8) var(--layout-gutter) var(--space-24);
     box-sizing: border-box;
   }
 
-  .grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .work {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    column-gap: clamp(var(--space-3), 1.5vw, var(--space-5));
-    row-gap: var(--space-3xl);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(var(--space-4), 2.2vw, var(--space-10));
+    row-gap: clamp(var(--space-24), 12vw, var(--space-72));
     align-items: start;
   }
 
-  .grid__cell {
-    margin-top: var(--card-nudge, 0px);
-    align-self: start;
+  .work + .work {
+    margin-top: clamp(var(--space-24), 12vw, var(--space-72));
   }
 
-  .card {
+  .work-card {
+    --work-frame: var(--color-bg-muted);
+    --work-frame-hover: var(--color-accent-subtle);
+    --work-tilt: -1.5deg;
+    --caption-default-width: min(56ch, calc(100vw - (var(--layout-gutter) * 2)));
+    --caption-width: var(--caption-default-width);
+    grid-column: span 3;
     display: block;
-    text-decoration: none;
+    color: var(--color-text-primary);
+  }
+
+  .work-card:nth-child(6n + 1) {
+    --work-frame: var(--color-accent-subtle);
+    --work-frame-hover: var(--color-bg-muted);
+    --work-tilt: 1.4deg;
+    grid-column: 1 / span 4;
+  }
+
+  .work-card:nth-child(6n + 2) {
+    --work-frame: var(--color-brand-subtle);
+    --work-frame-hover: var(--color-accent-subtle);
+    --work-tilt: -2.2deg;
+    grid-column: 8 / span 3;
+    margin-top: var(--space-20);
+  }
+
+  .work--row-2 .work-card:nth-child(1) {
+    grid-column: 2 / span 3;
+    margin-top: var(--space-12);
+  }
+
+  .work--row-2 .work-card:nth-child(2) {
+    grid-column: 8 / span 4;
+    margin-top: var(--space-20);
+  }
+
+  .work--row-3 .work-card:nth-child(1) {
+    grid-column: 1 / span 4;
+    margin-top: var(--space-16);
+  }
+
+  .work--row-3 .work-card:nth-child(2) {
+    grid-column: 7 / span 4;
+  }
+
+  .work--row-4 .work-card:nth-child(1) {
+    grid-column: 3 / span 3;
+  }
+
+  .work--row-4 .work-card:nth-child(2) {
+    grid-column: 8 / span 3;
+    margin-top: var(--space-20);
+  }
+
+  .work-card__figure {
+    margin: 0;
+    display: grid;
+    gap: 0;
     position: relative;
-    transition: transform var(--transition-normal), opacity var(--transition-normal);
   }
 
-  .card:active {
-    transform: translateY(var(--space-1));
-  }
-
-  .card__img {
-    width: 100%;
+  .work-card__media {
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    background: var(--color-accent-subtle);
+    background: var(--work-frame);
+    border: var(--space-2) solid var(--work-frame);
+    border-bottom-width: var(--space-4);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2);
+    box-shadow: 0 var(--space-2) 0 color-mix(in oklch, var(--color-text-primary) 8%, transparent);
+    transform-origin: 50% 62%;
     position: relative;
-    border-radius: var(--image-radius);
-    clip-path: inset(0 round var(--image-radius));
-    transition: filter var(--transition-normal), transform var(--transition-slow);
+    z-index: 1;
+    transition:
+      background-color var(--transition-slow),
+      border-color var(--transition-slow),
+      box-shadow var(--transition-slow),
+      filter var(--transition-normal),
+      transform var(--transition-slow);
   }
 
-  @media (hover: hover) {
-    .card__img {
-      will-change: transform, filter;
-    }
-
-    .card:hover {
-      transform: translateY(calc(var(--space-1) * -1));
-    }
-
-    .card:hover .card__img {
-      filter: saturate(0.94);
-    }
-
-    .card:hover .card__name {
-      color: var(--color-text-primary);
-    }
-
-    .card:hover .card__meta {
-      color: var(--color-brand);
-    }
-  }
-
-  .card__img::after {
+  .work-card__media::after {
     content: "";
     position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, color-mix(in oklch, var(--color-bg-base) 55%, transparent) 0%, transparent 35%);
+    inset: var(--space-2);
+    border: 1px solid color-mix(in oklch, var(--color-text-primary) 9%, transparent);
+    border-radius: var(--radius-sm);
+    opacity: 0.7;
     pointer-events: none;
-    z-index: 1;
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow);
   }
 
-  .card__img img {
+  .work-card__media img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
-    box-sizing: border-box;
-    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 6%, transparent);
-    outline-offset: -1px;
+    border-radius: var(--radius-sm);
+    transition:
+      filter var(--transition-slow),
+      transform var(--transition-slow);
   }
 
-  .card__info {
-    margin-top: var(--space-2);
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+  .work-card__caption {
+    display: grid;
+    gap: var(--space-1);
+    position: relative;
+    z-index: 2;
+    padding-top: 0;
+    margin-top: calc(var(--space-8) * -1);
+    transform: translateX(calc(var(--space-3) * -1));
+    transition: transform var(--transition-slow);
   }
 
-  .card__name {
-    font-family: var(--font-heading-text);
-    font-size: var(--font-size-xl);
+  .work-card--caption-side {
+    --caption-width: min(30ch, calc(100vw - (var(--layout-gutter) * 2)));
+  }
+
+  .work-card--caption-side .work-card__caption {
+    position: absolute;
+    top: 50%;
+    width: var(--caption-width);
+    margin-top: 0;
+    transform: translateY(-50%);
+  }
+
+  .work-card--caption-right .work-card__caption {
+    left: calc(100% - var(--space-8));
+  }
+
+  .work-card--caption-left .work-card__caption {
+    right: calc(100% - var(--space-8));
+    justify-items: end;
+    text-align: right;
+  }
+
+  .work-card__title {
+    width: fit-content;
+    max-width: 8ch;
+    font-size: clamp(2.1rem, 4.2vw, 5.4rem);
     font-weight: var(--font-weight-regular);
-    line-height: var(--font-leading-tight);
-    color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-normal);
-    transition: color var(--transition-fast);
+    line-height: 0.9;
+    letter-spacing: var(--font-tracking-tightest);
+    position: relative;
   }
 
-  .card__meta {
-    font-family: var(--font-body-text);
+  .work-card__title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.12em;
+    height: 1px;
+    background: currentColor;
+    opacity: 0;
+    transform: scaleX(0.35);
+    transform-origin: left;
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow);
+  }
+
+  .work-card__price {
+    width: fit-content;
+    padding: var(--space-1) var(--space-2);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wider);
-    text-transform: uppercase;
     color: var(--color-text-secondary);
-    transition: color var(--transition-fast);
+    letter-spacing: var(--font-tracking-wide);
     font-variant-numeric: tabular-nums;
+    transition:
+      color var(--transition-normal),
+      opacity var(--transition-normal),
+      transform var(--transition-normal);
   }
 
-  @media (max-width: 900px) {
-    .grid {
-      grid-template-columns: repeat(3, 1fr);
+  .work-card__description {
+    width: var(--caption-width);
+    margin: var(--space-2) 0 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-snug);
+    color: var(--color-text-secondary);
+    text-wrap: pretty;
+    transition:
+      color var(--transition-normal),
+      transform var(--transition-slow);
+  }
+
+  @media (hover: hover) {
+    .work-card:hover .work-card__media {
+      background-color: var(--work-frame-hover);
+      border-color: var(--work-frame-hover);
+      box-shadow: var(--space-2) var(--space-3) 0 color-mix(in oklch, var(--color-text-primary) 13%, transparent);
+      filter: saturate(1.02);
+      transform: translateY(calc(var(--space-2) * -1)) rotate(var(--work-tilt)) scale(1.025);
+    }
+
+    .work-card:hover .work-card__media::after {
+      opacity: 0.25;
+      transform: scale(0.96);
+    }
+
+    .work-card:hover .work-card__media img {
+      filter: contrast(1.02) saturate(0.95);
+      transform: scale(1.055) rotate(calc(var(--work-tilt) * -0.7));
+    }
+
+    .work-card:hover .work-card__caption {
+      transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
+    }
+
+    .work-card--caption-side:hover .work-card__caption {
+      transform: translate(calc(var(--space-1) * -1), calc(-50% - var(--space-2)));
+    }
+
+    .work-card:hover .work-card__title::after {
+      opacity: 0.55;
+      transform: scaleX(1);
+    }
+
+    .work-card:hover .work-card__price,
+    .work-card:hover .work-card__description {
+      color: var(--color-text-primary);
+      transform: translateX(var(--space-1));
+    }
+
+    .work-card--caption-left:hover .work-card__description,
+    .work-card--caption-left:hover .work-card__price {
+      transform: translateX(calc(var(--space-1) * -1));
     }
   }
 
-  @media (max-width: 600px) {
-    .grid {
+  @media (max-width: 920px) {
+    .listing {
+      padding-top: var(--space-6);
+    }
+
+    .work {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      row-gap: var(--space-32);
+    }
+
+    .work-card,
+    .work-card:nth-child(n),
+    .work.work--row-2 .work-card:nth-child(n),
+    .work.work--row-3 .work-card:nth-child(n),
+    .work.work--row-4 .work-card:nth-child(n) {
+      grid-column: span 3;
+      margin-top: 0;
+    }
+
+    .work-card:nth-child(4n + 2),
+    .work-card:nth-child(4n + 3) {
+      margin-top: var(--space-16);
+    }
+
+    .work-card--caption-side .work-card__caption {
+      position: relative;
+      top: auto;
+      right: auto;
+      left: auto;
+      width: auto;
+      margin-top: calc(var(--space-8) * -1);
+      transform: translateX(calc(var(--space-3) * -1));
+      justify-items: start;
+      text-align: left;
+    }
+
+    .work-card--caption-side .work-card__description {
+      --caption-width: var(--caption-default-width);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .listing {
+      padding-bottom: var(--space-16);
+    }
+
+    .work {
       grid-template-columns: repeat(2, 1fr);
-      row-gap: var(--space-16);
+      column-gap: var(--space-3);
+      row-gap: var(--space-20);
     }
 
-    .grid__cell {
-      --card-nudge: 0px;
+    .work-card,
+    .work-card:nth-child(n),
+    .work.work--row-2 .work-card:nth-child(n),
+    .work.work--row-3 .work-card:nth-child(n),
+    .work.work--row-4 .work-card:nth-child(n) {
+      --caption-default-width: min(40ch, calc(100vw - (var(--layout-gutter) * 2)));
+      grid-column: span 1;
+      margin-top: 0;
+    }
+
+    .work-card:nth-child(even) {
+      margin-top: var(--space-10);
+    }
+
+    .work-card__title,
+    .work-card:nth-child(n) .work-card__title {
+      font-size: var(--font-size-xl);
+      max-width: 9ch;
+    }
+
+    .work-card__price,
+    .work-card__description {
+      font-size: var(--font-size-xs);
     }
   }
 </style>
