@@ -136,6 +136,7 @@
   --color-bg-base: var(--off-white);
   --color-bg-surface: var(--brand-2-100);
   --color-bg-muted: oklch(83% 0.04 15);
+  --color-bg-statement: color-mix(in oklch, var(--brand-2-100) 72%, var(--off-white));
   --color-bg-inverse: var(--neutral-950);
 
   /* Color — text */
@@ -169,6 +170,9 @@
 
   /* Layout */
   --layout-site-width: 1200px;
+  --layout-wide-width: 1360px;
+  --layout-statement-width: 1040px;
+  --layout-endeavour-media-min: 320px;
   --layout-content-width: 68ch;
   --layout-gutter: clamp(var(--space-6), 5vw, var(--space-12));
 

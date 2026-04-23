@@ -383,7 +383,7 @@ function makeClipHover(
   .page-flow {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5xl);
+    gap: clamp(var(--space-32), 16vw, var(--space-72));
   }
 
   /* ── Collage grid ── */
@@ -393,11 +393,38 @@ function makeClipHover(
     column-gap: var(--grid-gutter);
     row-gap: var(--space-4xl);
     padding: 0 var(--layout-gutter);
-    max-width: var(--layout-site-width);
+    max-width: var(--layout-wide-width);
     margin: 0 auto;
     align-items: start;
     width: 100%;
     box-sizing: border-box;
+  }
+
+  .page-flow > .collage:first-of-type {
+    padding-top: var(--space-8);
+    row-gap: var(--space-5xl);
+  }
+
+  @media (min-width: 900px) {
+    .page-flow > .collage:first-of-type .collage__item:nth-child(1) {
+      transform: translateY(calc(var(--space-8) * -1)) rotate(-1.2deg);
+      transform-origin: 35% 40%;
+      z-index: var(--z-raised);
+    }
+
+    .page-flow > .collage:first-of-type .collage__deco:nth-child(2) {
+      transform: translateY(var(--space-10)) rotate(1.8deg) scale(1.06);
+      transform-origin: 60% 50%;
+    }
+
+    .page-flow > .collage:first-of-type .collage__item:nth-child(3) {
+      transform: translateY(var(--space-16)) rotate(0.8deg);
+      transform-origin: 50% 30%;
+    }
+
+    .page-flow > .collage:first-of-type .collage__item:nth-child(4) {
+      transform: translateX(var(--space-10));
+    }
   }
 
   /* ── Shared interlude shell ── */
@@ -416,26 +443,26 @@ function makeClipHover(
 
   /* ── About interlude ── */
   .interlude--about {
-    padding: var(--space-4xl) var(--layout-gutter);
+    padding: var(--space-32) var(--layout-gutter) var(--space-24);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    max-width: 800px;
+    max-width: var(--layout-statement-width);
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--color-bg-muted);
+    background-color: var(--color-bg-statement);
     position: relative;
     overflow: visible;
   }
 
   .about__photo-wrap {
     position: absolute;
-    top: calc(var(--space-4xl) * -0.75);
+    top: calc(var(--space-4xl) * -0.9);
     left: var(--layout-gutter);
-    width: clamp(180px, 28%, 300px);
+    width: clamp(220px, 34%, 360px);
     z-index: 0;
-    transform: rotate(-2.5deg);
+    transform: rotate(-4deg);
     transform-origin: top left;
   }
 
@@ -457,7 +484,7 @@ function makeClipHover(
     margin: 0;
     position: relative;
     z-index: 1;
-    padding-left: clamp(155px, 24%, 265px);
+    padding-left: clamp(200px, 32%, 340px);
   }
 
   .about__body {
@@ -468,6 +495,7 @@ function makeClipHover(
     z-index: 1;
     line-height: var(--font-leading-snug);
     margin: 0;
+    max-width: 58ch;
   }
 
   .about__socials {
@@ -555,18 +583,18 @@ function makeClipHover(
     display: flex;
     flex-direction: column;
     gap: var(--space-48);
-    max-width: var(--layout-site-width);
+    max-width: var(--layout-wide-width);
     margin: 0 auto;
-    padding: var(--space-4xl) var(--layout-gutter);
+    padding: var(--space-32) var(--layout-gutter);
     box-sizing: border-box;
-    background-color: var(--endeavours-bg);
+    background-color: var(--color-bg-statement);
     color: var(--endeavours-color);
   }
 
   .endeavour {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: var(--space-10);
+    grid-template-columns: minmax(var(--layout-endeavour-media-min), 0.85fr) minmax(0, 1fr);
+    gap: var(--space-16);
     align-items: center;
   }
 
@@ -593,7 +621,7 @@ function makeClipHover(
   }
 
   .endeavour--reversed {
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: minmax(0, 1fr) minmax(var(--layout-endeavour-media-min), 0.85fr);
   }
 
   .endeavour--reversed .collage__item-img {
@@ -628,6 +656,15 @@ function makeClipHover(
     .collage {
       grid-template-columns: repeat(2, 1fr);
       row-gap: var(--space-32);
+    }
+
+    .page-flow > .collage:first-of-type {
+      padding-top: 0;
+      row-gap: var(--space-32);
+    }
+
+    .interlude--about {
+      padding: var(--space-20) var(--layout-gutter) var(--space-16);
     }
 
     .collage__deco,
@@ -809,7 +846,9 @@ function makeClipHover(
     overflow: hidden;
     background: var(--image-border-color);
     position: relative;
-    transition: clip-path var(--duration-normal) var(--ease-out-expo);
+    transition:
+      clip-path var(--duration-normal) var(--ease-out-expo),
+      filter var(--transition-normal);
     clip-path: var(--clip-rest);
   }
 
@@ -822,8 +861,13 @@ function makeClipHover(
       will-change: clip-path;
     }
 
+    .collage__item:hover {
+      scale: 1.025;
+    }
+
     .collage__item:hover .collage__item-img {
       clip-path: var(--clip-hover);
+      filter: contrast(1.06) saturate(0.92);
     }
   }
 
@@ -932,6 +976,11 @@ function makeClipHover(
     .gaza-media--loaded .gaza-media__video {
       display: block;
     }
+  }
+
+  @keyframes collage-reveal {
+    from { opacity: 0; translate: 0 18px; }
+    to   { opacity: 1; translate: 0 0; }
   }
 
   /* ── Overlay (products only) ── */
@@ -1088,4 +1137,30 @@ function makeClipHover(
   } else {
     setTimeout(() => initIndexInteractions(), 400);
   }
+
+  // Scroll-reveal for collage items
+  document.addEventListener("astro:page-load", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const items = document.querySelectorAll<HTMLElement>(".collage__item, .collage__deco");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).style.animationPlayState = "running";
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    );
+    items.forEach((el, i) => {
+      el.style.animationName = "collage-reveal";
+      el.style.animationDuration = "600ms";
+      el.style.animationTimingFunction = "cubic-bezier(0.16, 1, 0.3, 1)";
+      el.style.animationFillMode = "both";
+      el.style.animationPlayState = "paused";
+      el.style.animationDelay = `${(i % 3) * 60}ms`;
+      observer.observe(el);
+    });
+  });
 </script>

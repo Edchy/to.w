@@ -244,16 +244,17 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     text-decoration: none;
     position: relative;
     overflow: hidden;
-    transition:
-      background-color var(--transition-normal),
-      color var(--transition-normal),
-      scale var(--transition-fast),
-      translate var(--transition-fast);
+    transition: scale var(--transition-fast);
   }
 
-  .pd__buy:hover {
-    background-color: var(--color-accent-dark);
-    color: var(--color-text-inverse);
+  .pd__buy::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent-dark);
+    border-radius: inherit;
+    translate: 0 100%;
+    transition: translate 360ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .pd__buy:active {
@@ -262,10 +263,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
   .pd__buy-text {
     position: relative;
+    z-index: 1;
   }
 
   @media (hover: hover) {
-    .pd__buy:hover { translate: 2px -2px; }
+    .pd__buy:hover::before { translate: 0 0; }
   }
 
   /* ── Tablet ── */
