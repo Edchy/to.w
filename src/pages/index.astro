@@ -166,8 +166,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       <div class="about__text">
         <p class="about__intro">Hej, jag heter Tove Wätte och gör smycken i min studio i Järna, utanför Stockholm.</p>
         <p>Jag arbetar främst med silver, ofta återvunnet. Allt görs för hand med omsorg och kärlek, vilket gör att varje del blir lite unik. <br/> Jag designar även stickmönster som ett sätt att utforska form och struktur på ett annat sätt än i silvret.</p>
-        <p class="about__cta">För det senaste, kommande workshops och allt däremellan — se min <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>.</p>
-        <p class="about__cta">För frågor, specialbeställningar eller annat — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.</p>
+        <p class="about__cta">För det senaste, kommande workshops och allt däremellan — se min <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>. För frågor, specialbeställningar eller annat — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.</p>
       </div>
     </section>
   </div>
@@ -408,6 +407,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     line-height: 0.9;
     letter-spacing: var(--font-tracking-tightest);
     position: relative;
+    transition: color var(--transition-normal);
   }
 
   .work-card__title::after {
@@ -483,13 +483,17 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       transform: scaleX(1);
     }
 
+    .work-card:hover .work-card__title {
+      color: var(--color-contact-accent);
+    }
+
     .work-card:hover .work-card__price {
-      color: var(--color-text-primary);
+      color: var(--color-contact-accent);
       transform: translateX(var(--space-1));
     }
 
     .work-card:hover .work-card__description {
-      color: var(--color-text-primary);
+      color: var(--color-contact-accent);
       transform: translateX(var(--space-1));
     }
 
@@ -568,7 +572,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     justify-content: center;
     min-width: 44px;
     min-height: 44px;
-    color: var(--color-brand);
+    color: var(--color-contact-accent);
     position: relative;
     transition: opacity var(--transition-fast), transform var(--transition-normal);
   }
@@ -994,6 +998,65 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
 
   .is-visible {
     animation-play-state: running;
+  }
+
+  @media (max-width: 1300px) {
+    .work {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      row-gap: var(--space-32);
+    }
+
+    .work-card,
+    .work-card:nth-child(n),
+    .work.work--row-2 .work-card:nth-child(n),
+    .work.work--row-3 .work-card:nth-child(n),
+    .work.work--row-4 .work-card:nth-child(n),
+    .work.work--row-5 .work-card:nth-child(n) {
+      grid-column: span 3;
+      margin-top: 0;
+    }
+
+    .work-card:nth-child(odd) {
+      grid-column: 1 / span 3;
+    }
+
+    .work-card:nth-child(even) {
+      grid-column: 5 / span 3;
+      margin-top: var(--space-10);
+    }
+
+    .work-card--caption-side .work-card__caption {
+      position: relative;
+      top: auto;
+      right: auto;
+      left: auto;
+      width: auto;
+      margin-top: calc(var(--space-8) * -1);
+      transform: translateX(calc(var(--space-3) * -1));
+      justify-items: start;
+      text-align: left;
+    }
+
+    .work-card--caption-side .work-card__description {
+      --caption-width: var(--caption-default-width);
+    }
+
+    .work-card--caption-side:hover .work-card__caption {
+      transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
+    }
+
+    .work-card__title {
+      font-size: clamp(2rem, 4vw, 4rem);
+    }
+
+    .project__heading {
+      font-size: clamp(var(--font-size-3xl), 8vw, 7rem);
+    }
+
+    .typett-hero,
+    .hoop-hero {
+      width: clamp(180px, 28%, 320px);
+    }
   }
 
   @media (max-width: 920px) {

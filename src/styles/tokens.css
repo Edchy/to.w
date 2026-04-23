@@ -208,6 +208,8 @@
   /* Nav */
   --nav-height: 72px;
   --nav-font: var(--font-body-text);
+  --nav-active-underline-offset: 9px;
+  --nav-active-underline-rotation: -1.5deg;
 
   /* Portfolio grid */
   --grid-gutter: clamp(var(--space-3), 2vw, var(--space-6));

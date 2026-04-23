@@ -210,10 +210,12 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     position: absolute;
     left: -1px;
     right: -2px;
-    bottom: -4px;
+    bottom: var(--nav-active-underline-offset);
     height: 1px;
     background: var(--color-brand);
     border-radius: var(--radius-full);
+    transform: rotate(var(--nav-active-underline-rotation));
+    transform-origin: center;
   }
 
   .shop-banner {
@@ -282,6 +284,32 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     .shop-banner__carousel {
       display: block;
+    }
+  }
+
+  @media (max-width: 1300px) {
+    .nav-list {
+      gap: var(--space-5);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .site-header {
+      height: auto;
+      min-height: var(--nav-height);
+    }
+
+    .site-header__inner {
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding-block: var(--space-3);
+    }
+
+    .nav-list {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0 var(--space-4);
+      max-width: 18rem;
     }
   }
 
@@ -416,8 +444,21 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .footer-link--active {
     color: var(--color-text-primary);
-    text-decoration: underline;
-    text-underline-offset: var(--space-1);
+    text-decoration: none;
+    position: relative;
+  }
+
+  .footer-link--active::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    right: -2px;
+    bottom: var(--nav-active-underline-offset);
+    height: 1px;
+    background: var(--color-brand);
+    border-radius: var(--radius-full);
+    transform: rotate(var(--nav-active-underline-rotation));
+    transform-origin: center;
   }
 
   .footer-colophon {
@@ -463,6 +504,8 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   @media (max-width: 760px) {
     .site-footer {
       margin-top: var(--space-48);
+      padding-top: var(--space-12);
+      padding-bottom: var(--space-12);
     }
 
     .site-footer__inner {

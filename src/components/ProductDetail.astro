@@ -353,8 +353,21 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     }
 
     .pd__stage {
-      height: min(58svh, 480px);
-      min-height: 300px;
+      height: min(50svh, 420px);
+      min-height: 260px;
+    }
+
+    .pd__slide img {
+      object-fit: contain;
+      background: var(--color-bg-muted);
+    }
+
+    .pd__thumbs {
+      right: var(--space-3);
+      top: auto;
+      bottom: var(--space-3);
+      transform: none;
+      flex-direction: row;
     }
 
     .pd__info {
@@ -388,6 +401,23 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
     .pd__buy {
       width: 100%;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .pd__stage {
+      height: min(44svh, 340px);
+      min-height: 220px;
+    }
+
+    .pd__thumb {
+      width: var(--space-10);
+      height: var(--space-10);
+      border-radius: var(--radius-sm);
+    }
+
+    .pd__info {
+      padding-top: var(--space-6);
     }
   }
 </style>
