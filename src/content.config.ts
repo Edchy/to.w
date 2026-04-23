@@ -12,6 +12,7 @@ const productSchema = ({ image }: SchemaContext) =>
     technique: z.string().optional(),
     design: z.string().optional(),
     images: z.array(image()),
+    imagesHd: z.array(image()).optional(),
     date: z.string(),
     body: z.string().optional(),
   });

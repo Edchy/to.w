@@ -349,7 +349,7 @@ function makeClipHover(
       return (
         <section class="endeavours defer-render" aria-label="Projekt">
             <div class="endeavour">
-            <div class="collage__item-img collage__item-img--bordered gaza-media" style={`clip-path:${e0clip};`}>
+            <div class="collage__item-img collage__item-img--bordered gaza-media">
               <Image class="gaza-media__poster" src={gazaPoster} alt="Gaza-halsbandet" loading="lazy" width={600} height={750} />
               <button class="gaza-media__play" type="button" aria-label="Spela Gaza-video"></button>
               <video
@@ -372,13 +372,13 @@ function makeClipHover(
               <h2 class="collage__item-title">Typ Ett</h2>
               <p class="endeavour__body">En tunn ring med en knut högst upp, designad exklusivt för <a class="endeavour__inline-link" href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes — ett projekt som ligger mig varmt om hjärtat som förälder till ett barn med diabetes.</p>
             </div>
-            <div class="collage__item-img cycle-wrap" style={`clip-path:${e1clip};`}>
+            <div class="collage__item-img cycle-wrap">
               <img class="cycle-img cycle-img--active" src={d1handImg.src} alt="D1-ringen" loading="lazy" width={600} height={750} />
               <img class="cycle-img" src={typ1Img.src} alt="Typ-ett-ringen" loading="lazy" width={600} height={750} />
             </div>
           </div>
           <div class="endeavour">
-            <div class="collage__item-img cycle-wrap" style={`clip-path:${e2clip};`}>
+            <div class="collage__item-img cycle-wrap">
               <img class="cycle-img cycle-img--active" src={broderJohnImg.src} alt="Broder John" loading="lazy" width={600} height={750} />
               <img class="cycle-img" src={bjInstaImg.src} alt="Broder John på Instagram" loading="lazy" width={600} height={750} />
               <img class="cycle-img" src={bjLolImg.src} alt="Broder John" loading="lazy" width={600} height={750} />
@@ -511,7 +511,7 @@ function makeClipHover(
 
   /* ── About interlude ── */
   .interlude--about {
-    padding: var(--space-32) var(--layout-gutter) var(--space-24);
+    padding: var(--space-24) var(--layout-gutter) var(--space-20);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
@@ -519,7 +519,8 @@ function makeClipHover(
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--color-brand);
+    background-color: var(--color-bg-statement);
+    border-radius: var(--radius-organic);
     position: relative;
     overflow: visible;
   }
@@ -530,7 +531,7 @@ function makeClipHover(
     left: var(--layout-gutter);
     width: clamp(180px, 28%, 300px);
     z-index: 0;
-    transform: rotate(-4deg);
+    transform: rotate(-2deg);
     transform-origin: top left;
   }
 
@@ -546,15 +547,16 @@ function makeClipHover(
     display: block;
     object-fit: cover;
     object-position: top center;
+    border-radius: var(--image-radius);
   }
 
   .about__headline {
     font-family: var(--font-heading-text);
-    font-size: clamp(3.5rem, calc(3rem + 2.8vw), 5.5rem);
+    font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-light);
     line-height: var(--font-leading-tight);
-    letter-spacing: -0.01em;
-    color: var(--color-text-inverse);
+    letter-spacing: var(--font-tracking-normal);
+    color: var(--color-text-primary);
     margin: 0;
     position: relative;
     z-index: 1;
@@ -564,7 +566,7 @@ function makeClipHover(
   .about__body {
     font-family: var(--font-body-text);
     font-size: var(--font-size-base);
-    color: var(--color-text-inverse);
+    color: var(--color-text-primary);
     position: relative;
     z-index: 1;
     line-height: var(--font-leading-snug);
@@ -595,7 +597,7 @@ function makeClipHover(
   }
 
   .about__inline-link {
-    color: var(--color-text-inverse);
+    color: var(--color-brand);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
@@ -610,9 +612,9 @@ function makeClipHover(
     justify-content: center;
     min-width: 44px;
     min-height: 44px;
-    color: var(--color-text-inverse);
     text-decoration: none;
     position: relative;
+    color: var(--color-brand);
     transition: opacity var(--transition-fast);
     padding: var(--space-3);
   }
@@ -632,7 +634,7 @@ function makeClipHover(
       font-size: var(--font-size-xs);
       letter-spacing: var(--font-tracking-wide);
       white-space: nowrap;
-      color: var(--color-text-inverse);
+      color: var(--color-text-secondary);
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--transition-fast), transform var(--transition-fast);
@@ -659,10 +661,11 @@ function makeClipHover(
     gap: var(--space-48);
     max-width: var(--layout-wide-width);
     margin: 0 auto;
-    padding: var(--space-32) var(--layout-gutter);
+    padding: var(--space-24) var(--layout-gutter);
     box-sizing: border-box;
-    background-color: var(--color-bg-statement);
+    background-color: var(--endeavours-bg);
     color: var(--endeavours-color);
+    border-radius: var(--radius-organic);
   }
 
   .endeavour {
@@ -675,17 +678,11 @@ function makeClipHover(
   .endeavour .collage__item-img {
     aspect-ratio: 4 / 5;
     width: 100%;
-    filter: contrast(1.08) saturate(0.7);
+    filter: saturate(0.88);
   }
 
   .endeavour .collage__item-img::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(160deg, var(--brand-100) 0%, transparent 60%);
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    z-index: 2;
+    display: none;
   }
 
   .endeavour__text {
@@ -896,13 +893,13 @@ function makeClipHover(
     overflow: visible;
     display: block;
     text-decoration: none;
-    transition: scale var(--duration-fast) var(--ease-out-quart);
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
     align-self: start;
     grid-column: span var(--item-span, 1);
     margin-top: var(--item-nudge, 0px);
   }
 
-  .collage__item:active { scale: 0.96; }
+  .collage__item:active { transform: translateY(var(--space-1)); }
 
   /* ── Decorative ── */
   .collage__deco {
@@ -921,10 +918,11 @@ function makeClipHover(
     background: var(--image-border-color);
     position: relative;
     transition:
-      clip-path var(--duration-normal) var(--ease-out-expo),
       background-color var(--transition-slow),
-      filter var(--transition-normal);
-    clip-path: var(--clip-rest);
+      filter var(--transition-normal),
+      transform var(--transition-slow);
+    border-radius: var(--image-radius);
+    clip-path: inset(0 round var(--image-radius));
   }
 
   .collage__item-img--deco {
@@ -941,13 +939,12 @@ function makeClipHover(
     position: absolute;
     inset: var(--space-3);
     background-color: var(--color-brand);
-    clip-path: var(--clip-rest);
+    border-radius: var(--image-radius);
     opacity: 0;
-    transform: translate(var(--space-3), calc(var(--space-2) * -1)) rotate(-2deg);
+    transform: translate(var(--space-2), calc(var(--space-1) * -1)) rotate(-1deg);
     transition:
       opacity var(--transition-normal),
-      transform var(--transition-slow),
-      clip-path var(--duration-normal) var(--ease-out-expo);
+      transform var(--transition-slow);
     z-index: 1;
   }
 
@@ -961,12 +958,11 @@ function makeClipHover(
     filter: grayscale(1) contrast(1.5);
     mix-blend-mode: multiply;
     opacity: 0;
-    transform: translate(calc(var(--space-2) * -1), var(--space-2)) rotate(1.5deg);
+    transform: translate(calc(var(--space-1) * -1), var(--space-1)) rotate(0.8deg);
     transition:
       opacity var(--transition-normal),
-      transform var(--transition-slow),
-      clip-path var(--duration-normal) var(--ease-out-expo);
-    clip-path: var(--clip-rest);
+      transform var(--transition-slow);
+    border-radius: var(--image-radius);
     z-index: 1;
   }
 
@@ -980,38 +976,34 @@ function makeClipHover(
 
   @media (hover: hover) {
     .collage__item-img {
-      will-change: clip-path;
+      will-change: transform, filter;
     }
 
     .collage__item:hover {
-      scale: 1.025;
+      transform: translateY(calc(var(--space-1) * -1));
     }
 
     .collage__item:hover .collage__item-img {
-      clip-path: var(--clip-hover);
-      filter: contrast(1.06) saturate(0.92);
+      filter: saturate(0.94);
     }
 
     .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco {
       background-color: var(--color-bg-inverse);
-      clip-path: var(--clip-hover);
     }
 
     .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco::before {
-      clip-path: var(--clip-hover);
-      opacity: 0.9;
-      transform: translate(var(--space-2), calc(var(--space-1) * -1)) rotate(-1deg);
+      opacity: 0.32;
+      transform: translate(var(--space-1), 0) rotate(-0.5deg);
     }
 
     .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco::after {
-      clip-path: var(--clip-hover);
-      opacity: 0.24;
-      transform: translate(calc(var(--space-1) * -1), var(--space-1)) rotate(0.7deg);
+      opacity: 0.12;
+      transform: translate(0, var(--space-1)) rotate(0.4deg);
     }
 
     .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco img {
-      filter: contrast(1.08) saturate(0.86);
-      transform: translate(calc(var(--space-1) * -1), calc(var(--space-1) * -1)) rotate(0.8deg);
+      filter: saturate(0.88);
+      transform: translate(0, calc(var(--space-1) * -1)) rotate(0.4deg);
     }
   }
 
@@ -1019,7 +1011,7 @@ function makeClipHover(
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, var(--color-bg-base) 0%, transparent 50%);
+    background: linear-gradient(to top, color-mix(in oklch, var(--color-bg-base) 55%, transparent) 0%, transparent 38%);
     pointer-events: none;
     z-index: 1;
   }
@@ -1054,7 +1046,7 @@ function makeClipHover(
     box-sizing: border-box;
     display: block;
     opacity: 0;
-    transition: opacity 520ms var(--ease-out-expo);
+    transition: opacity 900ms var(--ease-out-expo);
     pointer-events: none;
   }
 
@@ -1068,7 +1060,7 @@ function makeClipHover(
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 0.6s ease;
+    transition: opacity 1400ms var(--ease-out-expo);
   }
 
   .cycle-img--active {
@@ -1162,10 +1154,10 @@ function makeClipHover(
   .collage__item-title {
     display: block;
     font-family: var(--font-heading-text);
-    font-size: var(--font-size-display);
+    font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
-    color: var(--color-brand);
+    color: var(--color-text-primary);
     white-space: nowrap;
     letter-spacing: var(--font-tracking-tightest);
     transition: color var(--transition-fast);
@@ -1204,7 +1196,7 @@ function makeClipHover(
     }
 
     .collage__item .collage__item-title {
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-xl);
       white-space: normal;
     }
 
@@ -1233,7 +1225,6 @@ function makeClipHover(
 </style>
 
 <script>
-  const INTERVAL = 160;
   function initIndexInteractions() {
     const desktopMedia = window.matchMedia("(min-width: 761px)");
     const gazaMedia = document.querySelector<HTMLElement>(".gaza-media");
@@ -1279,20 +1270,17 @@ function makeClipHover(
         if (!el || extras.length === 0) return;
 
         const originalSrc = el.src;
-        let timer: ReturnType<typeof setInterval> | null = null;
-        let idx = 0;
+        let timer: ReturnType<typeof setTimeout> | null = null;
 
         deco.addEventListener("mouseenter", () => {
-          timer = setInterval(() => {
-            el.src = extras[idx % extras.length];
-            idx++;
-          }, INTERVAL);
+          timer = setTimeout(() => {
+            el.src = extras[0];
+          }, 220);
         });
 
         deco.addEventListener("mouseleave", () => {
-          if (timer) { clearInterval(timer); timer = null; }
+          if (timer) { clearTimeout(timer); timer = null; }
           el.src = originalSrc;
-          idx = 0;
         });
       });
     }

@@ -36,7 +36,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <title>{pageTitle}</title>
     <Font cssVariable="--font-body" />
     <Font cssVariable="--font-june-active" />
-    <Font cssVariable="--font-june-curious" />
     <ClientRouter />
   </head>
   <body>
@@ -140,7 +139,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .site-header {
     position: relative;
     height: var(--nav-height);
-    background-color: color-mix(in oklch, var(--color-bg-base) 96%, transparent);
+    background-color: color-mix(in oklch, var(--color-bg-base) 94%, transparent);
   }
 
   .site-header__inner {
@@ -152,18 +151,19 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-logo {
     font-family: var(--font-brand-text);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-normal);
-    color: var(--color-brand);
+    color: var(--color-text-primary);
     line-height: 1;
-    transition: letter-spacing 380ms var(--ease-out-expo);
+    transition: color var(--transition-normal), opacity var(--transition-normal);
   }
 
   @media (hover: hover) {
     .site-logo:hover,
     .footer-wordmark:hover {
-      letter-spacing: 0.12em;
+      color: var(--color-brand);
+      opacity: 0.82;
     }
   }
 
@@ -184,17 +184,17 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   .nav-link:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
   }
 
   .nav-link--active {
-    color: var(--color-brand);
+    color: var(--color-text-primary);
     text-decoration: none;
     position: relative;
   }
@@ -205,30 +205,31 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     left: -1px;
     right: -2px;
     bottom: -4px;
-    height: 2px;
+    height: 1px;
     background: var(--color-brand);
-    border-radius: 0;
+    border-radius: var(--radius-full);
   }
 
   .shop-banner {
     position: relative;
     z-index: var(--z-raised);
-    background: var(--color-brand);
+    background: var(--color-bg-statement);
     text-align: center;
     padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .shop-banner p,
   .shop-banner__slide {
     font-size: var(--font-size-xs);
-    color: var(--color-text-inverse);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wider);
-    text-transform: uppercase;
+    text-transform: lowercase;
     margin: 0;
   }
 
   .shop-banner a {
-    color: var(--color-text-inverse);
+    color: var(--color-text-primary);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
@@ -247,15 +248,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: center;
     gap: var(--space-6);
     white-space: nowrap;
-    animation: banner-scroll 18s linear infinite;
+    animation: banner-scroll 34s linear infinite;
   }
 
   .shop-banner__item,
   .shop-banner__sep {
     font-size: var(--font-size-xs);
-    color: var(--color-text-inverse);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wider);
-    text-transform: uppercase;
+    text-transform: lowercase;
     flex-shrink: 0;
   }
 
@@ -319,8 +320,8 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     margin-top: var(--space-24);
     padding-top: var(--space-16);
     padding-bottom: var(--space-16);
-    background-color: var(--color-bg-statement);
-    border-top: 1px solid var(--color-border-default);
+    background-color: var(--color-bg-muted);
+    border-top: 1px solid var(--color-border-subtle);
   }
 
   .site-footer__inner {
@@ -338,11 +339,11 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .footer-wordmark {
     font-family: var(--font-brand-text);
-    font-size: clamp(5rem, 12vw, 14rem);
-    color: var(--color-brand);
+    font-size: clamp(3rem, 8vw, 8rem);
+    color: var(--color-text-primary);
     letter-spacing: var(--font-tracking-normal);
-    line-height: 0.9;
-    transition: letter-spacing 380ms var(--ease-out-expo);
+    line-height: 1;
+    transition: color var(--transition-normal), opacity var(--transition-normal);
   }
 
   .footer-directory {
@@ -367,15 +368,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     min-height: 44px;
     padding-block: var(--space-1);
     font-size: var(--font-size-sm);
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   .footer-links a:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
   }
 
   .footer-socials {
@@ -393,20 +394,20 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     min-height: 44px;
     padding-block: var(--space-1);
     font-size: var(--font-size-sm);
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   .footer-socials a:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
   }
 
 
   .footer-link--active {
-    color: var(--color-accent-dark);
+    color: var(--color-text-primary);
     text-decoration: underline;
     text-underline-offset: var(--space-1);
   }
@@ -422,7 +423,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .footer-colophon p {
     margin: 0;
     font-size: var(--font-size-sm);
-    color: var(--color-brand);
+    color: var(--color-text-tertiary);
     letter-spacing: var(--font-tracking-wide);
     line-height: var(--font-leading-snug);
     text-transform: lowercase;
@@ -436,8 +437,8 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   }
 
   .footer-colophon a:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
   }
 
   .footer-socials--mobile {
@@ -474,7 +475,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     }
 
     .footer-wordmark {
-      font-size: var(--font-size-3xl);
+      font-size: var(--font-size-2xl);
     }
   }
 

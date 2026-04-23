@@ -71,7 +71,7 @@ h1, h2, h3, h4 {
   font-family: var(--font-heading-text);
   font-weight: var(--font-weight-regular);
   line-height: var(--font-leading-tight);
-  letter-spacing: var(--font-tracking-tightest);
+  letter-spacing: var(--font-tracking-normal);
   text-wrap: balance;
 }
 
@@ -101,7 +101,7 @@ p {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neutral-600);
+  background: var(--color-text-tertiary);
 }
 
 .sr-only {

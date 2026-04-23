@@ -11,10 +11,12 @@ type Props = {
   technique?: string;
   design?: string;
   images: ImageMetadata[];
+  imagesHd?: ImageMetadata[];
   transitionName?: string;
 };
 
-const { title, price, description, images, transitionName } = Astro.props;
+const { title, price, description, images, imagesHd, transitionName } = Astro.props;
+const stageImages = imagesHd ?? images;
 
 const fmt = new Intl.NumberFormat("sv-SE").format;
 const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}`;
@@ -31,11 +33,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     aria-roledescription="bildgalleri"
     tabindex="0"
   >
-    {images.map((img, i) => (
+    {stageImages.map((img, i) => (
       <div class="pd__slide" data-slide aria-hidden={i !== 0}>
         <Image
           src={img}
-          alt={images.length > 1 ? `${title} — bild ${i + 1}` : title}
+          alt={stageImages.length > 1 ? `${title} — bild ${i + 1}` : title}
           width={1600}
           height={1200}
           loading={i === 0 ? "eager" : "lazy"}
@@ -44,10 +46,10 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       </div>
     ))}
 
-    {images.length > 1 && (
+    {stageImages.length > 1 && (
       <div class="pd__thumbs" role="group" aria-label="Välj bild">
         {images.map((img, i) => (
-          <button class="pd__thumb" type="button" data-thumb={i} aria-label={`Visa bild ${i + 1} av ${images.length}`} aria-pressed={i === 0}>
+          <button class="pd__thumb" type="button" data-thumb={i} aria-label={`Visa bild ${i + 1} av ${stageImages.length}`} aria-pressed={i === 0}>
             <Image src={img} alt="" width={120} height={120} loading="lazy" />
           </button>
         ))}
@@ -106,7 +108,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   .pd__stage.is-left { cursor: w-resize; }
 
   .pd__stage:focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 1px solid var(--color-brand);
     outline-offset: -2px;
   }
 
@@ -128,7 +130,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     display: block;
     -webkit-user-drag: none;
     pointer-events: none;
-    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 8%, transparent);
+    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 6%, transparent);
     outline-offset: -1px;
     transition: transform 600ms var(--ease-out-expo);
     will-change: transform;
@@ -158,7 +160,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     height: var(--space-12);
     padding: 0;
     border: 1.5px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     background: none;
     cursor: pointer;
     overflow: hidden;
@@ -189,7 +191,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: var(--space-12) var(--layout-gutter);
+    padding: var(--space-10) var(--layout-gutter);
     gap: var(--space-5);
     min-height: 0;
   }
@@ -200,19 +202,19 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   @keyframes title-settle {
-    from { letter-spacing: 0.04em; }
-    to   { letter-spacing: var(--font-tracking-tightest); }
+    from { opacity: 0.84; }
+    to   { opacity: 1; }
   }
 
   .pd__title {
     font-family: var(--font-heading-text);
-    font-size: clamp(4rem, 10vw, 9rem);
+    font-size: clamp(var(--font-size-3xl), 6vw, var(--font-size-display));
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-tightest);
+    letter-spacing: var(--font-tracking-normal);
     color: var(--color-text-primary);
-    margin: 0 0 0 -0.055em;
-    animation: title-settle 1400ms var(--ease-out-expo) both;
+    margin: 0;
+    animation: title-settle 900ms var(--ease-out-expo) both;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -221,10 +223,10 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
   .pd__price {
     font-family: var(--font-body-text);
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     font-variant-numeric: tabular-nums;
   }
 
@@ -250,34 +252,34 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     gap: var(--space-2);
     width: 100%;
     max-width: 280px;
-    min-height: var(--space-16);
+    min-height: var(--space-12);
     padding: 0 var(--space-8);
-    background-color: var(--color-brand);
-    border: 0;
+    background-color: var(--color-bg-statement);
+    border: 1px solid var(--color-border-default);
     border-radius: var(--radius-md);
-    color: var(--color-text-inverse);
+    color: var(--color-text-primary);
     font-family: var(--font-body-text);
     font-size: var(--font-size-base);
     letter-spacing: var(--font-tracking-wider);
-    text-transform: uppercase;
+    text-transform: lowercase;
     text-decoration: none;
     position: relative;
     overflow: hidden;
-    transition: scale var(--transition-fast);
+    transition: background-color var(--transition-normal), border-color var(--transition-normal), transform var(--transition-fast);
   }
 
   .pd__buy::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--neutral-50);
+    background: var(--color-brand-subtle);
     border-radius: inherit;
     translate: 0 100%;
     transition: translate 360ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .pd__buy:active {
-    scale: 0.96;
+    transform: translateY(var(--space-1));
   }
 
   .pd__buy-text {
@@ -286,6 +288,10 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   @media (hover: hover) {
+    .pd__buy:hover {
+      border-color: var(--color-brand);
+    }
+
     .pd__buy:hover::before { translate: 0 0; }
   }
 
@@ -333,7 +339,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     }
 
     .pd__title {
-      font-size: clamp(var(--font-size-3xl), 8vw, 6rem);
+      font-size: var(--font-size-3xl);
     }
 
   }

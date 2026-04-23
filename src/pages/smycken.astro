@@ -119,11 +119,11 @@ function makeClipHover(
     display: block;
     text-decoration: none;
     position: relative;
-    transition: scale var(--duration-fast) var(--ease-out-quart);
+    transition: transform var(--transition-normal), opacity var(--transition-normal);
   }
 
   .card:active {
-    scale: 0.96;
+    transform: translateY(var(--space-1));
   }
 
   .card__img {
@@ -132,25 +132,30 @@ function makeClipHover(
     overflow: hidden;
     background: var(--color-accent-subtle);
     position: relative;
-    transition: clip-path var(--duration-normal) var(--ease-out-expo);
-    clip-path: var(--clip-rest);
+    border-radius: var(--image-radius);
+    clip-path: inset(0 round var(--image-radius));
+    transition: filter var(--transition-normal), transform var(--transition-slow);
   }
 
   @media (hover: hover) {
     .card__img {
-      will-change: clip-path;
+      will-change: transform, filter;
+    }
+
+    .card:hover {
+      transform: translateY(calc(var(--space-1) * -1));
     }
 
     .card:hover .card__img {
-      clip-path: var(--clip-hover);
+      filter: saturate(0.94);
     }
 
     .card:hover .card__name {
-      color: var(--color-brand);
+      color: var(--color-text-primary);
     }
 
     .card:hover .card__meta {
-      color: var(--color-accent-dark);
+      color: var(--color-brand);
     }
   }
 
@@ -158,7 +163,7 @@ function makeClipHover(
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, var(--color-bg-base) 0%, transparent 40%);
+    background: linear-gradient(to top, color-mix(in oklch, var(--color-bg-base) 55%, transparent) 0%, transparent 35%);
     pointer-events: none;
     z-index: 1;
   }
@@ -182,11 +187,11 @@ function makeClipHover(
 
   .card__name {
     font-family: var(--font-heading-text);
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
     color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-tightest);
+    letter-spacing: var(--font-tracking-normal);
     transition: color var(--transition-fast);
   }
 
@@ -196,7 +201,7 @@ function makeClipHover(
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wider);
     text-transform: uppercase;
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     transition: color var(--transition-fast);
     font-variant-numeric: tabular-nums;
   }

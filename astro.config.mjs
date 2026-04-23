@@ -32,18 +32,5 @@ export default defineConfig({
         ],
       },
     },
-    {
-      provider: fontProviders.local(),
-      name: "JuneExpt Curious",
-      cssVariable: "--font-june-curious",
-      formats: ["otf"],
-      options: {
-        variants: [
-          {
-            src: ["./src/assets/fonts/JuneExpt-Curious-TRIAL.otf"],
-          },
-        ],
-      },
-    },
   ],
 });
