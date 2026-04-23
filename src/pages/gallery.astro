@@ -1,5 +1,567 @@
 ---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+type GalleryImage = {
+  path: string;
+  filename: string;
+  image: ImageMetadata;
+  orientation: "landscape" | "portrait" | "square";
+};
+
+const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
+  "../content/gallery/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const galleryImages = Object.entries(galleryModules)
+  .map(([path, module]) => {
+    const filename = path.split("/").pop() ?? path;
+    const image = module.default;
+    const ratio = image.width / image.height;
+
+    return {
+      path,
+      filename,
+      image,
+      orientation: ratio > 1.08 ? "landscape" : ratio < 0.92 ? "portrait" : "square",
+    } satisfies GalleryImage;
+  })
+  .sort((a, b) => {
+    if (a.filename === "hero.jpg") return -1;
+    if (b.filename === "hero.jpg") return 1;
+    return a.filename.localeCompare(b.filename, "sv");
+  });
+
+const heroImage = galleryImages.find((entry) => entry.filename === "hero.jpg") ?? galleryImages[0];
+const imagesAfterHero = galleryImages.filter((entry) => entry.path !== heroImage?.path);
+
+const firstPortrait = imagesAfterHero.find((entry) => entry.orientation === "portrait");
+const firstLandscape = imagesAfterHero.find((entry) => entry.orientation === "landscape");
+
+const introImages = [firstPortrait, firstLandscape].filter(
+  (entry, index, array): entry is GalleryImage =>
+    Boolean(entry) && array.findIndex((candidate) => candidate?.path === entry?.path) === index,
+);
+
+const featuredPaths = new Set([heroImage?.path, ...introImages.map((entry) => entry.path)]);
+const galleryFlow = galleryImages.filter((entry) => !featuredPaths.has(entry.path));
+
+const chunk = <T,>(items: T[], size: number) => {
+  const groups: T[][] = [];
+
+  for (let index = 0; index < items.length; index += size) {
+    groups.push(items.slice(index, index + size));
+  }
+
+  return groups;
+};
+
+const gallerySections = chunk(galleryFlow, 4);
+const repriseImages = gallerySections
+  .map((section) => section[0])
+  .filter((entry, index, array): entry is GalleryImage =>
+    Boolean(entry) && array.findIndex((candidate) => candidate?.path === entry?.path) === index,
+  );
+const sectionPhrases = [
+  "silver, kropp, ljus",
+  "spår, vila, rörelse",
+  "former som får stanna en stund",
+];
+
+const imageLabel = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${index + 1}.`;
 ---
 
-<BaseLayout title="Gallery" description="Galleri av Tove Wätte." />
+<BaseLayout title="Galleri" description="Galleri med fotografier från Tove Wättes praktik och ateljé.">
+  <div class="gallery-page">
+    <header class="gallery-hero" aria-label="Galleriintroduktion">
+      <div class="gallery-hero__copy">
+        <h1>ett urval bilder från arbetet, materialen och mellanrummen</h1>
+
+      </div>
+
+      {heroImage && (
+        <figure class="gallery-hero__lead">
+          <div class="gallery-frame gallery-frame--lead">
+            <Image
+              src={heroImage.image}
+              alt={imageLabel(0)}
+              width={heroImage.image.width}
+              height={heroImage.image.height}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        </figure>
+      )}
+
+      {introImages.length > 0 && (
+        <div class="gallery-hero__stack" aria-label="Utvalda fotografier">
+          {introImages.map((entry, index) => (
+            <figure class:list={["gallery-card", "gallery-card--intro", `gallery-card--${entry.orientation}`]}>
+              <div class="gallery-frame">
+                <Image
+                  src={entry.image}
+                  alt={imageLabel(index + 1)}
+                  width={entry.image.width}
+                  height={entry.image.height}
+                  loading="eager"
+                  fetchpriority={index === 0 ? "high" : "auto"}
+                />
+              </div>
+            </figure>
+          ))}
+        </div>
+      )}
+    </header>
+
+    {gallerySections.map((section, sectionIndex) => (
+      <section
+        class:list={["gallery-section", `gallery-section--${(sectionIndex % 3) + 1}`]}
+        aria-label={`Galleri del ${sectionIndex + 1}`}
+      >
+        <div class="gallery-section__label">
+          <span>{String(sectionIndex + 1).padStart(2, "0")}</span>
+          <p>{sectionPhrases[sectionIndex % sectionPhrases.length]}</p>
+        </div>
+
+        {section.map((entry, imageIndex) => {
+          const absoluteIndex = sectionIndex * 4 + imageIndex + introImages.length + 1;
+
+          return (
+            <figure class:list={["gallery-card", `gallery-card--${entry.orientation}`]}>
+              <div class="gallery-frame">
+                <Image
+                  src={entry.image}
+                  alt={imageLabel(absoluteIndex)}
+                  width={entry.image.width}
+                  height={entry.image.height}
+                  loading={sectionIndex === 0 && imageIndex < 2 ? "eager" : "lazy"}
+                  fetchpriority={sectionIndex === 0 && imageIndex === 0 ? "high" : "auto"}
+                />
+              </div>
+            </figure>
+          );
+        })}
+      </section>
+    ))}
+
+    {repriseImages.length > 0 && (
+      <section class="gallery-reprise" aria-label="Fördjupade bilder">
+        {repriseImages.map((entry, index) => (
+          <figure class:list={["gallery-card", "gallery-card--reprise", `gallery-card--${entry.orientation}`]}>
+            <div class="gallery-frame">
+              <Image
+                src={entry.image}
+                alt={imageLabel(galleryFlow.length + introImages.length + index + 1)}
+                width={entry.image.width}
+                height={entry.image.height}
+                loading="lazy"
+                fetchpriority="auto"
+              />
+            </div>
+          </figure>
+        ))}
+      </section>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .gallery-page {
+    max-width: var(--layout-wide-width);
+    margin: 0 auto;
+    padding: var(--space-8) var(--layout-gutter) var(--space-24);
+  }
+
+  .gallery-hero,
+  .gallery-section,
+  .gallery-reprise {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+    row-gap: clamp(var(--space-6), 4vw, var(--space-16));
+  }
+
+  .gallery-hero {
+    align-items: start;
+    margin-bottom: clamp(var(--space-20), 12vw, var(--space-32));
+  }
+
+  .gallery-hero__copy {
+    grid-column: 1 / span 6;
+    grid-row: 1;
+    display: grid;
+    gap: var(--space-4);
+    align-self: start;
+    padding: clamp(var(--space-6), 3vw, var(--space-12));
+    align-content: start;
+    margin-bottom: 0;
+    position: relative;
+    z-index: var(--z-raised);
+    pointer-events: none;
+  }
+
+  .gallery-section__label span,
+  .gallery-section__label p {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .gallery-hero__copy h1 {
+    max-width: 16ch;
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-regular);
+    line-height: 0.95;
+    text-wrap: balance;
+    color: var(--color-text-inverse);
+    text-shadow: 0 1px 10px color-mix(in oklch, var(--color-bg-inverse) 26%, transparent);
+  }
+
+
+
+  .gallery-hero__lead {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin: 0;
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .gallery-hero__stack {
+    grid-column: 1 / span 4;
+    display: grid;
+    gap: var(--space-8);
+    align-self: end;
+    max-width: 24rem;
+    grid-row: 2;
+  }
+
+  .gallery-section {
+    align-items: start;
+    margin-top: clamp(var(--space-24), 14vw, var(--space-48));
+  }
+
+  .gallery-reprise {
+    align-items: start;
+    margin-top: clamp(var(--space-24), 12vw, var(--space-40));
+  }
+
+  .gallery-section__label {
+    grid-column: 1 / span 2;
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+  }
+
+  .gallery-section__label p {
+    max-width: 14ch;
+    line-height: var(--font-leading-snug);
+  }
+
+  .gallery-card {
+    margin: 0;
+    width: 100%;
+    min-width: min(100%, 18rem);
+    max-width: 32rem;
+    justify-self: start;
+    transition: transform var(--transition-slow);
+  }
+
+  .gallery-card--intro {
+    margin-left: auto;
+    width: 100%;
+  }
+
+  .gallery-card--landscape {
+    max-width: 30rem;
+  }
+
+  .gallery-card--portrait {
+    max-width: 25rem;
+  }
+
+  .gallery-card--square {
+    max-width: 27rem;
+  }
+
+  .gallery-card--reprise {
+    max-width: 34rem;
+  }
+
+  .gallery-frame {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--color-bg-surface) 92%, transparent),
+        color-mix(in oklch, var(--color-bg-muted) 74%, transparent)
+      );
+    border: 1px solid var(--color-border-subtle);
+    padding: clamp(var(--space-2), 1.2vw, var(--space-4));
+    box-shadow: 0 1px 0 color-mix(in oklch, var(--color-text-primary) 6%, transparent);
+  }
+
+  .gallery-frame--lead {
+    padding: clamp(var(--space-3), 1.6vw, var(--space-5));
+    min-height: min(78svh, 56rem);
+    display: grid;
+  }
+
+  .gallery-frame :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .gallery-frame--lead :global(img) {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gallery-section--1 .gallery-card:nth-of-type(2) {
+    grid-column: 3 / span 4;
+  }
+
+  .gallery-section--1 .gallery-card:nth-of-type(3) {
+    grid-column: 8 / span 5;
+    margin-top: var(--space-10);
+  }
+
+  .gallery-section--1 .gallery-card:nth-of-type(4) {
+    grid-column: 2 / span 4;
+    margin-top: 0;
+  }
+
+  .gallery-section--1 .gallery-card:nth-of-type(5) {
+    grid-column: 7 / span 5;
+  }
+
+  .gallery-section--2 .gallery-card:nth-of-type(2) {
+    grid-column: 2 / span 4;
+    margin-top: var(--space-8);
+  }
+
+  .gallery-section--2 .gallery-card:nth-of-type(3) {
+    grid-column: 7 / span 5;
+  }
+
+  .gallery-section--2 .gallery-card:nth-of-type(4) {
+    grid-column: 2 / span 4;
+  }
+
+  .gallery-section--2 .gallery-card:nth-of-type(5) {
+    grid-column: 7 / span 5;
+    margin-top: 0;
+  }
+
+  .gallery-section--3 .gallery-card:nth-of-type(2) {
+    grid-column: 3 / span 5;
+  }
+
+  .gallery-section--3 .gallery-card:nth-of-type(3) {
+    grid-column: 7 / span 5;
+    margin-top: var(--space-10);
+  }
+
+  .gallery-section--3 .gallery-card:nth-of-type(4) {
+    grid-column: 2 / span 4;
+  }
+
+  .gallery-section--3 .gallery-card:nth-of-type(5) {
+    grid-column: 7 / span 5;
+  }
+
+  .gallery-reprise .gallery-card:nth-of-type(1) {
+    grid-column: 2 / span 4;
+  }
+
+  .gallery-reprise .gallery-card:nth-of-type(2) {
+    grid-column: 7 / span 4;
+    margin-top: var(--space-12);
+  }
+
+  .gallery-reprise .gallery-card:nth-of-type(3) {
+    grid-column: 4 / span 5;
+  }
+
+  @media (hover: hover) {
+    .gallery-card:hover {
+      transform: translateY(calc(var(--space-1) * -1));
+    }
+
+    .gallery-card:hover .gallery-frame {
+      border-color: var(--color-border-default);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .gallery-page {
+      padding-bottom: var(--space-20);
+    }
+
+    .gallery-hero__copy {
+      grid-column: 1 / span 8;
+    }
+
+    .gallery-hero__lead {
+      max-width: none;
+    }
+
+    .gallery-hero__stack {
+      grid-column: 1 / span 5;
+      max-width: 22rem;
+    }
+
+    .gallery-section__label {
+      grid-column: 1 / span 3;
+    }
+
+    .gallery-section--1 .gallery-card:nth-of-type(2),
+    .gallery-section--2 .gallery-card:nth-of-type(2),
+    .gallery-section--3 .gallery-card:nth-of-type(2) {
+      grid-column: 4 / span 4;
+      margin-top: 0;
+    }
+
+    .gallery-section--1 .gallery-card:nth-of-type(3),
+    .gallery-section--2 .gallery-card:nth-of-type(3),
+    .gallery-section--3 .gallery-card:nth-of-type(3) {
+      grid-column: 8 / span 4;
+      margin-top: var(--space-6);
+    }
+
+    .gallery-section--1 .gallery-card:nth-of-type(4),
+    .gallery-section--2 .gallery-card:nth-of-type(4),
+    .gallery-section--3 .gallery-card:nth-of-type(4) {
+      grid-column: 3 / span 4;
+      margin-top: 0;
+    }
+
+    .gallery-section--1 .gallery-card:nth-of-type(5),
+    .gallery-section--2 .gallery-card:nth-of-type(5),
+    .gallery-section--3 .gallery-card:nth-of-type(5) {
+      grid-column: 7 / span 5;
+      margin-top: 0;
+    }
+
+    .gallery-reprise .gallery-card:nth-of-type(1) {
+      grid-column: 2 / span 4;
+    }
+
+    .gallery-reprise .gallery-card:nth-of-type(2) {
+      grid-column: 7 / span 4;
+      margin-top: var(--space-6);
+    }
+
+    .gallery-reprise .gallery-card:nth-of-type(3) {
+      grid-column: 4 / span 5;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .gallery-page {
+      padding-top: var(--space-6);
+      padding-bottom: var(--space-16);
+    }
+
+    .gallery-hero,
+    .gallery-section,
+    .gallery-reprise {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-4);
+    }
+
+    .gallery-hero {
+      margin-bottom: var(--space-12);
+    }
+
+    .gallery-hero__copy,
+    .gallery-hero__lead,
+    .gallery-hero__stack,
+    .gallery-section__label,
+    .gallery-section .gallery-card,
+    .gallery-reprise .gallery-card {
+      grid-column: 1;
+    }
+
+    .gallery-hero__copy {
+      order: 2;
+      align-self: end;
+      gap: var(--space-3);
+      padding: var(--space-5);
+      margin-bottom: 0;
+    }
+
+    .gallery-hero__copy h1 {
+      max-width: 16ch;
+      font-size: var(--font-size-2xl);
+      line-height: 1.04;
+      text-wrap: pretty;
+    }
+
+    .gallery-hero__lead {
+      order: 1;
+    }
+
+    .gallery-hero__stack {
+      order: 3;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+      align-items: start;
+      margin-top: var(--space-2);
+    }
+
+    .gallery-frame--lead {
+      min-height: 58svh;
+      padding: var(--space-3);
+    }
+
+    .gallery-card--intro {
+      width: 100%;
+    }
+
+    .gallery-card,
+    .gallery-card--landscape,
+    .gallery-card--portrait,
+    .gallery-card--square,
+    .gallery-hero__lead,
+    .gallery-hero__stack {
+      min-width: 0;
+      max-width: none;
+    }
+
+    .gallery-section {
+      margin-top: var(--space-12);
+      padding-top: var(--space-2);
+    }
+
+    .gallery-reprise {
+      margin-top: var(--space-12);
+    }
+
+    .gallery-section__label {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      padding-top: 0;
+      margin-bottom: var(--space-1);
+    }
+
+    .gallery-section__label p {
+      max-width: none;
+    }
+
+    .gallery-section .gallery-card + .gallery-card {
+      margin-top: var(--space-2);
+    }
+
+    .gallery-reprise .gallery-card + .gallery-card {
+      margin-top: var(--space-2);
+    }
+  }
+</style>

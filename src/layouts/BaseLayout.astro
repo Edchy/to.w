@@ -45,13 +45,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   <body>
     <div class="shop-banner" role="note" aria-live="polite" transition:persist>
       <p class="shop-banner__full">
-        webbshopen byggs om — du kan fortfarande beställa via <a href={CONTACT_EMAIL_HREF}>mejl</a> och betala med swish.
+        webbshopen byggs om — men du kan fortfarande beställa via <a href={CONTACT_EMAIL_HREF}>mejl</a> och betala med swish.
       </p>
       <div class="shop-banner__carousel" aria-hidden="true">
         <span class="shop-banner__track">
-          <span class="shop-banner__item">webbshopen byggs om — beställ via mejl och betala med swish</span>
+          <span class="shop-banner__item">webbshopen byggs om — men du kan ändå beställa via mejl och betala med swish</span>
           <span class="shop-banner__sep" aria-hidden="true">·</span>
-          <span class="shop-banner__item">webbshopen byggs om — beställ via mejl och betala med swish</span>
+          <span class="shop-banner__item">webbshopen byggs om — men du kan ändå beställa via mejl och betala med swish</span>
           <span class="shop-banner__sep" aria-hidden="true">·</span>
         </span>
       </div>
@@ -74,8 +74,27 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
             ))}
           </ul>
         </nav>
+        <button class="hamburger" aria-label="Öppna meny" aria-expanded="false" aria-controls="mobile-nav">
+          <span class="hamburger__bar"></span>
+          <span class="hamburger__bar"></span>
+        </button>
       </div>
     </header>
+
+    <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Meny" aria-modal="false">
+      <ul class="mobile-nav__list" role="list">
+        {headerNavLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={withBase(href)}
+              class:list={["mobile-nav__link", { "mobile-nav__link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
 
     <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />
@@ -132,6 +151,42 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   </body>
 </html>
 
+<script is:inline>
+  function initHamburger() {
+    const btn = document.querySelector('.hamburger');
+    const nav = document.getElementById('mobile-nav');
+    if (!btn || !nav) return;
+
+    if (btn.dataset.hamburgerInit) return;
+    btn.dataset.hamburgerInit = '1';
+
+    function openMenu() {
+      nav.classList.add('is-open');
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-label', 'Stäng meny');
+    }
+
+    function closeMenu() {
+      nav.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Öppna meny');
+    }
+
+    btn.addEventListener('click', () => {
+      btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
+    });
+
+    document.addEventListener('astro:after-swap', () => {
+      nav.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Öppna meny');
+    });
+  }
+
+  document.addEventListener('astro:page-load', initHamburger);
+  initHamburger();
+</script>
+
 <style>
   .site-wrap {
     width: 100%;
@@ -142,6 +197,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-header {
     position: relative;
+    z-index: var(--z-modal);
     height: var(--nav-height);
     background-color: color-mix(in oklch, var(--color-bg-base) 94%, transparent);
   }
@@ -228,7 +284,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     z-index: var(--z-raised);
     background: var(--color-bg-statement);
     text-align: center;
-    padding: var(--space-2) 0;
     border-bottom: 1px solid var(--color-border-subtle);
   }
 
@@ -300,21 +355,11 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   @media (max-width: 760px) {
     .site-header {
-      height: auto;
-      min-height: var(--nav-height);
-    }
-
-    .site-header__inner {
-      align-items: flex-start;
-      gap: var(--space-4);
-      padding-block: var(--space-3);
+      height: var(--nav-height);
     }
 
     .nav-list {
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 0 var(--space-4);
-      max-width: 18rem;
+      display: none;
     }
   }
 
@@ -498,6 +543,98 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .footer-colophon a:hover {
     color: var(--color-text-primary);
     opacity: 0.82;
+  }
+
+  /* ── Hamburger button ── */
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    width: 44px;
+    height: var(--font-size-lg);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .hamburger__bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: var(--radius-full);
+    transform-origin: center;
+    transition: transform var(--transition-normal);
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
+    transform: translateY(4.5px) rotate(45deg);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
+    transform: translateY(-4.5px) rotate(-45deg);
+  }
+
+  @media (max-width: 760px) {
+    .hamburger {
+      display: flex;
+    }
+  }
+
+  /* ── Mobile nav panel ── */
+
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    top: var(--nav-height);
+    background-color: var(--color-bg-base);
+    z-index: var(--z-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow);
+  }
+
+  .mobile-nav.is-open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mobile-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .mobile-nav__link {
+    display: block;
+    padding-block: var(--space-4);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .mobile-nav__link:hover,
+  .mobile-nav__link--active {
+    color: var(--color-text-primary);
   }
 
   .footer-socials--mobile {
