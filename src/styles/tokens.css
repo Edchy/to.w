@@ -22,13 +22,6 @@
   --brand-400: oklch(58% 0.12 85);
   --brand-100: oklch(88% 0.07 85);
 
-  /* Omnipollo palette */
-  --omni-1: oklch(55% 0.2 30); /* orange-red */
-  --omni-2: oklch(75% 0.15 0); /* light pink */
-  --omni-3: oklch(55% 0.25 350); /* hot pink / magenta center */
-  --omni-4: oklch(72% 0.17 215); /* cyan / sky blue logo */
-  --omni-5: oklch(45% 0.2 295); /* purple body text */
-
   /* Neutrals — warm-tinted (h75 amber), dark end off-black, light end beige */
   --neutral-950: oklch(14% 0.01 75);
   --neutral-900: oklch(20% 0.01 75);
@@ -83,6 +76,12 @@
   --radius-md: 4px;
   --radius-full: 9999px;
 
+  /* Blur */
+  --blur-nav: 8px;
+
+  /* Underline offset */
+  --underline-offset: 3px;
+
   /* Motion */
   --duration-fast: 120ms;
   --duration-normal: 240ms;
@@ -107,6 +106,7 @@
   --font-brand-text: var(--font-june-active);
 
   /* Typography — sizes */
+  --font-size-xs: 0.7rem;
   --font-size-sm: var(--step--1);
   --font-size-base: var(--step-0);
   --font-size-lg: var(--step-1);
@@ -133,28 +133,28 @@
   --font-tracking-wider: 0.12em;
 
   /* Color — backgrounds */
-  --color-bg-base: var(--omni-2);
-  --color-bg-surface: var(--omni-3);
-  --color-bg-muted: var(--neutral-100);
+  --color-bg-base: var(--off-white);
+  --color-bg-surface: var(--brand-2-100);
+  --color-bg-muted: oklch(83% 0.04 15);
   --color-bg-inverse: var(--neutral-950);
 
   /* Color — text */
-  --color-text-primary: var(--omni-5);
-  --color-text-secondary: var(--neutral-600);
-  --color-text-tertiary: var(--neutral-400);
-  --color-text-inverse: var(--neutral-50);
+  --color-text-primary: var(--brand-2-700);
+  --color-text-secondary: var(--brand-2-400);
+  --color-text-tertiary: oklch(72% 0.05 15);
+  --color-text-inverse: var(--off-white);
 
   /* Color — brand */
-  --color-brand: var(--neutral-800);
-  --color-brand-mid: var(--neutral-500);
-  --color-brand-subtle: var(--neutral-200);
-  --color-accent: var(--omni-1);
-  --color-accent-dark: var(--omni-4);
-  --color-accent-subtle: var(--omni-2);
+  --color-brand: var(--brand-2-700);
+  --color-brand-mid: var(--brand-2-400);
+  --color-brand-subtle: var(--brand-2-100);
+  --color-accent: var(--brand-2-400);
+  --color-accent-dark: var(--brand-2-700);
+  --color-accent-subtle: var(--brand-2-100);
 
   /* Color — borders */
-  --color-border-default: var(--neutral-200);
-  --color-border-subtle: var(--neutral-100);
+  --color-border-default: oklch(75% 0.05 15);
+  --color-border-subtle: var(--brand-2-100);
 
   /* Spacing — semantic */
   --space-xs: var(--space-1);
@@ -183,12 +183,12 @@
 
   /* Image */
   --image-border-width: 10px;
-  --image-border-color: var(--brand-700);
+  --image-border-color: var(--brand-2-400);
 
   /* Endeavours */
-  --endeavours-bg: var(--color-accent);
-  --endeavours-color: var(--color-text-inverse);
-  --endeavours-text: var(--color-text-inverse);
+  --endeavours-bg: var(--brand-2-100);
+  --endeavours-color: var(--brand-2-700);
+  --endeavours-text: var(--brand-2-700);
 
   /* Nav */
   --nav-height: 100px;
@@ -199,90 +199,5 @@
   --grid-row-gap: clamp(var(--space-32), 10vw, var(--space-72));
 
   /* Lightbox */
-  --lightbox-scrim: oklch(12% 0.01 75 / 0.92);
-}
-
-/* ─── Theme A: off-white bg, purple text and accents ─── */
-[data-theme="a"] {
-  --color-bg-base: oklch(94% 0.005 75);
-  --color-bg-surface: oklch(91% 0.005 75);
-  --color-bg-muted: oklch(92% 0.005 75);
-  --color-text-primary: var(--omni-5);
-  --color-text-secondary: oklch(52% 0.15 295);
-  --color-text-tertiary: oklch(65% 0.1 295);
-  --color-text-inverse: var(--off-white);
-  --color-brand: var(--omni-5);
-  --color-accent: var(--omni-5);
-  --color-accent-dark: oklch(60% 0.18 295);
-  --color-accent-subtle: white;
-  --color-border-default: oklch(88% 0.04 295);
-  --color-border-subtle: oklch(93% 0.02 295);
-  --image-border-color: white;
-  --lightbox-scrim: oklch(30% 0.15 295 / 0.92);
-  --endeavours-bg: var(--color-bg-muted);
-  --endeavours-color: var(--omni-5);
-  --endeavours-text: var(--omni-5);
-}
-
-/* ─── Theme B: white bg, brand-2 dusty rose text and accents ─── */
-[data-theme="b"] {
-  --color-bg-base: var(--off-white);
-  --color-bg-surface: var(--brand-2-100);
-  --color-bg-muted: oklch(83% 0.04 15);
-  --color-text-primary: var(--brand-2-700);
-  --color-text-secondary: var(--brand-2-400);
-  --color-text-tertiary: oklch(72% 0.05 15);
-  --color-text-inverse: var(--off-white);
-  --color-brand: var(--brand-2-700);
-  --color-accent: var(--brand-2-400);
-  --color-accent-dark: var(--brand-2-700);
-  --color-accent-subtle: var(--brand-2-100);
-  --color-border-default: oklch(75% 0.05 15);
-  --color-border-subtle: var(--brand-2-100);
-  --image-border-color: var(--brand-2-400);
   --lightbox-scrim: oklch(35% 0.06 15 / 0.85);
-  --endeavours-bg: var(--brand-2-100);
-  --endeavours-color: var(--brand-2-700);
-  --endeavours-text: var(--brand-2-700);
-}
-
-/* ─── Theme C: white bg, orange-red text, cyan + pink pops ─── */
-[data-theme="c"] {
-  --color-bg-base: var(--off-white);
-  --color-bg-surface: oklch(95% 0.015 30);
-  --color-bg-muted: oklch(92% 0.02 30);
-  --color-text-primary: var(--omni-1);
-  --color-text-secondary: oklch(58% 0.18 30);
-  --color-text-tertiary: oklch(68% 0.14 30);
-  --color-text-inverse: var(--off-white);
-  --color-brand: var(--omni-1);
-  --color-accent: var(--omni-4);
-  --color-accent-dark: var(--omni-5);
-  --color-accent-subtle: oklch(93% 0.03 30);
-  --color-border-default: oklch(88% 0.04 30);
-  --color-border-subtle: oklch(93% 0.02 30);
-  --image-border-color: var(--omni-4);
-  --lightbox-scrim: oklch(25% 0.18 30 / 0.92);
-}
-
-/* ─── Theme D: white bg, ochre ink ─── */
-[data-theme="d"] {
-  --color-bg-base: var(--off-white);
-  --color-bg-surface: var(--brand-100);
-  --color-bg-muted: oklch(93% 0.05 85);
-  --color-text-primary: var(--brand-700);
-  --color-text-secondary: var(--brand-400);
-  --color-text-tertiary: oklch(68% 0.08 85);
-  --color-text-inverse: var(--off-white);
-  --color-brand: var(--brand-700);
-  --color-accent: var(--brand-400);
-  --color-accent-dark: var(--brand-700);
-  --color-accent-subtle: var(--brand-100);
-  --color-border-default: oklch(85% 0.06 85);
-  --color-border-subtle: var(--brand-100);
-  --image-border-color: var(--brand-400);
-  --lightbox-scrim: oklch(35% 0.08 85 / 0.85);
-  --endeavours-bg: var(--brand-100);
-  --endeavours-color: var(--brand-700);
-  --endeavours-text: var(--brand-700);
 }

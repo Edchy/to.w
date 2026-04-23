@@ -125,6 +125,7 @@ function makeClipHover(
     background: var(--color-accent-subtle);
     position: relative;
     transition: clip-path var(--duration-normal) var(--ease-out-expo);
+    will-change: clip-path;
   }
 
   .card:hover .card__img {
@@ -177,6 +178,7 @@ function makeClipHover(
     text-transform: lowercase;
     color: var(--color-accent);
     transition: color var(--transition-fast);
+    font-variant-numeric: tabular-nums;
   }
 
   .card:hover .card__meta {

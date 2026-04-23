@@ -14,20 +14,9 @@ type Props = {
   transitionName?: string;
 };
 
-const {
-  title,
-  price,
-  sizes,
-  description,
-  material,
-  technique,
-  design,
-  images,
-  transitionName,
-} = Astro.props;
+const { title, price, description, images, transitionName } = Astro.props;
 
 const fmt = new Intl.NumberFormat("sv-SE").format;
-const details = [material, technique, design].filter((value): value is string => Boolean(value));
 const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}`;
 ---
 
@@ -39,7 +28,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       <div class="pd__slide" data-slide aria-hidden={i !== 0}>
         <Image
           src={img}
-          alt={i === 0 ? title : ""}
+          alt={images.length > 1 ? `${title} — bild ${i + 1}` : title}
           width={1600}
           height={1200}
           loading={i === 0 ? "eager" : "lazy"}
@@ -48,9 +37,9 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     ))}
 
     {images.length > 1 && (
-      <div class="pd__thumbs" aria-hidden="true">
+      <div class="pd__thumbs" role="group" aria-label="Välj bild">
         {images.map((img, i) => (
-          <button class="pd__thumb" data-thumb={i} aria-pressed={i === 0} tabindex="-1">
+          <button class="pd__thumb" type="button" data-thumb={i} aria-label={`Visa bild ${i + 1} av ${images.length}`} aria-pressed={i === 0}>
             <Image src={img} alt="" width={120} height={120} loading="lazy" />
           </button>
         ))}
@@ -72,32 +61,13 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       <span class="pd__price">{fmt(price)} kr</span>
       <a class="pd__buy" href={orderHref}>
         <span class="pd__buy-text">Beställ</span>
-        <span class="pd__buy-arrow" aria-hidden="true">↗</span>
       </a>
     </div>
 
     <div class="pd__support">
-      <!-- <div class="pd__meta">
-        {details.length > 0 && (
-          <ul class="pd__details" role="list">
-            {details.map((v) => <li class="pd__detail">{v}</li>)}
-          </ul>
-        )}
-      </div> -->
-
       <div class="pd__body">
         {description && <p class="pd__description">{description}</p>}
-
-
       </div>
-      <!-- {sizes.length > 0 && (
-        <div class="pd__sizes" aria-label="Tillgängliga storlekar">
-          <span class="pd__label">storlek</span>
-          <div class="pd__size-row">
-            {sizes.map((s) => <span class="pd__size">{s}</span>)}
-          </div>
-        </div>
-      )} -->
     </div>
 
   </div>
@@ -131,7 +101,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 400ms var(--ease-out-quart);
+    transition: opacity var(--duration-slow) var(--ease-out-quart);
   }
 
   .pd__slide:first-child { opacity: 1; }
@@ -145,6 +115,8 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     display: block;
     -webkit-user-drag: none;
     pointer-events: none;
+    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 8%, transparent);
+    outline-offset: -1px;
   }
 
   /* ── Thumbnails ── */
@@ -161,10 +133,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   .pd__thumb {
-    width: 48px;
-    height: 48px;
+    width: var(--space-12);
+    height: var(--space-12);
     padding: 0;
     border: 1.5px solid transparent;
+    border-radius: var(--radius-sm);
     background: none;
     cursor: pointer;
     overflow: hidden;
@@ -213,46 +186,13 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     margin: 0 0 0 -0.055em;
   }
 
-  .pd__meta {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    padding-top: var(--space-6);
-  }
-
   .pd__price {
     font-family: var(--font-body-text);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-light);
     letter-spacing: var(--font-tracking-wide);
     color: var(--color-accent);
-  }
-
-  .pd__sizes {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .pd__label {
-    font-size: var(--font-size-sm);
-    letter-spacing: var(--font-tracking-wider);
-    text-transform: lowercase;
-    color: var(--color-text-tertiary);
-  }
-
-  .pd__size-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  .pd__size {
-    font-size: var(--font-size-sm);
-    letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-secondary);
-    padding: var(--space-1) var(--space-2);
-    border: 1px solid var(--color-border-default);
+    font-variant-numeric: tabular-nums;
   }
 
   .pd__body {
@@ -266,21 +206,6 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     line-height: var(--font-leading-relaxed);
     color: var(--color-text-primary);
     margin: 0;
-  }
-
-  .pd__details {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .pd__detail {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    letter-spacing: var(--font-tracking-wide);
   }
 
   /* ── CTA ── */
@@ -319,18 +244,16 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     transform: scale(0.96);
   }
 
-  .pd__buy-text,
-  .pd__buy-arrow {
+  .pd__buy-text
+   {
     position: relative;
   }
 
-  .pd__buy-arrow {
-    font-size: var(--font-size-base);
-    line-height: 1;
-    transition: transform var(--transition-fast);
-  }
 
-  .pd__buy:hover .pd__buy-arrow { transform: translate(2px, -2px); }
+    transition: transform var(--transition-fast);
+
+
+  .pd__buy:hover { transform: translate(2px, -2px); }
 
   /* ── Tablet ── */
 
@@ -437,6 +360,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
       const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>("[data-thumb]"));
       let current = 0;
+      let bounds = gallery.getBoundingClientRect();
 
       const show = (next: number) => {
         slides[current].setAttribute("aria-hidden", "true");
@@ -446,10 +370,19 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
         thumbs[current]?.setAttribute("aria-pressed", "true");
       };
 
+      const isLeftSide = (clientX: number) => (clientX - bounds.left) < bounds.width / 2;
+
+      gallery.addEventListener("mouseenter", () => {
+        bounds = gallery.getBoundingClientRect();
+      });
+
+      window.addEventListener("resize", () => {
+        bounds = gallery.getBoundingClientRect();
+      });
+
       gallery.addEventListener("click", (e) => {
         if ((e.target as HTMLElement).closest("[data-thumb]")) return;
-        const left = (e.clientX - gallery.getBoundingClientRect().left) < gallery.offsetWidth / 2;
-        show(left ? current - 1 : current + 1);
+        show(isLeftSide(e.clientX) ? current - 1 : current + 1);
       });
 
       thumbs.forEach((btn) => {
@@ -458,8 +391,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
       gallery.addEventListener("mousemove", (e) => {
         if ((e.target as HTMLElement).closest("[data-thumb]")) return;
-        const left = (e.clientX - gallery.getBoundingClientRect().left) < gallery.offsetWidth / 2;
-        gallery.classList.toggle("is-left", left);
+        gallery.classList.toggle("is-left", isLeftSide(e.clientX));
       });
     });
   });

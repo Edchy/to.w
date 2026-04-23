@@ -27,7 +27,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 ---
 
 <!doctype html>
-<html lang="en" data-theme="a">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
@@ -46,9 +46,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       </p>
       <div class="shop-banner__carousel" aria-hidden="true">
         <span class="shop-banner__track">
-          <span class="shop-banner__item">the webshop is under reconstruction — order by <a href={CONTACT_EMAIL_HREF}>mailing</a> and pay via swish</span>
+          <span class="shop-banner__item">the webshop is under reconstruction — order by mailing and pay via swish</span>
           <span class="shop-banner__sep" aria-hidden="true">·</span>
-          <span class="shop-banner__item">the webshop is under reconstruction — order by <a href={CONTACT_EMAIL_HREF}>mailing</a> and pay via swish</span>
+          <span class="shop-banner__item">the webshop is under reconstruction — order by mailing and pay via swish</span>
           <span class="shop-banner__sep" aria-hidden="true">·</span>
         </span>
       </div>
@@ -77,13 +77,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />
     </main>
-
-    <div class="theme-picker" role="group" aria-label="Theme" transition:persist>
-      <button data-theme-btn="a">A</button>
-      <button data-theme-btn="b">B</button>
-      <button data-theme-btn="c">C</button>
-      <button data-theme-btn="d">D</button>
-    </div>
 
     <footer class:list={["site-footer", { "site-footer--hidden": noPadding }]}>
       <div class="site-wrap site-footer__inner">
@@ -148,8 +141,8 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     position: relative;
     height: var(--nav-height);
     background-color: color-mix(in oklch, var(--color-bg-base) 92%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(var(--blur-nav));
+    -webkit-backdrop-filter: blur(var(--blur-nav));
   }
 
   .site-header__inner {
@@ -204,7 +197,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     bottom: -4px;
     height: 1.5px;
     background: var(--color-brand);
-    border-radius: 1px;
+    border-radius: var(--radius-sm);
     transform: rotate(-1.5deg);
     transform-origin: left center;
   }
@@ -228,7 +221,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .shop-banner a {
     color: var(--color-brand);
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-underline-offset: var(--underline-offset);
   }
 
   .shop-banner a:hover {
@@ -466,56 +459,4 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     }
   }
 
-  .theme-picker {
-    position: fixed;
-    bottom: var(--space-6);
-    right: var(--space-6);
-    display: flex;
-    gap: var(--space-2);
-    z-index: var(--z-overlay);
-  }
-
-  .theme-picker button {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-full);
-    border: 1.5px solid var(--color-brand);
-    background: var(--color-bg-base);
-    color: var(--color-brand);
-    font-size: var(--font-size-sm);
-    font-family: var(--font-body-text);
-    letter-spacing: var(--font-tracking-wide);
-    opacity: 0.5;
-    transition: opacity var(--transition-fast), transform var(--transition-fast);
-  }
-
-  .theme-picker button:hover {
-    opacity: 1;
-  }
-
-  .theme-picker button[aria-pressed="true"] {
-    opacity: 1;
-    background: var(--color-brand);
-    color: var(--color-bg-base);
-    transform: scale(1.1);
-  }
 </style>
-
-<script>
-  const html = document.documentElement;
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-btn]');
-
-  function setTheme(theme: string) {
-    html.dataset.theme = theme;
-    buttons.forEach(btn => {
-      btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
-    });
-  }
-
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => setTheme(btn.dataset.themeBtn!));
-  });
-
-  setTheme(html.dataset.theme ?? 'a');
-
-</script>

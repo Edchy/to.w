@@ -191,7 +191,7 @@ function makeClipHover(
         if (item.kind === "decorative") return (
           <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
             <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
-              <img src={item.img.src} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+              <Image src={item.img} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
             </div>
           </div>
         );
@@ -201,7 +201,7 @@ function makeClipHover(
         return (
           <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
-              <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
+              <Image src={entry.data.images[0]} alt={entry.data.title} loading={i < 3 ? "eager" : "lazy"} width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
             <div class="collage__item-overlay" style={overlayStyle(i)} aria-hidden="true">
               <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
@@ -256,7 +256,7 @@ function makeClipHover(
         if (item.kind === "decorative") return (
           <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
             <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
-              <img src={item.img.src} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+              <Image src={item.img} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
             </div>
           </div>
         );
@@ -311,7 +311,7 @@ function makeClipHover(
               <h2 class="collage__item-title">Typ Ett</h2>
               <p class="endeavour__body">En tunn ring med en knut högst upp, designad exklusivt för <a class="endeavour__inline-link" href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes — ett projekt som ligger mig varmt om hjärtat som förälder till ett barn med diabetes.</p>
             </div>
-            <div class="collage__item-img collage__item-img--bordered" style={`clip-path:${e1clip};`}
+            <div class="collage__item-img" style={`clip-path:${e1clip};`}
               data-cycle-imgs={JSON.stringify([d1handImg.src, typ1Img.src])}>
               <img src={d1handImg.src} alt="D1-ringen" loading="lazy" width={600} height={750} />
             </div>
@@ -335,7 +335,7 @@ function makeClipHover(
         if (item.kind === "decorative") return (
           <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
             <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
-              <img src={item.img.src} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+              <Image src={item.img} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
             </div>
           </div>
         );
@@ -343,7 +343,7 @@ function makeClipHover(
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
         return (
-          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+          <a class:list={["collage__item", `collage__item--${kind}`, { "collage__item--mobile-hidden": i === 2 }]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
@@ -391,22 +391,6 @@ function makeClipHover(
     box-sizing: border-box;
   }
 
-  .interlude__eyebrow {
-    font-size: var(--font-size-sm);
-    letter-spacing: var(--font-tracking-wider);
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-4);
-  }
-
-  .interlude__body {
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
-    line-height: var(--font-leading-relaxed);
-    max-width: 44ch;
-  }
-
-
   /* ── About interlude ── */
   .interlude--about {
     padding: var(--space-4xl) var(--layout-gutter);
@@ -442,15 +426,14 @@ function makeClipHover(
 
   .about__headline {
     font-family: var(--font-heading-text);
-    font-size: var(--font-size-display);
+    font-size: clamp(3.5rem, calc(3rem + 2.8vw), 5.5rem);
     font-weight: var(--font-weight-light);
-    line-height: 1.1;
+    line-height: var(--font-leading-tight);
     letter-spacing: -0.01em;
     color: var(--color-text-primary);
     margin: 0;
     position: relative;
     z-index: 1;
-    font-size: clamp(3.5rem, calc(3rem + 2.8vw), 5.5rem);
     padding-left: clamp(155px, 24%, 265px);
   }
 
@@ -462,10 +445,6 @@ function makeClipHover(
     z-index: 1;
     line-height: var(--font-leading-snug);
     margin: 0;
-  }
-
-  .about__body--cta {
-    /* inherits */
   }
 
   .about__socials {
@@ -493,7 +472,7 @@ function makeClipHover(
   .about__inline-link {
     color: var(--endeavours-text);
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: var(--underline-offset);
   }
 
   .about__inline-link:hover {
@@ -507,6 +486,8 @@ function makeClipHover(
     text-decoration: none;
     position: relative;
     transition: opacity var(--transition-fast);
+    padding: 5px;
+    margin: -5px;
   }
 
   .about__socials a:hover {
@@ -610,7 +591,7 @@ function makeClipHover(
   .endeavour__inline-link {
     color: var(--endeavours-text);
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: var(--underline-offset);
   }
 
   /* ── Responsive ── */
@@ -624,10 +605,14 @@ function makeClipHover(
       row-gap: var(--space-32);
     }
 
-    .collage__deco {
+    .collage__deco,
+    .collage__item--mobile-hidden {
       display: none;
     }
 
+    .collage--final {
+      display: none;
+    }
 
     .endeavours {
       gap: var(--space-32);
@@ -766,10 +751,6 @@ function makeClipHover(
 
   }
 
-  @media (max-width: 760px) {
-    .collage--final { display: none; }
-  }
-
   /* ── Product links ── */
   .collage__item {
     position: relative;
@@ -797,6 +778,7 @@ function makeClipHover(
     background: var(--image-border-color);
     position: relative;
     transition: clip-path var(--duration-normal) var(--ease-out-expo);
+    will-change: clip-path;
   }
 
   .collage__item-img--deco {
@@ -842,7 +824,7 @@ function makeClipHover(
     display: none;
     color: var(--endeavours-text);
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: var(--underline-offset);
   }
 
   .endeavour__reel:hover {
@@ -931,6 +913,7 @@ function makeClipHover(
     white-space: nowrap;
     margin-top: var(--space-1);
     transition: color var(--transition-fast);
+    font-variant-numeric: tabular-nums;
   }
 
   .collage__item:hover .collage__item-title,
@@ -954,12 +937,12 @@ function makeClipHover(
 
     .collage__item-meta {
       white-space: normal;
-      font-size: 0.55rem;
+      font-size: var(--font-size-sm);
       font-family: var(--font-body-text);
       letter-spacing: var(--font-tracking-wide);
       text-transform: uppercase;
       color: var(--color-accent);
-      opacity: 0.5;
+      opacity: 1;
     }
 
     .gaza-media .gaza-media__poster {
