@@ -6,6 +6,8 @@ import gazaVideo from "../assets/img/v-gaza.web.mp4";
 import gazaPoster from "../assets/img/v-gaza-poster.jpg";
 import d1handImg from "../assets/img/d1hand.avif";
 import typ1Img from "../assets/img/typ1.avif";
+import broderJohnImg from "../assets/img/broder_john.avif";
+import bjInstaImg from "../assets/img/bjinsta.avif";
 import toveImg from "../assets/img/tove.avif";
 import iconInstagram from "../assets/img/noun-instagram-6788383.svg?raw";
 import iconEmail from "../assets/img/noun-send-6788398.svg?raw";
@@ -208,6 +210,7 @@ function makeClipHover(
         const { entry, kind } = item;
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
+        const hasHoverImg = entry.data.images.length > 1;
         return (
           <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`Visa ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
@@ -220,6 +223,18 @@ function makeClipHover(
                 height={600}
                 style={`padding: ${borderPadding};`}
               />
+              {hasHoverImg && (
+                <Image
+                  src={entry.data.images[1]}
+                  alt=""
+                  aria-hidden="true"
+                  class="collage__item-img-hover"
+                  loading="lazy"
+                  width={600}
+                  height={600}
+                  style={`padding: ${borderPadding};`}
+                />
+              )}
             </div>
             <div class="collage__item-overlay" style={overlayStyle(i)} aria-hidden="true">
               <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
@@ -281,10 +296,23 @@ function makeClipHover(
         const { entry, kind } = item;
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
+        const hasHoverImg2 = entry.data.images.length > 1;
         return (
           <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`Visa ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
+              {hasHoverImg2 && (
+                <Image
+                  src={entry.data.images[1]}
+                  alt=""
+                  aria-hidden="true"
+                  class="collage__item-img-hover"
+                  loading="lazy"
+                  width={600}
+                  height={600}
+                  style={`padding: ${borderPadding};`}
+                />
+              )}
             </div>
             <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
               <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
@@ -301,8 +329,11 @@ function makeClipHover(
       const e0offsets = cornerOffsets[0];
       const e1inset   = insets[3];
       const e1offsets = cornerOffsets[3];
+      const e2inset   = insets[6];
+      const e2offsets = cornerOffsets[6];
       const e0clip    = `polygon(${makeClip(e0inset, e0offsets)})`;
       const e1clip    = `polygon(${makeClip(e1inset, e1offsets)})`;
+      const e2clip    = `polygon(${makeClip(e2inset, e2offsets)})`;
       return (
         <section class="endeavours defer-render" aria-label="Projekt">
             <div class="endeavour">
@@ -334,6 +365,16 @@ function makeClipHover(
               <img class="cycle-img" src={typ1Img.src} alt="Typ-ett-ringen" loading="lazy" width={600} height={750} />
             </div>
           </div>
+          <div class="endeavour">
+            <div class="collage__item-img cycle-wrap" style={`clip-path:${e2clip};`}>
+              <img class="cycle-img cycle-img--active" src={broderJohnImg.src} alt="Broder John" loading="lazy" width={600} height={750} />
+              <img class="cycle-img" src={bjInstaImg.src} alt="Broder John på Instagram" loading="lazy" width={600} height={750} />
+            </div>
+            <div class="endeavour__text">
+              <h2 class="collage__item-title">hoop hoop</h2>
+              <p class="endeavour__body">Fick den stora äran att göra ett par ringar åt en av sveriges fetaste. <a class="endeavour__inline-link" href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer">Broder John</a> och hans <a class="endeavour__inline-link" href="https://www.hoopdiggas.com/" target="_blank" rel="noopener noreferrer">Hoopdiggas</a>.</p>
+            </div>
+          </div>
         </section>
       );
     })()}
@@ -360,10 +401,23 @@ function makeClipHover(
         const { entry, kind } = item;
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
+        const hasHoverImg3 = entry.data.images.length > 1;
         return (
           <a class:list={["collage__item", `collage__item--${kind}`, { "collage__item--mobile-hidden": i === 2 }]} href={href} style={itemStyle} aria-label={`Visa ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
+              {hasHoverImg3 && (
+                <Image
+                  src={entry.data.images[1]}
+                  alt=""
+                  aria-hidden="true"
+                  class="collage__item-img-hover"
+                  loading="lazy"
+                  width={600}
+                  height={600}
+                  style={`padding: ${borderPadding};`}
+                />
+              )}
             </div>
             <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
               <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
@@ -460,10 +514,16 @@ function makeClipHover(
     position: absolute;
     top: calc(var(--space-4xl) * -0.9);
     left: var(--layout-gutter);
-    width: clamp(220px, 34%, 360px);
+    width: clamp(180px, 28%, 300px);
     z-index: 0;
     transform: rotate(-4deg);
     transform-origin: top left;
+  }
+
+  @media (min-width: 761px) {
+    .about__photo-wrap {
+      top: clamp(-160px, -14vw, -80px);
+    }
   }
 
   .about__photo {
@@ -484,7 +544,7 @@ function makeClipHover(
     margin: 0;
     position: relative;
     z-index: 1;
-    padding-left: clamp(200px, 32%, 340px);
+    padding-left: clamp(160px, 26%, 280px);
   }
 
   .about__body {
@@ -898,6 +958,26 @@ function makeClipHover(
   .collage__item-img--bordered img,
   .collage__item-img--bordered video {
     object-fit: contain;
+  }
+
+  /* ── Second-image hover crossfade ── */
+  .collage__item-img-hover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    box-sizing: border-box;
+    display: block;
+    opacity: 0;
+    transition: opacity 520ms var(--ease-out-expo);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .collage__item:hover .collage__item-img-hover {
+      opacity: 1;
+    }
   }
 
   .cycle-img {

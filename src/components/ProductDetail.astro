@@ -130,6 +130,14 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     pointer-events: none;
     outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 8%, transparent);
     outline-offset: -1px;
+    transition: transform 600ms var(--ease-out-expo);
+    will-change: transform;
+  }
+
+  @media (hover: hover) {
+    .pd__stage:hover .pd__slide[aria-hidden="false"] img {
+      transform: scale(1.03) translate(var(--parallax-x, 0px), var(--parallax-y, 0px));
+    }
   }
 
   /* ── Thumbnails ── */
@@ -191,6 +199,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     display: contents;
   }
 
+  @keyframes title-settle {
+    from { letter-spacing: 0.04em; }
+    to   { letter-spacing: var(--font-tracking-tight); }
+  }
+
   .pd__title {
     font-family: var(--font-heading-text);
     font-size: clamp(4rem, 10vw, 9rem);
@@ -199,6 +212,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     letter-spacing: var(--font-tracking-tight);
     color: var(--color-brand);
     margin: 0 0 0 -0.055em;
+    animation: title-settle 1400ms var(--ease-out-expo) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pd__title { animation: none; }
   }
 
   .pd__price {
@@ -409,6 +427,16 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
         gallery.addEventListener("mousemove", (e) => {
           if ((e.target as HTMLElement).closest("[data-thumb]")) return;
           gallery.classList.toggle("is-left", isLeftSide(e.clientX));
+
+          const rx = (e.clientX - bounds.left) / bounds.width - 0.5;
+          const ry = (e.clientY - bounds.top) / bounds.height - 0.5;
+          gallery.style.setProperty("--parallax-x", `${rx * -6}px`);
+          gallery.style.setProperty("--parallax-y", `${ry * -4}px`);
+        });
+
+        gallery.addEventListener("mouseleave", () => {
+          gallery.style.removeProperty("--parallax-x");
+          gallery.style.removeProperty("--parallax-y");
         });
       }
 

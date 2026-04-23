@@ -159,6 +159,14 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     letter-spacing: var(--font-tracking-wide);
     color: var(--color-brand);
     line-height: 1;
+    transition: letter-spacing 380ms var(--ease-out-expo);
+  }
+
+  @media (hover: hover) {
+    .site-logo:hover,
+    .footer-wordmark:hover {
+      letter-spacing: 0.14em;
+    }
   }
 
   .nav-list {
@@ -335,6 +343,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-brand);
     letter-spacing: var(--font-tracking-normal);
     line-height: var(--font-leading-tight);
+    transition: letter-spacing 380ms var(--ease-out-expo);
   }
 
   .footer-directory {
