@@ -132,15 +132,10 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
           <article class="project project--hoop" aria-label="Projekt hoop hoop">
             <Image class="hoop-hero" src={broderJohnImg} alt="Broder John" loading="lazy" width={640} height={640} />
             <div class="project__media project__media--quad">
-              <a href="https://www.instagram.com/broderjohn" target="_blank" rel="noopener noreferrer" aria-label="Broder John på Instagram">
-                <Image src={bjInstaImg} alt="Broder John på Instagram" loading="lazy" width={640} height={640} />
-                <span class="project__media-label">instagram</span>
-              </a>
+              <Image src={dontFollowMeImg} alt="Broder John-ring" loading="lazy" width={640} height={640} />
               <Image src={bjLolImg} alt="Broder John" loading="lazy" width={640} height={640} />
-              <a href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer" aria-label="Broder John på Spotify">
-                <Image src={dontFollowMeImg} alt="Broder John-ring" loading="lazy" width={640} height={640} />
-                <span class="project__media-label">spotify</span>
-              </a>
+              <Image src={bjInstaImg} alt="Broder John på Instagram" loading="lazy" width={640} height={640} />
+              <Image src={broderJohnImg} alt="Broder John" loading="lazy" width={640} height={640} />
             </div>
             <div class="project__text">
               <h2 class="project__heading">hoop hoop</h2>
@@ -196,6 +191,10 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     margin-top: clamp(var(--space-32), 15vw, var(--space-72));
   }
 
+  .work--row-4 + .work--row-5 {
+    margin-top: clamp(var(--space-24), 12vw, var(--space-48));
+  }
+
   .work-card {
     --work-frame: var(--color-bg-muted);
     --work-frame-hover: var(--color-accent-subtle);
@@ -217,7 +216,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     --reveal-x: calc(var(--space-6) * -1);
     --reveal-rot: -1.6deg;
     --ring: 0 0 0 6px color-mix(in oklch, var(--clay-400) 22%, transparent);
-    grid-column: 1 / span 4;
+    grid-column: 2 / span 4;
   }
 
   .work-card:nth-child(6n + 2) {
@@ -227,7 +226,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     --reveal-x: var(--space-8);
     --reveal-rot: 1.2deg;
     --ring: inset 0 0 0 1px color-mix(in oklch, var(--brand-700) 30%, transparent);
-    grid-column: 8 / span 3;
+    grid-column: 9 / span 3;
     margin-top: var(--space-20);
   }
 
@@ -381,22 +380,24 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     --caption-width: min(30ch, calc(100vw - (var(--layout-gutter) * 2)));
   }
 
-  .work-card--caption-side .work-card__caption {
-    position: absolute;
-    top: 50%;
-    width: var(--caption-width);
-    margin-top: 0;
-    transform: translateY(-50%);
-  }
+  @media (min-width: 1500px) {
+    .work-card--caption-side .work-card__caption {
+      position: absolute;
+      top: 50%;
+      width: var(--caption-width);
+      margin-top: 0;
+      transform: translateY(-50%);
+    }
 
-  .work-card--caption-right .work-card__caption {
-    left: calc(100% - var(--space-8));
-  }
+    .work-card--caption-right .work-card__caption {
+      left: calc(100% - var(--space-8));
+    }
 
-  .work-card--caption-left .work-card__caption {
-    right: calc(100% - var(--space-8));
-    justify-items: end;
-    text-align: right;
+    .work-card--caption-left .work-card__caption {
+      right: calc(100% - var(--space-8));
+      justify-items: end;
+      text-align: right;
+    }
   }
 
   .work-card__title {
@@ -446,6 +447,10 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     line-height: var(--font-leading-snug);
     color: var(--color-text-secondary);
     text-wrap: pretty;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     transition:
       color var(--transition-normal),
       transform var(--transition-slow);
@@ -474,8 +479,10 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
     }
 
-    .work-card--caption-side:hover .work-card__caption {
-      transform: translate(calc(var(--space-1) * -1), calc(-50% - var(--space-2)));
+    @media (min-width: 1500px) {
+      .work-card--caption-side:hover .work-card__caption {
+        transform: translate(calc(var(--space-1) * -1), calc(-50% - var(--space-2)));
+      }
     }
 
     .work-card:hover .work-card__title::after {
@@ -614,6 +621,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
   /* ── Project articles ─────────────────────────────────── */
 
   .project {
+    position: relative;
     max-width: var(--layout-wide-width);
     padding: clamp(var(--space-8), 5vw, var(--space-16));
     border-radius: var(--radius-md);
@@ -740,7 +748,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     display: none;
   }
 
-  @media (min-width: 761px) {
+  @media (min-width: 700px) {
     .gaza-media__play {
       display: grid;
     }
@@ -797,7 +805,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     height: auto;
     object-fit: cover;
     border-radius: var(--radius-sm);
-    z-index: var(--z-raised);
+    z-index: 0;
   }
 
   .project--typett .project__text {
@@ -805,11 +813,17 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     gap: var(--space-5);
     padding-left: var(--space-5);
     border-left: 2px solid var(--color-brand);
+    position: relative;
+    z-index: 1;
   }
 
   .project--typett .project__heading {
     margin-bottom: var(--space-2);
     color: var(--color-brand);
+  }
+
+  .project--typett .project__text p {
+    color: var(--color-text-primary);
   }
 
   .project__media--pair {
@@ -889,13 +903,33 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     aspect-ratio: 1 / 1;
   }
 
-  .project__media--quad > :nth-child(1) {
-    grid-row: 1 / 3;
+  @media (min-width: 1024px) {
+    .project--hoop .project__media--quad {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+    }
+
+    .project--hoop .project__media--quad img:nth-child(1) {
+      grid-row: 1 / span 2;
+      grid-column: 1;
+      height: 100%;
+    }
+
+    .project--hoop .project__media--quad img:nth-child(2) {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .project--hoop .project__media--quad img:nth-child(3) {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .project--hoop .project__media--quad img:nth-child(4) {
+      display: none;
+    }
   }
 
-  .project__media--quad > :nth-child(1) img {
-    object-position: 25% center;
-  }
 
   .project__media--quad img {
     width: 100%;
@@ -903,6 +937,8 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     min-height: 0;
     object-fit: cover;
     border-radius: var(--radius-sm);
+    outline: 1px solid color-mix(in oklch, var(--brand-2-400) 45%, transparent);
+    outline-offset: 5px;
     transition: transform var(--transition-slow);
   }
 
@@ -939,19 +975,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       transform var(--transition-normal);
   }
 
-  .project__media--quad > :nth-child(1) img,
-  .project__media--quad > :nth-child(1):is(img) {
-    outline: 1px solid color-mix(in oklch, var(--brand-2-400) 45%, transparent);
-    outline-offset: -4px;
-  }
 
-  .project__media--quad > :nth-child(2) img,
-  .project__media--quad > :nth-child(2):is(img),
-  .project__media--quad > :nth-child(3) img,
-  .project__media--quad > :nth-child(3):is(img) {
-    outline: 1px solid color-mix(in oklch, var(--brand-2-400) 45%, transparent);
-    outline-offset: 5px;
-  }
 
   @media (hover: hover) {
     .project__media--quad > a:hover .project__media-label,
@@ -1000,10 +1024,75 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     animation-play-state: running;
   }
 
+  /* ── Desktop sub-variant: < 1300px ─────────────────────
+     Keep the desktop layout intact — only shrink the cards. */
   @media (max-width: 1300px) {
+    .work-card {
+      --caption-default-width: 100%;
+      min-width: 0;
+    }
+
+    .work-card__figure {
+      min-width: 0;
+    }
+
+    .work-card__media {
+      max-width: 100%;
+    }
+
+    .work-card:nth-child(6n + 2) .work-card__media,
+    .work-card:nth-child(6n + 5) .work-card__media,
+    .work--row-2 .work-card:nth-child(2) .work-card__media,
+    .work--row-4 .work-card:nth-child(2) .work-card__media,
+    .work--row-5 .work-card:nth-child(2) .work-card__media {
+      margin-left: auto;
+    }
+
+    .work-card__title {
+      font-size: clamp(1.8rem, 3.4vw, 3.4rem);
+    }
+
+    .work-card__description {
+      width: 100%;
+    }
+
+    .work-card--caption-side .work-card__caption {
+      position: relative;
+      top: auto;
+      right: auto;
+      left: auto;
+      width: auto;
+      margin-top: calc(var(--space-8) * -1);
+      transform: translateX(calc(var(--space-3) * -1));
+      justify-items: start;
+      text-align: left;
+    }
+
+    .work-card--caption-side:hover .work-card__caption {
+      transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
+    }
+  }
+
+  /* ── Shrink further below 1100px, still same layout ──── */
+  @media (max-width: 1100px) {
+    .work-card__media {
+      max-width: 92%;
+    }
+
+    .work-card__title {
+      font-size: clamp(1.6rem, 3vw, 2.8rem);
+    }
+  }
+
+  /* ── Tablet: < 1024px ─────────────────────────────────── */
+  @media (max-width: 1023px) {
+    .home {
+      padding-top: var(--space-6);
+    }
+
     .work {
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      row-gap: var(--space-32);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      row-gap: var(--space-24);
     }
 
     .work-card,
@@ -1012,16 +1101,16 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     .work.work--row-3 .work-card:nth-child(n),
     .work.work--row-4 .work-card:nth-child(n),
     .work.work--row-5 .work-card:nth-child(n) {
-      grid-column: span 3;
+      grid-column: 1 / span 2;
       margin-top: 0;
     }
 
-    .work-card:nth-child(odd) {
-      grid-column: 1 / span 3;
-    }
-
-    .work-card:nth-child(even) {
-      grid-column: 5 / span 3;
+    .work-card:nth-child(even),
+    .work.work--row-2 .work-card:nth-child(even),
+    .work.work--row-3 .work-card:nth-child(even),
+    .work.work--row-4 .work-card:nth-child(even),
+    .work.work--row-5 .work-card:nth-child(even) {
+      grid-column: 3 / span 2;
       margin-top: var(--space-10);
     }
 
@@ -1046,86 +1135,75 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     }
 
     .work-card__title {
-      font-size: clamp(2rem, 4vw, 4rem);
-    }
-
-    .project__heading {
-      font-size: clamp(var(--font-size-3xl), 8vw, 7rem);
-    }
-
-    .typett-hero,
-    .hoop-hero {
-      width: clamp(180px, 28%, 320px);
-    }
-  }
-
-  @media (max-width: 920px) {
-    .home {
-      padding-top: var(--space-6);
-    }
-
-    .work {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      row-gap: var(--space-32);
-    }
-
-    .work-card,
-    .work-card:nth-child(n),
-    .work.work--row-2 .work-card:nth-child(n),
-    .work.work--row-3 .work-card:nth-child(n),
-    .work.work--row-4 .work-card:nth-child(n),
-    .work.work--row-5 .work-card:nth-child(n) {
-      grid-column: span 3;
-      margin-top: 0;
-    }
-
-    .work-card:nth-child(4n + 2),
-    .work-card:nth-child(4n + 3) {
-      margin-top: var(--space-16);
-    }
-
-    .work-card--caption-side .work-card__caption {
-      position: relative;
-      top: auto;
-      right: auto;
-      left: auto;
-      width: auto;
-      margin-top: calc(var(--space-8) * -1);
-      transform: translateX(calc(var(--space-3) * -1));
-      justify-items: start;
-      text-align: left;
-    }
-
-    .work-card--caption-side .work-card__description {
-      --caption-width: var(--caption-default-width);
-    }
-
-    .work-card--caption-side:hover .work-card__caption {
-      transform: translate(calc(var(--space-1) * -1), calc(var(--space-2) * -1));
+      font-size: clamp(1.8rem, 3.5vw, 3.2rem);
     }
 
     .about {
       grid-template-columns: 1fr;
     }
 
+    .about__photo-wrap {
+      max-width: 480px;
+    }
+
     .project--gaza,
     .project--typett,
     .project--hoop {
       grid-template-columns: 1fr;
+      justify-items: center;
+      align-items: start;
+      gap: var(--space-8);
+      overflow: visible;
     }
 
-    .about__photo-wrap {
-      max-width: 640px;
+    .project__media--quad {
+      width: 100%;
+      max-width: 560px;
     }
 
-    .project__media--pair,
-    .project__media--quad,
-    .gaza-media {
-      max-width: 640px;
+    .project--gaza .gaza-media {
+      width: min(100%, 360px);
+      max-height: none;
+    }
+
+    .project--typett .project__media--pair {
+      width: min(100%, 320px);
+      max-height: none;
+    }
+
+    .project--gaza .project__text,
+    .project--typett .project__text,
+    .project--hoop .project__text {
+      justify-self: center;
+      width: 100%;
+      max-width: 560px;
+      order: 1;
+      text-align: left;
+      border: 0;
+      padding: 0;
+    }
+
+    .project--gaza .gaza-media,
+    .project--typett .project__media--pair,
+    .project--hoop .project__media--quad {
+      order: 2;
+    }
+
+    .project--typett .typett-hero {
+      display: none;
+    }
+
+    .project--hoop .hoop-hero {
+      display: none;
+    }
+
+    .project__heading {
+      font-size: clamp(var(--font-size-3xl), 8vw, 6rem);
     }
   }
 
-  @media (max-width: 560px) {
+  /* ── Mobile: < 700px ──────────────────────────────────── */
+  @media (max-width: 699px) {
     .home {
       padding-bottom: var(--space-16);
     }
@@ -1133,7 +1211,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     .work {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: var(--space-3);
-      row-gap: var(--space-20);
+      row-gap: var(--space-16);
     }
 
     .work-card,
@@ -1147,8 +1225,12 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       margin-top: 0;
     }
 
-    .work-card:nth-child(even) {
-      margin-top: var(--space-10);
+    .work-card:nth-child(even),
+    .work.work--row-2 .work-card:nth-child(even),
+    .work.work--row-3 .work-card:nth-child(even),
+    .work.work--row-4 .work-card:nth-child(even),
+    .work.work--row-5 .work-card:nth-child(even) {
+      margin-top: var(--space-8);
     }
 
     .work-card__title,
@@ -1178,7 +1260,6 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     }
 
     .project__media--pair {
-      grid-template-columns: 1fr;
       aspect-ratio: auto;
     }
 
@@ -1206,7 +1287,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
 
 <script>
   function initIndexInteractions() {
-    const desktopMedia = window.matchMedia("(min-width: 761px)");
+    const desktopMedia = window.matchMedia("(min-width: 700px)");
     const gazaMedia = document.querySelector<HTMLElement>(".gaza-media");
     const gazaVideo = document.querySelector<HTMLVideoElement>(".gaza-media__video[data-src]");
     const gazaPlay = document.querySelector<HTMLButtonElement>(".gaza-media__play");

@@ -186,6 +186,10 @@
   --layout-content-width: 68ch;
   --layout-gutter: clamp(var(--space-6), 5vw, var(--space-12));
 
+  /* Breakpoints */
+  --bp-md: 700px;   /* mobile → tablet */
+  --bp-lg: 1024px;  /* tablet → desktop */
+
   /* Motion */
   --transition-fast: var(--duration-fast) var(--ease-out-quart);
   --transition-normal: var(--duration-normal) var(--ease-out-quart);
@@ -209,7 +213,10 @@
   --nav-height: 72px;
   --nav-font: var(--font-body-text);
   --nav-active-underline-offset: 9px;
-  --nav-active-underline-rotation: -1.5deg;
+  --nav-active-underline-shift-x: 2px;
+  --nav-active-underline-rotation: -2.5deg;
+  --nav-active-underline-height: 6px;
+  --nav-active-underline-wave-width: 28px;
 
   /* Portfolio grid */
   --grid-gutter: clamp(var(--space-3), 2vw, var(--space-6));

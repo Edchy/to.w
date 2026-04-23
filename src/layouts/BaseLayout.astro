@@ -90,7 +90,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
               <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
             </li>
             <li>
-              <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+              <a href={CONTACT_EMAIL_HREF}>email</a>
             </li>
           </ul>
         </div>
@@ -115,7 +115,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
                 <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
               </li>
               <li>
-                <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+                <a href={CONTACT_EMAIL_HREF}>email</a>
               </li>
             </ul>
           </div>
@@ -123,7 +123,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
         <div class="footer-colophon">
           <p>&copy; {currentYear} to.w</p>
           <p>
-            webbplats av
+            website by
             <a href="https://nope.digital" target="_blank" rel="noopener noreferrer">nope digital</a>
           </p>
         </div>
@@ -211,10 +211,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     left: -1px;
     right: -2px;
     bottom: var(--nav-active-underline-offset);
-    height: 1px;
-    background: var(--color-brand);
-    border-radius: var(--radius-full);
-    transform: rotate(var(--nav-active-underline-rotation));
+    height: var(--nav-active-underline-height);
+    background-color: var(--color-brand);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: round;
+    -webkit-mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-repeat: round;
+    mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    transform: translateX(var(--nav-active-underline-shift-x)) rotate(var(--nav-active-underline-rotation));
     transform-origin: center;
   }
 
@@ -454,10 +459,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     left: -1px;
     right: -2px;
     bottom: var(--nav-active-underline-offset);
-    height: 1px;
-    background: var(--color-brand);
-    border-radius: var(--radius-full);
-    transform: rotate(var(--nav-active-underline-rotation));
+    height: var(--nav-active-underline-height);
+    background-color: var(--color-brand);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: round;
+    -webkit-mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-repeat: round;
+    mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    transform: translateX(var(--nav-active-underline-shift-x)) rotate(var(--nav-active-underline-rotation));
     transform-origin: center;
   }
 

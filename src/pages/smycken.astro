@@ -15,7 +15,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 <BaseLayout title="Smycken" description="Handgjorda smycken av Tove Wätte.">
   <div class="listing">
     <header class="listing__header">
-      <h1>Smycken</h1>
+      <h1 class="sr-only">Smycken</h1>
     </header>
 
     <section class="product-grid" aria-label="Smycken">
@@ -183,6 +183,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     line-height: var(--font-leading-snug);
     color: var(--color-text-secondary);
     text-wrap: pretty;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     transition:
       color var(--transition-normal),
       transform var(--transition-slow);
