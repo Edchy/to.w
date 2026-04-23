@@ -67,10 +67,17 @@ function makeClipHover(
         const productSlug = getProductSlug(entry.id);
         const href    = withBase(`/smycken/${productSlug}`);
         return (
-          <li class="grid__cell" style={`margin-top: ${nudge}`}>
+          <li class="grid__cell" style={`--card-nudge:${nudge}`}>
             <a class="card" href={href} aria-label={`${entry.data.title} — ${fmt(entry.data.price)} kr`}>
-              <div class="card__img" style={`--clip-rest:${clip};--clip-hover:${clipHover};clip-path:var(--clip-rest);`} transition:name={`product-${productSlug}`}>
-                <Image src={entry.data.images[0]} alt={entry.data.title} width={600} height={600} loading={i < 3 ? "eager" : "lazy"} />
+              <div class="card__img" style={`--clip-rest:${clip};--clip-hover:${clipHover};`} transition:name={`product-${productSlug}`}>
+                <Image
+                  src={entry.data.images[0]}
+                  alt={entry.data.title}
+                  width={600}
+                  height={600}
+                  loading={i < 3 ? "eager" : "lazy"}
+                  fetchpriority={i === 0 ? "high" : "auto"}
+                />
               </div>
               <div class="card__info" aria-hidden="true">
                 <span class="card__name" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</span>
@@ -104,6 +111,7 @@ function makeClipHover(
   }
 
   .grid__cell {
+    margin-top: var(--card-nudge, 0px);
     align-self: start;
   }
 
@@ -115,7 +123,7 @@ function makeClipHover(
   }
 
   .card:active {
-    scale: 0.97;
+    scale: 0.96;
   }
 
   .card__img {
@@ -125,11 +133,25 @@ function makeClipHover(
     background: var(--color-accent-subtle);
     position: relative;
     transition: clip-path var(--duration-normal) var(--ease-out-expo);
-    will-change: clip-path;
+    clip-path: var(--clip-rest);
   }
 
-  .card:hover .card__img {
-    clip-path: var(--clip-hover) !important;
+  @media (hover: hover) {
+    .card__img {
+      will-change: clip-path;
+    }
+
+    .card:hover .card__img {
+      clip-path: var(--clip-hover);
+    }
+
+    .card:hover .card__name {
+      color: var(--color-accent-dark);
+    }
+
+    .card:hover .card__meta {
+      color: var(--color-accent-dark);
+    }
   }
 
   .card__img::after {
@@ -147,6 +169,8 @@ function makeClipHover(
     object-fit: contain;
     display: block;
     box-sizing: border-box;
+    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 6%, transparent);
+    outline-offset: -1px;
   }
 
   .card__info {
@@ -166,10 +190,6 @@ function makeClipHover(
     transition: color var(--transition-fast);
   }
 
-  .card:hover .card__name {
-    color: var(--color-accent-dark);
-  }
-
   .card__meta {
     font-family: var(--font-body-text);
     font-size: var(--font-size-sm);
@@ -179,10 +199,6 @@ function makeClipHover(
     color: var(--color-accent);
     transition: color var(--transition-fast);
     font-variant-numeric: tabular-nums;
-  }
-
-  .card:hover .card__meta {
-    color: var(--color-accent-dark);
   }
 
   @media (max-width: 900px) {
@@ -198,7 +214,7 @@ function makeClipHover(
     }
 
     .grid__cell {
-      margin-top: 0 !important;
+      --card-nudge: 0px;
     }
   }
 </style>

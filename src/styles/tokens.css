@@ -148,8 +148,8 @@
   --color-brand: var(--brand-2-700);
   --color-brand-mid: var(--brand-2-400);
   --color-brand-subtle: var(--brand-2-100);
-  --color-accent: var(--brand-2-400);
-  --color-accent-dark: var(--brand-2-700);
+  --color-accent: var(--brand-2-700);
+  --color-accent-dark: var(--neutral-900);
   --color-accent-subtle: var(--brand-2-100);
 
   /* Color — borders */
@@ -188,7 +188,7 @@
   /* Endeavours */
   --endeavours-bg: var(--brand-2-100);
   --endeavours-color: var(--brand-2-700);
-  --endeavours-text: var(--brand-2-700);
+  --endeavours-text: var(--neutral-900);
 
   /* Nav */
   --nav-height: 100px;

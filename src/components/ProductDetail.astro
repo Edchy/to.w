@@ -23,7 +23,14 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 <div class="pd">
 
   <!-- ── Left: image stage ── -->
-  <div class="pd__stage" data-gallery transition:name={transitionName} aria-label={`${title} bilder`}>
+  <div
+    class="pd__stage"
+    data-gallery
+    transition:name={transitionName}
+    aria-label={`${title} bilder`}
+    aria-roledescription="bildgalleri"
+    tabindex="0"
+  >
     {images.map((img, i) => (
       <div class="pd__slide" data-slide aria-hidden={i !== 0}>
         <Image
@@ -32,6 +39,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
           width={1600}
           height={1200}
           loading={i === 0 ? "eager" : "lazy"}
+          fetchpriority={i === 0 ? "high" : "auto"}
         />
       </div>
     ))}
@@ -97,6 +105,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
   .pd__stage.is-left { cursor: w-resize; }
 
+  .pd__stage:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
+  }
+
   .pd__slide {
     position: absolute;
     inset: 0;
@@ -153,7 +166,9 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     pointer-events: none;
   }
 
-  .pd__thumb:hover { opacity: 0.8; }
+  @media (hover: hover) {
+    .pd__thumb:hover { opacity: 0.8; }
+  }
 
   .pd__thumb[aria-pressed="true"] {
     opacity: 1;
@@ -232,7 +247,8 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     transition:
       background-color var(--transition-normal),
       color var(--transition-normal),
-      transform var(--transition-fast);
+      scale var(--transition-fast),
+      translate var(--transition-fast);
   }
 
   .pd__buy:hover {
@@ -241,19 +257,16 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   .pd__buy:active {
-    transform: scale(0.96);
+    scale: 0.96;
   }
 
-  .pd__buy-text
-   {
+  .pd__buy-text {
     position: relative;
   }
 
-
-    transition: transform var(--transition-fast);
-
-
-  .pd__buy:hover { transform: translate(2px, -2px); }
+  @media (hover: hover) {
+    .pd__buy:hover { translate: 2px -2px; }
+  }
 
   /* ── Tablet ── */
 
@@ -371,6 +384,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       };
 
       const isLeftSide = (clientX: number) => (clientX - bounds.left) < bounds.width / 2;
+      const hasHover = window.matchMedia("(hover: hover)").matches;
 
       gallery.addEventListener("mouseenter", () => {
         bounds = gallery.getBoundingClientRect();
@@ -389,9 +403,27 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
         btn.addEventListener("click", () => show(Number(btn.dataset.thumb)));
       });
 
-      gallery.addEventListener("mousemove", (e) => {
-        if ((e.target as HTMLElement).closest("[data-thumb]")) return;
-        gallery.classList.toggle("is-left", isLeftSide(e.clientX));
+      if (hasHover) {
+        gallery.addEventListener("mousemove", (e) => {
+          if ((e.target as HTMLElement).closest("[data-thumb]")) return;
+          gallery.classList.toggle("is-left", isLeftSide(e.clientX));
+        });
+      }
+
+      gallery.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          show(current - 1);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          show(current + 1);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          show(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          show(slides.length - 1);
+        }
       });
     });
   });

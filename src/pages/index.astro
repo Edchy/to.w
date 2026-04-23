@@ -137,10 +137,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
 function overlayStyle(idx: number): string {
   const o = textOffsets[idx % textOffsets.length];
-  const parts = [`bottom:${o.bottom}`];
-  if (o.left  !== undefined) parts.push(`left:${o.left}`);
-  if (o.right !== undefined) parts.push(`right:${o.right}`);
-  if (o.textAlign)           parts.push(`text-align:${o.textAlign}`);
+  const parts = [`--overlay-bottom:${o.bottom}`];
+  if (o.left  !== undefined) parts.push(`--overlay-left:${o.left}`);
+  if (o.right !== undefined) parts.push(`--overlay-right:${o.right}`);
+  if (o.textAlign)           parts.push(`--overlay-align:${o.textAlign}`);
   return parts.join(";");
 }
 
@@ -173,11 +173,11 @@ function makeClipHover(
 }
 ---
 
-<BaseLayout description="to.w — handmade jewelry and objects.">
+<BaseLayout description="to.w — handgjorda smycken och objekt.">
   <div class="page-flow">
-    <h1 class="sr-only">Tove Wätte — handmade jewelry and knitting</h1>
+    <h1 class="sr-only">Tove Wätte — handgjorda smycken och stickning</h1>
 
-    <section class="collage" aria-label="Works — part 1">
+    <section class="collage" aria-label="Verk — del 1">
       {gridAB.slice(0, 6).map((item, i) => {
         const slot          = slots[i % slots.length];
         const inset         = insets[i % insets.length];
@@ -185,13 +185,23 @@ function makeClipHover(
         const clipRest      = `polygon(${makeClip(inset, offsets)})`;
         const clipHover     = `polygon(${makeClipHover(inset, offsets)})`;
         const borderPadding = borderPaddings[i % borderPaddings.length];
-        const itemStyle     = `grid-column: span ${item.span}; margin-top: ${slot.nudge};`;
-        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};clip-path:var(--clip-rest);`;
+        const itemStyle     = `--item-span:${item.span};--item-nudge:${slot.nudge};`;
+        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};`;
+        const isAboveFold   = i < 3;
+        const priority      = i === 0 && item.kind !== "decorative" ? "high" : "auto";
         if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
         if (item.kind === "decorative") return (
           <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
             <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
-              <Image src={item.img} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
+              <Image
+                src={item.img}
+                alt=""
+                width={600}
+                height={900}
+                loading="lazy"
+                fetchpriority="low"
+                style={`padding: ${borderPadding};`}
+              />
             </div>
           </div>
         );
@@ -199,9 +209,17 @@ function makeClipHover(
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
         return (
-          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`Visa ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
-              <Image src={entry.data.images[0]} alt={entry.data.title} loading={i < 3 ? "eager" : "lazy"} width={600} height={600} style={`padding: ${borderPadding};`} />
+              <Image
+                src={entry.data.images[0]}
+                alt={entry.data.title}
+                loading={isAboveFold ? "eager" : "lazy"}
+                fetchpriority={priority}
+                width={600}
+                height={600}
+                style={`padding: ${borderPadding};`}
+              />
             </div>
             <div class="collage__item-overlay" style={overlayStyle(i)} aria-hidden="true">
               <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
@@ -212,20 +230,20 @@ function makeClipHover(
       })}
     </section>
 
-    <!-- About -->
-    <section class="interlude interlude--about" aria-label="About">
+    <!-- Om -->
+    <section class="interlude interlude--about" aria-label="Om">
       <div class="about__photo-wrap">
-        <Image class="about__photo" src={toveImg} alt="Portrait of the artist" loading="lazy" width={400} height={500} />
+        <Image class="about__photo" src={toveImg} alt="Porträtt av konstnären" loading="lazy" width={400} height={500} />
       </div>
       <p class="about__headline">
-      Hello,
+      Hej,
       </p>
       <p class="about__body">
-      My name is Tove Wätte. I make jewelry and knitwear from my studio in Järna, outside Stockholm. Self-taught, and at it for over ten years now.
-        I work with silver and wool, often recycled. Every piece is made by hand and takes time, love and care. That means every piece is a little different. In a world full of mass production, I think that matters.
+      Jag heter Tove Wätte. Jag gör smycken och stickat i min studio i Järna, utanför Stockholm. Självlärd, och har arbetat med det i över tio år.
+        Jag arbetar med silver och ull, ofta återvunnet. Varje del görs för hand och tar tid, omtanke och kärlek. Det innebär att varje del blir lite unik. I en värld full av massproduktion tycker jag att det är viktigt.
       </p>
       <p class="about__body about__body--cta">
-        For the latest work, upcoming workshops, and everything in between — check my <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>.<br/> For questions, special requests, or anything else — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>email me</a>.
+        För det senaste, kommande workshops och allt däremellan — se min <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">Instagram</a>.<br/> För frågor, specialbeställningar eller annat — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.
       </p>
       <ul class="about__socials" role="list">
         <li>
@@ -234,14 +252,14 @@ function makeClipHover(
           </a>
         </li>
         <li>
-          <a href={CONTACT_EMAIL_HREF} aria-label="Email" data-label={CONTACT_EMAIL}>
+          <a href={CONTACT_EMAIL_HREF} aria-label="E-post" data-label={CONTACT_EMAIL}>
             <Fragment set:html={iconEmail} />
           </a>
         </li>
       </ul>
     </section>
 
-    <section class="collage" aria-label="Works — part 1b">
+    <section class="collage" aria-label="Verk — del 1b">
       {gridAB.slice(6).map((item, i) => {
         const si            = i + 6;
         const slot          = slots[si % slots.length];
@@ -250,8 +268,8 @@ function makeClipHover(
         const clipRest      = `polygon(${makeClip(inset, offsets)})`;
         const clipHover     = `polygon(${makeClipHover(inset, offsets)})`;
         const borderPadding = borderPaddings[si % borderPaddings.length];
-        const itemStyle     = `grid-column: span ${item.span}; margin-top: ${slot.nudge};`;
-        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};clip-path:var(--clip-rest);`;
+        const itemStyle     = `--item-span:${item.span};--item-nudge:${slot.nudge};`;
+        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};`;
         if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
         if (item.kind === "decorative") return (
           <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
@@ -264,7 +282,7 @@ function makeClipHover(
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
         return (
-          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+          <a class:list={["collage__item", `collage__item--${kind}`]} href={href} style={itemStyle} aria-label={`Visa ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
@@ -277,7 +295,7 @@ function makeClipHover(
       })}
     </section>
 
-    <!-- Endeavours -->
+    <!-- Projekt -->
     {(() => {
       const e0inset   = insets[0];
       const e0offsets = cornerOffsets[0];
@@ -286,7 +304,7 @@ function makeClipHover(
       const e0clip    = `polygon(${makeClip(e0inset, e0offsets)})`;
       const e1clip    = `polygon(${makeClip(e1inset, e1offsets)})`;
       return (
-        <section class="endeavours" aria-label="Endeavours">
+        <section class="endeavours defer-render" aria-label="Projekt">
             <div class="endeavour">
             <div class="collage__item-img collage__item-img--bordered gaza-media" style={`clip-path:${e0clip};`}>
               <Image class="gaza-media__poster" src={gazaPoster} alt="Gaza-halsbandet" loading="lazy" width={600} height={750} />
@@ -303,7 +321,7 @@ function makeClipHover(
             </div>
             <div class="endeavour__text">
               <h2 class="collage__item-title">Gaza</h2>
-              <p class="endeavour__body">Ett halsband graverat på återvunnet sterling silver, skapat i samarbete med <a class="endeavour__inline-link" href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. 20 exemplar — alla intäkter gick till Rädda Barnen och deras arbete för barn i Gaza. <a class="endeavour__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se reel</a></p>
+              <p class="endeavour__body">Ett halsband graverat på återvunnet sterling silver, skapat i samarbete med <a class="endeavour__inline-link" href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. 20 exemplar — alla intäkter gick till Rädda Barnen och deras arbete för barn i Gaza. <a class="endeavour__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se video</a></p>
             </div>
           </div>
           <div class="endeavour endeavour--reversed">
@@ -311,16 +329,16 @@ function makeClipHover(
               <h2 class="collage__item-title">Typ Ett</h2>
               <p class="endeavour__body">En tunn ring med en knut högst upp, designad exklusivt för <a class="endeavour__inline-link" href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes — ett projekt som ligger mig varmt om hjärtat som förälder till ett barn med diabetes.</p>
             </div>
-            <div class="collage__item-img" style={`clip-path:${e1clip};`}
-              data-cycle-imgs={JSON.stringify([d1handImg.src, typ1Img.src])}>
-              <img src={d1handImg.src} alt="D1-ringen" loading="lazy" width={600} height={750} />
+            <div class="collage__item-img cycle-wrap" style={`clip-path:${e1clip};`}>
+              <img class="cycle-img cycle-img--active" src={d1handImg.src} alt="D1-ringen" loading="lazy" width={600} height={750} />
+              <img class="cycle-img" src={typ1Img.src} alt="Typ-ett-ringen" loading="lazy" width={600} height={750} />
             </div>
           </div>
         </section>
       );
     })()}
 
-    <section class="collage collage--final" aria-label="Works — part 2">
+    <section class="collage collage--final" aria-label="Verk — del 2">
       {gridC.map((item, i) => {
         const si            = i + 9;
         const slot          = slots[si % slots.length];
@@ -329,8 +347,8 @@ function makeClipHover(
         const clipRest      = `polygon(${makeClip(inset, offsets)})`;
         const clipHover     = `polygon(${makeClipHover(inset, offsets)})`;
         const borderPadding = borderPaddings[si % borderPaddings.length];
-        const itemStyle     = `grid-column: span ${item.span}; margin-top: ${slot.nudge};`;
-        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};clip-path:var(--clip-rest);`;
+        const itemStyle     = `--item-span:${item.span};--item-nudge:${slot.nudge};`;
+        const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};`;
         if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
         if (item.kind === "decorative") return (
           <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
@@ -343,7 +361,7 @@ function makeClipHover(
         const productSlug = getProductSlug(entry.id);
         const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
         return (
-          <a class:list={["collage__item", `collage__item--${kind}`, { "collage__item--mobile-hidden": i === 2 }]} href={href} style={itemStyle} aria-label={`View ${entry.data.title}`}>
+          <a class:list={["collage__item", `collage__item--${kind}`, { "collage__item--mobile-hidden": i === 2 }]} href={href} style={itemStyle} aria-label={`Visa ${entry.data.title}`}>
             <div class="collage__item-img collage__item-img--bordered" style={imgStyle} transition:name={`product-${productSlug}`}>
               <Image src={entry.data.images[0]} alt={entry.data.title} loading="lazy" width={600} height={600} style={`padding: ${borderPadding};`} />
             </div>
@@ -389,6 +407,11 @@ function makeClipHover(
     margin: 0 auto;
     padding: 0 var(--layout-gutter);
     box-sizing: border-box;
+  }
+
+  .defer-render {
+    content-visibility: auto;
+    contain-intrinsic-size: 1200px;
   }
 
   /* ── About interlude ── */
@@ -482,19 +505,21 @@ function makeClipHover(
   .about__socials a {
     display: flex;
     align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
     color: var(--endeavours-text);
     text-decoration: none;
     position: relative;
     transition: opacity var(--transition-fast);
-    padding: 5px;
-    margin: -5px;
-  }
-
-  .about__socials a:hover {
-    opacity: 0.7;
+    padding: var(--space-3);
   }
 
   @media (hover: hover) {
+    .about__socials a:hover {
+      opacity: 0.7;
+    }
+
     .about__socials a::after {
       content: attr(data-label);
       position: absolute;
@@ -723,7 +748,10 @@ function makeClipHover(
     }
 
     .collage__item,
-    .collage__deco { grid-column: span 1 !important; margin-top: 0 !important; }
+    .collage__deco {
+      --item-span: 1;
+      --item-nudge: 0px;
+    }
   }
 
   @media (max-width: 420px) {
@@ -759,14 +787,18 @@ function makeClipHover(
     text-decoration: none;
     transition: scale var(--duration-fast) var(--ease-out-quart);
     align-self: start;
+    grid-column: span var(--item-span, 1);
+    margin-top: var(--item-nudge, 0px);
   }
 
-  .collage__item:active { scale: 0.97; }
+  .collage__item:active { scale: 0.96; }
 
   /* ── Decorative ── */
   .collage__deco {
     align-self: start;
     cursor: default;
+    grid-column: span var(--item-span, 1);
+    margin-top: var(--item-nudge, 0px);
   }
 
   /* ── Shared image wrapper ── */
@@ -778,15 +810,21 @@ function makeClipHover(
     background: var(--image-border-color);
     position: relative;
     transition: clip-path var(--duration-normal) var(--ease-out-expo);
-    will-change: clip-path;
+    clip-path: var(--clip-rest);
   }
 
   .collage__item-img--deco {
     aspect-ratio: 2 / 3;
   }
 
-  .collage__item:hover .collage__item-img {
-    clip-path: var(--clip-hover) !important;
+  @media (hover: hover) {
+    .collage__item-img {
+      will-change: clip-path;
+    }
+
+    .collage__item:hover .collage__item-img {
+      clip-path: var(--clip-hover);
+    }
   }
 
   .collage__item-img--bordered::after {
@@ -809,11 +847,24 @@ function makeClipHover(
     object-fit: cover;
     box-sizing: border-box;
     display: block;
+    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 6%, transparent);
+    outline-offset: -1px;
   }
 
   .collage__item-img--bordered img,
   .collage__item-img--bordered video {
-    object-fit: contain !important;
+    object-fit: contain;
+  }
+
+  .cycle-img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .cycle-img--active {
+    opacity: 1;
   }
 
   .gaza-media__video {
@@ -851,14 +902,17 @@ function makeClipHover(
 
   .gaza-media__play::before {
     content: "";
+    display: block;
     margin-left: var(--space-1);
     border-top: var(--space-2) solid transparent;
     border-bottom: var(--space-2) solid transparent;
-    border-left: var(--space-3) solid var(--endeavours-text);
+    border-left: var(--space-3) solid var(--color-text-inverse);
   }
 
-  .gaza-media__play:hover {
-    scale: 1.04;
+  @media (hover: hover) {
+    .gaza-media__play:hover {
+      scale: 1.04;
+    }
   }
 
   .gaza-media__play:active {
@@ -872,7 +926,7 @@ function makeClipHover(
 
     .gaza-media--loaded .gaza-media__poster,
     .gaza-media--loaded .gaza-media__play {
-      display: none !important;
+      display: none;
     }
 
     .gaza-media--loaded .gaza-media__video {
@@ -883,8 +937,10 @@ function makeClipHover(
   /* ── Overlay (products only) ── */
   .collage__item-overlay {
     position: absolute;
-    left: 0;
-    right: 0;
+    bottom: var(--overlay-bottom, 0);
+    left: var(--overlay-left, 0);
+    right: var(--overlay-right, 0);
+    text-align: var(--overlay-align, left);
     pointer-events: none;
     z-index: var(--z-raised);
   }
@@ -916,22 +972,24 @@ function makeClipHover(
     font-variant-numeric: tabular-nums;
   }
 
-  .collage__item:hover .collage__item-title,
-  .collage__item:hover .collage__item-meta {
-    color: var(--color-accent-dark);
+  @media (hover: hover) {
+    .collage__item:hover .collage__item-title,
+    .collage__item:hover .collage__item-meta {
+      color: var(--color-accent-dark);
+    }
   }
 
   @media (max-width: 760px) {
     .collage__item-overlay {
       position: absolute;
-      bottom: -1.6em !important;
-      left: 0 !important;
-      right: 0 !important;
-      text-align: left !important;
+      bottom: -0.4em;
+      left: 0;
+      right: auto;
+      text-align: left;
     }
 
     .collage__item .collage__item-title {
-      font-size: var(--font-size-xl);
+      font-size: var(--font-size-2xl);
       white-space: normal;
     }
 
@@ -947,7 +1005,7 @@ function makeClipHover(
 
     .gaza-media .gaza-media__poster {
       height: 118%;
-      object-fit: cover !important;
+      object-fit: cover;
       object-position: top center;
     }
 
@@ -961,65 +1019,73 @@ function makeClipHover(
 
 <script>
   const INTERVAL = 160;
-  const desktopMedia = window.matchMedia("(min-width: 761px)");
-  const gazaMedia = document.querySelector<HTMLElement>(".gaza-media");
-  const gazaVideo = document.querySelector<HTMLVideoElement>(".gaza-media__video[data-src]");
-  const gazaPlay = document.querySelector<HTMLButtonElement>(".gaza-media__play");
+  function initIndexInteractions() {
+    const desktopMedia = window.matchMedia("(min-width: 761px)");
+    const gazaMedia = document.querySelector<HTMLElement>(".gaza-media");
+    const gazaVideo = document.querySelector<HTMLVideoElement>(".gaza-media__video[data-src]");
+    const gazaPlay = document.querySelector<HTMLButtonElement>(".gaza-media__play");
 
-  function unloadGazaVideoOnMobile() {
-    if (!gazaVideo || !gazaMedia || desktopMedia.matches) return;
+    function unloadGazaVideoOnMobile() {
+      if (!gazaVideo || !gazaMedia || desktopMedia.matches) return;
 
-    gazaVideo.pause();
-    gazaVideo.removeAttribute("src");
-    gazaVideo.load();
-    gazaMedia.classList.remove("gaza-media--loaded");
+      gazaVideo.pause();
+      gazaVideo.removeAttribute("src");
+      gazaVideo.load();
+      gazaMedia.classList.remove("gaza-media--loaded");
+    }
+
+    gazaPlay?.addEventListener("click", () => {
+      if (!gazaVideo || !gazaMedia || !desktopMedia.matches) return;
+
+      if (!gazaVideo.src) gazaVideo.src = gazaVideo.dataset.src ?? "";
+      gazaMedia.classList.add("gaza-media--loaded");
+      gazaVideo.play().catch(() => {});
+    });
+
+    unloadGazaVideoOnMobile();
+    desktopMedia.addEventListener("change", unloadGazaVideoOnMobile);
+
+    document.querySelectorAll<HTMLElement>(".cycle-wrap").forEach((wrap) => {
+      const imgs = Array.from(wrap.querySelectorAll<HTMLImageElement>(".cycle-img"));
+      if (imgs.length < 2) return;
+
+      let idx = 0;
+      setInterval(() => {
+        imgs[idx].classList.remove("cycle-img--active");
+        idx = (idx + 1) % imgs.length;
+        imgs[idx].classList.add("cycle-img--active");
+      }, 4000);
+    });
+
+    if (window.matchMedia("(hover: hover)").matches) {
+      document.querySelectorAll<HTMLElement>(".collage__deco[data-deco-imgs]").forEach((deco) => {
+        const extras: string[] = JSON.parse(deco.dataset.decoImgs!);
+        const el = deco.querySelector<HTMLImageElement>("img");
+        if (!el || extras.length === 0) return;
+
+        const originalSrc = el.src;
+        let timer: ReturnType<typeof setInterval> | null = null;
+        let idx = 0;
+
+        deco.addEventListener("mouseenter", () => {
+          timer = setInterval(() => {
+            el.src = extras[idx % extras.length];
+            idx++;
+          }, INTERVAL);
+        });
+
+        deco.addEventListener("mouseleave", () => {
+          if (timer) { clearInterval(timer); timer = null; }
+          el.src = originalSrc;
+          idx = 0;
+        });
+      });
+    }
   }
 
-  gazaPlay?.addEventListener("click", () => {
-    if (!gazaVideo || !gazaMedia || !desktopMedia.matches) return;
-
-    if (!gazaVideo.src) gazaVideo.src = gazaVideo.dataset.src ?? "";
-    gazaMedia.classList.add("gaza-media--loaded");
-    gazaVideo.play().catch(() => {});
-  });
-
-  unloadGazaVideoOnMobile();
-  desktopMedia.addEventListener("change", unloadGazaVideoOnMobile);
-
-  document.querySelectorAll<HTMLElement>("[data-cycle-imgs]").forEach((wrap) => {
-    const imgs: string[] = JSON.parse(wrap.dataset.cycleImgs!);
-    const el = wrap.querySelector<HTMLImageElement>("img");
-    if (!el || imgs.length < 2) return;
-
-    let idx = 0;
-    setInterval(() => {
-      idx = (idx + 1) % imgs.length;
-      el.src = imgs[idx];
-    }, 4000);
-  });
-
-  if (window.matchMedia("(hover: hover)").matches) {
-    document.querySelectorAll<HTMLElement>(".collage__deco[data-deco-imgs]").forEach((deco) => {
-      const extras: string[] = JSON.parse(deco.dataset.decoImgs!);
-      const el = deco.querySelector<HTMLImageElement>("img");
-      if (!el || extras.length === 0) return;
-
-      const originalSrc = el.src;
-      let timer: ReturnType<typeof setInterval> | null = null;
-      let idx = 0;
-
-      deco.addEventListener("mouseenter", () => {
-        timer = setInterval(() => {
-          el.src = extras[idx % extras.length];
-          idx++;
-        }, INTERVAL);
-      });
-
-      deco.addEventListener("mouseleave", () => {
-        if (timer) { clearInterval(timer); timer = null; }
-        el.src = originalSrc;
-        idx = 0;
-      });
-    });
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(() => initIndexInteractions(), { timeout: 1200 });
+  } else {
+    setTimeout(() => initIndexInteractions(), 400);
   }
 </script>
