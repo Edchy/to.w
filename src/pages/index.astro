@@ -2,12 +2,14 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import gazaVideo from "../assets/img/v-gaza.web.mp4";
-import gazaPoster from "../assets/img/v-gaza-poster.jpg";
-import d1handImg from "../assets/img/d1hand.avif";
-import typ1Img from "../assets/img/typ1.avif";
-import broderJohnImg from "../assets/img/broder_john.avif";
-import bjInstaImg from "../assets/img/bjinsta.avif";
+import gazaVideo from "../assets/img/gaza/v-gaza.web.mp4";
+import gazaPoster from "../assets/img/gaza/v-gaza-poster.jpg";
+import d1handImg from "../assets/img/typ-ett/d1hand.avif";
+import typ1Img from "../assets/img/typ-ett/typ1.avif";
+import broderJohnImg from "../assets/img/broder-john/broder_john.avif";
+import bjInstaImg from "../assets/img/broder-john/bjinsta.avif";
+import bjLolImg from "../assets/img/broder-john/bj-lol.avif";
+import dontFollowMeImg from "../assets/img/broder-john/dontfollowme.avif";
 import toveImg from "../assets/img/tove.avif";
 import iconInstagram from "../assets/img/noun-instagram-6788383.svg?raw";
 import iconEmail from "../assets/img/noun-send-6788398.svg?raw";
@@ -30,6 +32,13 @@ for (const [path, mod] of Object.entries(decoSlotImports)) {
   (decoBySlot[idx] ??= []).push(mod.default);
 }
 const allDeco = decoBySlot.map((imgs) => imgs?.[0]).filter(Boolean) as ImageMetadata[];
+
+const decorativePressedInkSlots = new Set([4]);
+
+const decoHoverImgs = (slot: number) =>
+  decorativePressedInkSlots.has(slot) ? [] : (decoBySlot[slot] ?? []).slice(1).map((img) => img.src);
+
+const decoEffect = (slot: number) => decorativePressedInkSlots.has(slot) ? "pressed-ink" : undefined;
 
 const byDate = (a: { data: { date: string } }, b: { data: { date: string } }) =>
   b.data.date.localeCompare(a.data.date);
@@ -193,8 +202,8 @@ function makeClipHover(
         const priority      = i === 0 && item.kind !== "decorative" ? "high" : "auto";
         if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
         if (item.kind === "decorative") return (
-          <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
-            <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
+          <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify(decoHoverImgs(item.decoSlot))} data-deco-effect={decoEffect(item.decoSlot)}>
+            <div class="collage__item-img collage__item-img--deco" style={`${imgStyle};--pressed-ink-image:url(${item.img.src});`}>
               <Image
                 src={item.img}
                 alt=""
@@ -237,8 +246,8 @@ function makeClipHover(
               )}
             </div>
             <div class="collage__item-overlay" style={overlayStyle(i)} aria-hidden="true">
-              <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
               <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
+              <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
             </div>
           </a>
         );
@@ -254,11 +263,14 @@ function makeClipHover(
       Hej,
       </p>
       <p class="about__body">
-      Jag heter Tove Wätte. Jag gör smycken och stickat i min studio i Järna, utanför Stockholm. Självlärd, och har arbetat med det i över tio år.
-        Jag arbetar med silver och ull, ofta återvunnet. Varje del görs för hand och tar tid, omtanke och kärlek. Det innebär att varje del blir lite unik. I en värld full av massproduktion tycker jag att det är viktigt.
+      Jag heter Tove Wätte och gör smycken i min studio i Järna, utanför Stockholm. Jag arbetar främst med silver, ofta återvunnet, och allt görs för hand med omsorg och kärlek. Det innebär att varje del blir lite unik.  I en värld med mycket massproduktion tycker jag att det är viktigt att ta sig tid och göra saker med omtanke. Jag har på senare tid även börjat designa stickmönster som en kul grej vid sidan av smyckena, och det har visat sig vara ett fantastiskt sätt att utforska form och struktur på ett annat sätt än i metallen.
+
       </p>
       <p class="about__body about__body--cta">
-        För det senaste, kommande workshops och allt däremellan — se min <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">Instagram</a>.<br/> För frågor, specialbeställningar eller annat — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.
+        För det senaste, kommande workshops och allt däremellan — se min <a class="about__inline-link" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>.
+      </p>
+      <p class="about__body about__body--cta">
+        För frågor, specialbeställningar eller annat — <a class="about__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.
       </p>
       <ul class="about__socials" role="list">
         <li>
@@ -287,8 +299,8 @@ function makeClipHover(
         const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};`;
         if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
         if (item.kind === "decorative") return (
-          <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
-            <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
+          <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify(decoHoverImgs(item.decoSlot))} data-deco-effect={decoEffect(item.decoSlot)}>
+            <div class="collage__item-img collage__item-img--deco" style={`${imgStyle};--pressed-ink-image:url(${item.img.src});`}>
               <Image src={item.img} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
             </div>
           </div>
@@ -315,8 +327,8 @@ function makeClipHover(
               )}
             </div>
             <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
-              <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
               <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
+              <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
             </div>
           </a>
         );
@@ -369,10 +381,12 @@ function makeClipHover(
             <div class="collage__item-img cycle-wrap" style={`clip-path:${e2clip};`}>
               <img class="cycle-img cycle-img--active" src={broderJohnImg.src} alt="Broder John" loading="lazy" width={600} height={750} />
               <img class="cycle-img" src={bjInstaImg.src} alt="Broder John på Instagram" loading="lazy" width={600} height={750} />
+              <img class="cycle-img" src={bjLolImg.src} alt="Broder John" loading="lazy" width={600} height={750} />
+              <img class="cycle-img" src={dontFollowMeImg.src} alt="Broder John" loading="lazy" width={600} height={750} />
             </div>
             <div class="endeavour__text">
               <h2 class="collage__item-title">hoop hoop</h2>
-              <p class="endeavour__body">Fick den stora äran att göra ett par ringar åt en av sveriges fetaste. <a class="endeavour__inline-link" href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer">Broder John</a> och hans <a class="endeavour__inline-link" href="https://www.hoopdiggas.com/" target="_blank" rel="noopener noreferrer">Hoopdiggas</a>.</p>
+              <p class="endeavour__body">Har haft den stora äran att få göra ett par ringar åt en av sveriges fetaste. <a class="endeavour__inline-link" href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer">Broder John</a> och hans <a class="endeavour__inline-link" href="https://www.hoopdiggas.com/" target="_blank" rel="noopener noreferrer">Hoopdiggas</a>.</p>
             </div>
           </div>
         </section>
@@ -392,8 +406,8 @@ function makeClipHover(
         const imgStyle      = `--clip-rest:${clipRest};--clip-hover:${clipHover};`;
         if (item.kind === "empty") return <div style={itemStyle} aria-hidden="true" />;
         if (item.kind === "decorative") return (
-          <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify((decoBySlot[item.decoSlot] ?? []).slice(1).map(img => img.src))}>
-            <div class="collage__item-img collage__item-img--deco" style={imgStyle}>
+          <div class="collage__deco" style={itemStyle} data-deco-imgs={JSON.stringify(decoHoverImgs(item.decoSlot))} data-deco-effect={decoEffect(item.decoSlot)}>
+            <div class="collage__item-img collage__item-img--deco" style={`${imgStyle};--pressed-ink-image:url(${item.img.src});`}>
               <Image src={item.img} alt="" width={600} height={900} loading="lazy" style={`padding: ${borderPadding};`} />
             </div>
           </div>
@@ -420,8 +434,8 @@ function makeClipHover(
               )}
             </div>
             <div class="collage__item-overlay" style={overlayStyle(si)} aria-hidden="true">
-              <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
               <span class="collage__item-meta">{fmt(entry.data.price)} kr</span>
+              <h2 class="collage__item-title" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</h2>
             </div>
           </a>
         );
@@ -505,7 +519,7 @@ function makeClipHover(
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--color-bg-statement);
+    background-color: var(--color-brand);
     position: relative;
     overflow: visible;
   }
@@ -540,7 +554,7 @@ function makeClipHover(
     font-weight: var(--font-weight-light);
     line-height: var(--font-leading-tight);
     letter-spacing: -0.01em;
-    color: var(--color-text-primary);
+    color: var(--color-text-inverse);
     margin: 0;
     position: relative;
     z-index: 1;
@@ -550,7 +564,7 @@ function makeClipHover(
   .about__body {
     font-family: var(--font-body-text);
     font-size: var(--font-size-base);
-    color: var(--endeavours-text);
+    color: var(--color-text-inverse);
     position: relative;
     z-index: 1;
     line-height: var(--font-leading-snug);
@@ -581,7 +595,7 @@ function makeClipHover(
   }
 
   .about__inline-link {
-    color: var(--endeavours-text);
+    color: var(--color-text-inverse);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
@@ -596,7 +610,7 @@ function makeClipHover(
     justify-content: center;
     min-width: 44px;
     min-height: 44px;
-    color: var(--endeavours-text);
+    color: var(--color-text-inverse);
     text-decoration: none;
     position: relative;
     transition: opacity var(--transition-fast);
@@ -618,7 +632,7 @@ function makeClipHover(
       font-size: var(--font-size-xs);
       letter-spacing: var(--font-tracking-wide);
       white-space: nowrap;
-      color: var(--endeavours-text);
+      color: var(--color-text-inverse);
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--transition-fast), transform var(--transition-fast);
@@ -908,12 +922,60 @@ function makeClipHover(
     position: relative;
     transition:
       clip-path var(--duration-normal) var(--ease-out-expo),
+      background-color var(--transition-slow),
       filter var(--transition-normal);
     clip-path: var(--clip-rest);
   }
 
   .collage__item-img--deco {
     aspect-ratio: 2 / 3;
+    background-color: var(--image-border-color);
+  }
+
+  .collage__deco[data-deco-effect="pressed-ink"] .collage__item-img--deco {
+    background-color: var(--color-bg-muted);
+  }
+
+  .collage__deco[data-deco-effect="pressed-ink"] .collage__item-img--deco::before {
+    content: "";
+    position: absolute;
+    inset: var(--space-3);
+    background-color: var(--color-brand);
+    clip-path: var(--clip-rest);
+    opacity: 0;
+    transform: translate(var(--space-3), calc(var(--space-2) * -1)) rotate(-2deg);
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow),
+      clip-path var(--duration-normal) var(--ease-out-expo);
+    z-index: 1;
+  }
+
+  .collage__deco[data-deco-effect="pressed-ink"] .collage__item-img--deco::after {
+    content: "";
+    position: absolute;
+    inset: var(--space-4);
+    background-image: var(--pressed-ink-image);
+    background-position: center;
+    background-size: cover;
+    filter: grayscale(1) contrast(1.5);
+    mix-blend-mode: multiply;
+    opacity: 0;
+    transform: translate(calc(var(--space-2) * -1), var(--space-2)) rotate(1.5deg);
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow),
+      clip-path var(--duration-normal) var(--ease-out-expo);
+    clip-path: var(--clip-rest);
+    z-index: 1;
+  }
+
+  .collage__deco[data-deco-effect="pressed-ink"] .collage__item-img--deco img {
+    position: relative;
+    z-index: 2;
+    transition:
+      transform var(--transition-slow),
+      filter var(--transition-normal);
   }
 
   @media (hover: hover) {
@@ -928,6 +990,28 @@ function makeClipHover(
     .collage__item:hover .collage__item-img {
       clip-path: var(--clip-hover);
       filter: contrast(1.06) saturate(0.92);
+    }
+
+    .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco {
+      background-color: var(--color-bg-inverse);
+      clip-path: var(--clip-hover);
+    }
+
+    .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco::before {
+      clip-path: var(--clip-hover);
+      opacity: 0.9;
+      transform: translate(var(--space-2), calc(var(--space-1) * -1)) rotate(-1deg);
+    }
+
+    .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco::after {
+      clip-path: var(--clip-hover);
+      opacity: 0.24;
+      transform: translate(calc(var(--space-1) * -1), var(--space-1)) rotate(0.7deg);
+    }
+
+    .collage__deco[data-deco-effect="pressed-ink"]:hover .collage__item-img--deco img {
+      filter: contrast(1.08) saturate(0.86);
+      transform: translate(calc(var(--space-1) * -1), calc(var(--space-1) * -1)) rotate(0.8deg);
     }
   }
 
@@ -1081,9 +1165,9 @@ function makeClipHover(
     font-size: var(--font-size-display);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
-    color: var(--color-accent);
+    color: var(--color-brand);
     white-space: nowrap;
-    letter-spacing: var(--font-tracking-tight);
+    letter-spacing: var(--font-tracking-tightest);
     transition: color var(--transition-fast);
   }
 
@@ -1091,10 +1175,10 @@ function makeClipHover(
     display: block;
     font-family: var(--font-body-text);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-light);
-    letter-spacing: var(--font-tracking-wide);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-wider);
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--color-text-secondary);
     white-space: nowrap;
     margin-top: var(--space-1);
     transition: color var(--transition-fast);
@@ -1102,9 +1186,11 @@ function makeClipHover(
   }
 
   @media (hover: hover) {
-    .collage__item:hover .collage__item-title,
-    .collage__item:hover .collage__item-meta {
+    .collage__item:hover .collage__item-title {
       color: var(--color-accent-dark);
+    }
+    .collage__item:hover .collage__item-meta {
+      color: var(--color-text-primary);
     }
   }
 
@@ -1126,9 +1212,9 @@ function makeClipHover(
       white-space: normal;
       font-size: var(--font-size-sm);
       font-family: var(--font-body-text);
-      letter-spacing: var(--font-tracking-wide);
+      letter-spacing: var(--font-tracking-wider);
       text-transform: uppercase;
-      color: var(--color-accent);
+      color: var(--color-text-secondary);
       opacity: 1;
     }
 

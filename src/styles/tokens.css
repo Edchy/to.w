@@ -12,31 +12,31 @@
      1. PRIMITIVES
   ───────────────────────────────────────────────────────── */
 
-  /*save for later */
-  --brand-2-700: oklch(45% 0.08 15);
-  --brand-2-400: oklch(65% 0.08 15);
-  --brand-2-100: oklch(80% 0.06 15);
+  /* Bone scale — text on dark ground */
+  --brand-2-700: oklch(92% 0.012 75);
+  --brand-2-400: oklch(75% 0.012 70);
+  --brand-2-100: oklch(16% 0.015 60);
 
-  /* Brand accent — ochre */
-  --brand-700: oklch(42% 0.1 85);
-  --brand-400: oklch(58% 0.12 85);
-  --brand-100: oklch(88% 0.07 85);
+  /* Brand accent — acid chartreuse */
+  --brand-700: oklch(78% 0.18 120);
+  --brand-400: oklch(86% 0.16 115);
+  --brand-100: oklch(28% 0.06 120);
 
-  /* Neutrals — warm-tinted (h75 amber), dark end off-black, light end beige */
-  --neutral-950: oklch(14% 0.01 75);
-  --neutral-900: oklch(20% 0.01 75);
-  --neutral-800: oklch(30% 0.01 75);
-  --neutral-700: oklch(40% 0.009 75);
-  --neutral-600: oklch(52% 0.009 75);
-  --neutral-500: oklch(62% 0.008 75);
-  --neutral-400: oklch(73% 0.008 75);
-  --neutral-300: oklch(83% 0.007 75);
-  --neutral-200: oklch(90% 0.007 75);
-  --neutral-100: oklch(95% 0.008 75);
-  --neutral-50: oklch(97.5% 0.01 75);
+  /* Neutrals — warm ink, dark end near-black, light end bone */
+  --neutral-950: oklch(6%  0.015 60);
+  --neutral-900: oklch(11% 0.014 60);
+  --neutral-800: oklch(18% 0.013 60);
+  --neutral-700: oklch(30% 0.012 55);
+  --neutral-600: oklch(44% 0.010 55);
+  --neutral-500: oklch(58% 0.008 55);
+  --neutral-400: oklch(70% 0.008 60);
+  --neutral-300: oklch(80% 0.010 65);
+  --neutral-200: oklch(88% 0.012 70);
+  --neutral-100: oklch(94% 0.010 75);
+  --neutral-50:  oklch(97% 0.008 80);
 
-  /* Off-white surface */
-  --off-white: oklch(97% 0.005 90);
+  /* Near-black ink ground */
+  --off-white: oklch(10% 0.012 60);
 
   /* Spacing scale — 4pt base */
   --space-1: 4px;
@@ -62,9 +62,9 @@
   --step-0: clamp(1rem, calc(0.96rem + 0.22vw), 1.13rem);
   --step-1: clamp(1.25rem, calc(1.18rem + 0.37vw), 1.5rem);
   --step-2: clamp(1.56rem, calc(1.44rem + 0.62vw), 2rem);
-  --step-3: clamp(1.95rem, calc(1.75rem + 1.02vw), 2.66rem);
-  --step-4: clamp(2.44rem, calc(2.12rem + 1.63vw), 3.55rem);
-  --step-5: clamp(3.05rem, calc(2.56rem + 2.5vw), 4.74rem);
+  --step-3: clamp(2.0rem,  calc(1.7rem  + 1.5vw),  3.5rem);
+  --step-4: clamp(2.8rem,  calc(2.2rem  + 2.8vw),  5.5rem);
+  --step-5: clamp(4.0rem,  calc(3.0rem  + 5.0vw),  9.0rem);
 
   /* Font weights */
   --weight-light: 300;
@@ -83,9 +83,9 @@
   --underline-offset: 3px;
 
   /* Motion */
-  --duration-fast: 120ms;
-  --duration-normal: 240ms;
-  --duration-slow: 400ms;
+  --duration-fast: 80ms;
+  --duration-normal: 180ms;
+  --duration-slow: 320ms;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-quart: cubic-bezier(0.5, 0, 0.75, 0);
@@ -121,41 +121,42 @@
   --font-weight-medium: var(--weight-medium);
 
   /* Typography — leading */
-  --font-leading-tight: 1.1;
-  --font-leading-snug: 1.35;
+  --font-leading-tight: 0.95;
+  --font-leading-snug: 1.25;
   --font-leading-normal: 1.55;
   --font-leading-relaxed: 1.7;
 
   /* Typography — tracking */
+  --font-tracking-tightest: -0.04em;
   --font-tracking-tight: -0.02em;
   --font-tracking-normal: 0em;
-  --font-tracking-wide: 0.06em;
-  --font-tracking-wider: 0.12em;
+  --font-tracking-wide: 0.08em;
+  --font-tracking-wider: 0.18em;
 
   /* Color — backgrounds */
-  --color-bg-base: var(--off-white);
+  --color-bg-base: var(--neutral-950);
   --color-bg-surface: var(--brand-2-100);
-  --color-bg-muted: oklch(83% 0.04 15);
-  --color-bg-statement: color-mix(in oklch, var(--brand-2-100) 72%, var(--off-white));
-  --color-bg-inverse: var(--neutral-950);
+  --color-bg-muted: oklch(13% 0.014 60);
+  --color-bg-statement: oklch(8% 0.018 60);
+  --color-bg-inverse: var(--neutral-50);
 
   /* Color — text */
   --color-text-primary: var(--brand-2-700);
   --color-text-secondary: var(--brand-2-400);
-  --color-text-tertiary: oklch(72% 0.05 15);
-  --color-text-inverse: var(--off-white);
+  --color-text-tertiary: oklch(55% 0.010 65);
+  --color-text-inverse: var(--neutral-950);
 
   /* Color — brand */
-  --color-brand: var(--brand-2-700);
-  --color-brand-mid: var(--brand-2-400);
-  --color-brand-subtle: var(--brand-2-100);
-  --color-accent: var(--brand-2-700);
-  --color-accent-dark: var(--neutral-900);
-  --color-accent-subtle: var(--brand-2-100);
+  --color-brand: var(--brand-700);
+  --color-brand-mid: var(--brand-400);
+  --color-brand-subtle: var(--brand-100);
+  --color-accent: var(--brand-700);
+  --color-accent-dark: var(--neutral-50);
+  --color-accent-subtle: var(--brand-100);
 
   /* Color — borders */
-  --color-border-default: oklch(75% 0.05 15);
-  --color-border-subtle: var(--brand-2-100);
+  --color-border-default: oklch(25% 0.015 60);
+  --color-border-subtle: oklch(18% 0.012 60);
 
   /* Spacing — semantic */
   --space-xs: var(--space-1);
@@ -169,9 +170,9 @@
   --space-5xl: 192px;
 
   /* Layout */
-  --layout-site-width: 1200px;
-  --layout-wide-width: 1360px;
-  --layout-statement-width: 1040px;
+  --layout-site-width: 1440px;
+  --layout-wide-width: 1600px;
+  --layout-statement-width: 1200px;
   --layout-endeavour-media-min: 320px;
   --layout-content-width: 68ch;
   --layout-gutter: clamp(var(--space-6), 5vw, var(--space-12));
@@ -187,15 +188,15 @@
 
   /* Image */
   --image-border-width: 10px;
-  --image-border-color: var(--brand-2-400);
+  --image-border-color: var(--brand-700);
 
   /* Endeavours */
-  --endeavours-bg: var(--brand-2-100);
-  --endeavours-color: var(--brand-2-700);
-  --endeavours-text: var(--neutral-900);
+  --endeavours-bg: var(--color-bg-statement);
+  --endeavours-color: var(--brand-700);
+  --endeavours-text: var(--brand-2-700);
 
   /* Nav */
-  --nav-height: 100px;
+  --nav-height: 72px;
   --nav-font: var(--font-body-text);
 
   /* Portfolio grid */

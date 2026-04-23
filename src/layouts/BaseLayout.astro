@@ -140,9 +140,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .site-header {
     position: relative;
     height: var(--nav-height);
-    background-color: color-mix(in oklch, var(--color-bg-base) 92%, transparent);
-    backdrop-filter: blur(var(--blur-nav));
-    -webkit-backdrop-filter: blur(var(--blur-nav));
+    background-color: color-mix(in oklch, var(--color-bg-base) 96%, transparent);
   }
 
   .site-header__inner {
@@ -154,9 +152,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-logo {
     font-family: var(--font-brand-text);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wide);
+    letter-spacing: var(--font-tracking-normal);
     color: var(--color-brand);
     line-height: 1;
     transition: letter-spacing 380ms var(--ease-out-expo);
@@ -165,7 +163,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   @media (hover: hover) {
     .site-logo:hover,
     .footer-wordmark:hover {
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
     }
   }
 
@@ -207,37 +205,36 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     left: -1px;
     right: -2px;
     bottom: -4px;
-    height: 1.5px;
+    height: 2px;
     background: var(--color-brand);
-    border-radius: var(--radius-sm);
-    transform: rotate(-1.5deg);
-    transform-origin: left center;
+    border-radius: 0;
   }
 
   .shop-banner {
     position: relative;
     z-index: var(--z-raised);
-    background: var(--color-accent-subtle);
+    background: var(--color-brand);
     text-align: center;
-    padding: var(--space-1) 0;
+    padding: var(--space-2) 0;
   }
 
   .shop-banner p,
   .shop-banner__slide {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-wide);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-inverse);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
     margin: 0;
   }
 
   .shop-banner a {
-    color: var(--color-brand);
+    color: var(--color-text-inverse);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
 
   .shop-banner a:hover {
-    color: var(--color-accent-dark);
+    opacity: 0.7;
   }
 
   .shop-banner__carousel {
@@ -255,9 +252,10 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .shop-banner__item,
   .shop-banner__sep {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-wide);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-inverse);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
     flex-shrink: 0;
   }
 
@@ -319,9 +317,10 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-footer {
     margin-top: var(--space-24);
-    padding-top: var(--space-12);
-    padding-bottom: var(--space-12);
-    background-color: var(--color-bg-muted);
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+    background-color: var(--color-bg-statement);
+    border-top: 1px solid var(--color-border-default);
   }
 
   .site-footer__inner {
@@ -339,10 +338,10 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .footer-wordmark {
     font-family: var(--font-brand-text);
-    font-size: var(--font-size-display);
+    font-size: clamp(5rem, 12vw, 14rem);
     color: var(--color-brand);
     letter-spacing: var(--font-tracking-normal);
-    line-height: var(--font-leading-tight);
+    line-height: 0.9;
     transition: letter-spacing 380ms var(--ease-out-expo);
   }
 
@@ -455,7 +454,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   @media (max-width: 760px) {
     .site-footer {
       margin-top: var(--space-48);
-      background-color: transparent;
     }
 
     .site-footer__inner {

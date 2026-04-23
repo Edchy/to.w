@@ -80,8 +80,8 @@ function makeClipHover(
                 />
               </div>
               <div class="card__info" aria-hidden="true">
-                <span class="card__name" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</span>
                 <span class="card__meta">{fmt(entry.data.price)} kr</span>
+                <span class="card__name" transition:name={`product-title-${productSlug}`} transition:animate="none">{entry.data.title}</span>
               </div>
             </a>
           </li>
@@ -105,7 +105,7 @@ function makeClipHover(
     padding: 0;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    column-gap: var(--grid-gutter);
+    column-gap: clamp(var(--space-3), 1.5vw, var(--space-5));
     row-gap: var(--space-3xl);
     align-items: start;
   }
@@ -146,7 +146,7 @@ function makeClipHover(
     }
 
     .card:hover .card__name {
-      color: var(--color-accent-dark);
+      color: var(--color-brand);
     }
 
     .card:hover .card__meta {
@@ -158,7 +158,7 @@ function makeClipHover(
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, var(--color-bg-base) 0%, transparent 50%);
+    background: linear-gradient(to top, var(--color-bg-base) 0%, transparent 40%);
     pointer-events: none;
     z-index: 1;
   }
@@ -181,22 +181,22 @@ function makeClipHover(
   }
 
   .card__name {
-    font-family: var(--font-body-text);
-    font-size: var(--font-size-lg);
+    font-family: var(--font-heading-text);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
-    color: var(--color-accent);
-    letter-spacing: var(--font-tracking-tight);
+    color: var(--color-text-primary);
+    letter-spacing: var(--font-tracking-tightest);
     transition: color var(--transition-fast);
   }
 
   .card__meta {
     font-family: var(--font-body-text);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-light);
-    letter-spacing: var(--font-tracking-wide);
-    text-transform: lowercase;
-    color: var(--color-accent);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-brand);
     transition: color var(--transition-fast);
     font-variant-numeric: tabular-nums;
   }
