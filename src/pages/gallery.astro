@@ -29,539 +29,340 @@ const galleryImages = Object.entries(galleryModules)
     } satisfies GalleryImage;
   })
   .sort((a, b) => {
-    if (a.filename === "hero.jpg") return -1;
-    if (b.filename === "hero.jpg") return 1;
+    if (a.filename === "hero.avif") return -1;
+    if (b.filename === "hero.avif") return 1;
     return a.filename.localeCompare(b.filename, "sv");
   });
 
-const heroImage = galleryImages.find((entry) => entry.filename === "hero.jpg") ?? galleryImages[0];
-const imagesAfterHero = galleryImages.filter((entry) => entry.path !== heroImage?.path);
+const heroImage = galleryImages.find((entry) => entry.filename === "hero.avif") ?? galleryImages[0];
+const restImages = galleryImages.filter((entry) => entry.path !== heroImage?.path);
 
-const firstPortrait = imagesAfterHero.find((entry) => entry.orientation === "portrait");
-const firstLandscape = imagesAfterHero.find((entry) => entry.orientation === "landscape");
+// Split into two columns for masonry feel
+const colA = restImages.filter((_, i) => i % 2 === 0);
+const colB = restImages.filter((_, i) => i % 2 === 1);
 
-const introImages = [firstPortrait, firstLandscape].filter(
-  (entry, index, array): entry is GalleryImage =>
-    Boolean(entry) && array.findIndex((candidate) => candidate?.path === entry?.path) === index,
-);
-
-const featuredPaths = new Set([heroImage?.path, ...introImages.map((entry) => entry.path)]);
-const galleryFlow = galleryImages.filter((entry) => !featuredPaths.has(entry.path));
-
-const chunk = <T,>(items: T[], size: number) => {
-  const groups: T[][] = [];
-
-  for (let index = 0; index < items.length; index += size) {
-    groups.push(items.slice(index, index + size));
-  }
-
-  return groups;
-};
-
-const gallerySections = chunk(galleryFlow, 4);
-const repriseImages = gallerySections
-  .map((section) => section[0])
-  .filter((entry, index, array): entry is GalleryImage =>
-    Boolean(entry) && array.findIndex((candidate) => candidate?.path === entry?.path) === index,
-  );
-const sectionPhrases = [
-  "silver, kropp, ljus",
-  "spår, vila, rörelse",
-  "former som får stanna en stund",
-];
-
-const imageLabel = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${index + 1}.`;
+const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${index + 1}.`;
 ---
 
 <BaseLayout title="Galleri" description="Galleri med fotografier från Tove Wättes praktik och ateljé.">
   <div class="gallery-page">
-    <header class="gallery-hero" aria-label="Galleriintroduktion">
-      <div class="gallery-hero__copy">
-        <h1>ett urval bilder från arbetet, materialen och mellanrummen</h1>
 
-      </div>
-
-      {heroImage && (
-        <figure class="gallery-hero__lead">
-          <div class="gallery-frame gallery-frame--lead">
-            <Image
-              src={heroImage.image}
-              alt={imageLabel(0)}
-              width={heroImage.image.width}
-              height={heroImage.image.height}
-              loading="eager"
-              fetchpriority="high"
-            />
-          </div>
+    {heroImage && (
+      <section class="gallery-lead" aria-label="Huvudbild">
+        <figure class="gallery-lead__frame">
+          <Image
+            src={heroImage.image}
+            alt={imageAlt(0)}
+            width={heroImage.image.width}
+            height={heroImage.image.height}
+            loading="eager"
+            fetchpriority="high"
+          />
         </figure>
-      )}
+      </section>
+    )}
 
-      {introImages.length > 0 && (
-        <div class="gallery-hero__stack" aria-label="Utvalda fotografier">
-          {introImages.map((entry, index) => (
-            <figure class:list={["gallery-card", "gallery-card--intro", `gallery-card--${entry.orientation}`]}>
-              <div class="gallery-frame">
-                <Image
-                  src={entry.image}
-                  alt={imageLabel(index + 1)}
-                  width={entry.image.width}
-                  height={entry.image.height}
-                  loading="eager"
-                  fetchpriority={index === 0 ? "high" : "auto"}
-                />
-              </div>
-            </figure>
-          ))}
-        </div>
-      )}
-    </header>
+    <div class="gallery-intro">
+      <div class="gallery-intro__index">
+        <span>galleri</span>
+      </div>
+      <div class="gallery-intro__text">
+        <h1>ett urval bilder från arbetet, materialen och mellanrummen</h1>
+        <p>Fotografier tagna under åren — i ateljen, i naturen, nära händerna som gör.</p>
+      </div>
+    </div>
 
-    {gallerySections.map((section, sectionIndex) => (
-      <section
-        class:list={["gallery-section", `gallery-section--${(sectionIndex % 3) + 1}`]}
-        aria-label={`Galleri del ${sectionIndex + 1}`}
-      >
-        <div class="gallery-section__label">
-          <span>{String(sectionIndex + 1).padStart(2, "0")}</span>
-          <p>{sectionPhrases[sectionIndex % sectionPhrases.length]}</p>
-        </div>
-
-        {section.map((entry, imageIndex) => {
-          const absoluteIndex = sectionIndex * 4 + imageIndex + introImages.length + 1;
-
+    <div class="gallery-columns" aria-label="Galleribilder">
+      <div class="gallery-col gallery-col--a">
+        {colA.map((entry, colIndex) => {
+          const globalIndex = colIndex * 2;
           return (
-            <figure class:list={["gallery-card", `gallery-card--${entry.orientation}`]}>
-              <div class="gallery-frame">
+            <figure class="gallery-item" aria-label={imageAlt(globalIndex + 1)}>
+              <div class="gallery-item__frame">
                 <Image
                   src={entry.image}
-                  alt={imageLabel(absoluteIndex)}
+                  alt={imageAlt(globalIndex + 1)}
                   width={entry.image.width}
                   height={entry.image.height}
-                  loading={sectionIndex === 0 && imageIndex < 2 ? "eager" : "lazy"}
-                  fetchpriority={sectionIndex === 0 && imageIndex === 0 ? "high" : "auto"}
+                  loading={globalIndex < 4 ? "eager" : "lazy"}
+                  fetchpriority={globalIndex === 0 ? "high" : "auto"}
                 />
               </div>
+              <figcaption class="gallery-item__caption">
+                <span>{String(globalIndex + 1).padStart(2, "0")}</span>
+              </figcaption>
             </figure>
           );
         })}
-      </section>
-    ))}
+      </div>
 
-    {repriseImages.length > 0 && (
-      <section class="gallery-reprise" aria-label="Fördjupade bilder">
-        {repriseImages.map((entry, index) => (
-          <figure class:list={["gallery-card", "gallery-card--reprise", `gallery-card--${entry.orientation}`]}>
-            <div class="gallery-frame">
-              <Image
-                src={entry.image}
-                alt={imageLabel(galleryFlow.length + introImages.length + index + 1)}
-                width={entry.image.width}
-                height={entry.image.height}
-                loading="lazy"
-                fetchpriority="auto"
-              />
-            </div>
-          </figure>
-        ))}
-      </section>
-    )}
+      <div class="gallery-col gallery-col--b">
+        {colB.map((entry, colIndex) => {
+          const globalIndex = colIndex * 2 + 1;
+          return (
+            <figure class="gallery-item" aria-label={imageAlt(globalIndex + 1)}>
+              <div class="gallery-item__frame">
+                <Image
+                  src={entry.image}
+                  alt={imageAlt(globalIndex + 1)}
+                  width={entry.image.width}
+                  height={entry.image.height}
+                  loading={globalIndex < 4 ? "eager" : "lazy"}
+                  fetchpriority="auto"
+                />
+              </div>
+              <figcaption class="gallery-item__caption">
+                <span>{String(globalIndex + 1).padStart(2, "0")}</span>
+              </figcaption>
+            </figure>
+          );
+        })}
+      </div>
+    </div>
+
   </div>
 </BaseLayout>
+
+<script>
+  function initGallery() {
+    const items = document.querySelectorAll<HTMLElement>('.gallery-item');
+    const lead = document.querySelector<HTMLElement>('.gallery-lead__frame');
+
+    if (!items.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).dataset.visible = '1';
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -48px 0px', threshold: 0.06 }
+    );
+
+    items.forEach((el) => observer.observe(el));
+
+    // Hero: reveal on load
+    if (lead) {
+      requestAnimationFrame(() => {
+        lead.dataset.visible = '1';
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initGallery);
+  initGallery();
+</script>
 
 <style>
   .gallery-page {
     max-width: var(--layout-wide-width);
     margin: 0 auto;
-    padding: var(--space-8) var(--layout-gutter) var(--space-24);
   }
 
-  .gallery-hero,
-  .gallery-section,
-  .gallery-reprise {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
-    row-gap: clamp(var(--space-6), 4vw, var(--space-16));
+  /* ── Lead hero ── */
+
+  .gallery-lead {
+    width: 100%;
+    padding: 0 var(--layout-gutter);
   }
 
-  .gallery-hero {
-    align-items: start;
-    margin-bottom: clamp(var(--space-20), 12vw, var(--space-32));
-  }
-
-  .gallery-hero__copy {
-    grid-column: 1 / span 6;
-    grid-row: 1;
-    display: grid;
-    gap: var(--space-4);
-    align-self: start;
-    padding: clamp(var(--space-6), 3vw, var(--space-12));
-    align-content: start;
-    margin-bottom: 0;
-    position: relative;
-    z-index: var(--z-raised);
-    pointer-events: none;
-  }
-
-  .gallery-section__label span,
-  .gallery-section__label p {
+  .gallery-lead__frame {
     margin: 0;
+    width: 100%;
+    height: clamp(480px, 80svh, 860px);
+    overflow: hidden;
+  }
+
+  .gallery-lead__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* ── Intro text ── */
+
+  .gallery-intro {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-8);
+    padding: clamp(var(--space-10), 5vw, var(--space-20)) var(--layout-gutter);
+    padding-bottom: clamp(var(--space-16), 7vw, var(--space-32));
+    align-items: baseline;
+  }
+
+  .gallery-intro__index {
+    padding-top: 0.2em;
+  }
+
+  .gallery-intro__index span {
     font-size: var(--font-size-xs);
     letter-spacing: var(--font-tracking-wider);
     text-transform: lowercase;
     color: var(--color-text-tertiary);
   }
 
-  .gallery-hero__copy h1 {
-    max-width: 16ch;
-    font-size: var(--font-size-display);
+  .gallery-intro__text {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 44ch;
+  }
+
+  .gallery-intro__text h1 {
+    font-size: clamp(var(--font-size-xl), 3vw, var(--font-size-3xl));
     font-weight: var(--font-weight-regular);
-    line-height: 0.95;
+    line-height: 1.1;
+    color: var(--color-text-primary);
     text-wrap: balance;
-    color: var(--color-text-inverse);
-    text-shadow: 0 1px 10px color-mix(in oklch, var(--color-bg-inverse) 26%, transparent);
+    letter-spacing: -0.01em;
   }
 
-
-
-  .gallery-hero__lead {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    margin: 0;
-    max-width: none;
-    justify-self: stretch;
+  .gallery-intro__text p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--font-leading-relaxed);
+    letter-spacing: var(--font-tracking-wide);
   }
 
-  .gallery-hero__stack {
-    grid-column: 1 / span 4;
+  /* ── Two-column masonry ── */
+
+  .gallery-columns {
     display: grid;
-    gap: var(--space-8);
-    align-self: end;
-    max-width: 24rem;
-    grid-row: 2;
-  }
-
-  .gallery-section {
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+    padding: 0 var(--layout-gutter) clamp(var(--space-24), 12vw, var(--space-72));
     align-items: start;
-    margin-top: clamp(var(--space-24), 14vw, var(--space-48));
   }
 
-  .gallery-reprise {
-    align-items: start;
-    margin-top: clamp(var(--space-24), 12vw, var(--space-40));
+  .gallery-col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(var(--space-6), 4.5vw, var(--space-20));
   }
 
-  .gallery-section__label {
-    grid-column: 1 / span 2;
-    display: grid;
-    gap: var(--space-2);
-    padding-top: var(--space-3);
+  /* Column B starts lower for staggered rhythm */
+  .gallery-col--b {
+    padding-top: clamp(var(--space-16), 12vw, var(--space-48));
   }
 
-  .gallery-section__label p {
-    max-width: 14ch;
-    line-height: var(--font-leading-snug);
-  }
+  /* ── Gallery item ── */
 
-  .gallery-card {
+  .gallery-item {
     margin: 0;
     width: 100%;
-    min-width: min(100%, 18rem);
-    max-width: 32rem;
-    justify-self: start;
-    transition: transform var(--transition-slow);
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 680ms var(--ease-out-expo),
+      transform 680ms var(--ease-out-expo);
   }
 
-  .gallery-card--intro {
-    margin-left: auto;
+  .gallery-item[data-visible="1"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Column B items get a 120ms lag — reinforces the staggered layout */
+  .gallery-col--b .gallery-item[data-visible="1"] {
+    transition-delay: 120ms;
+  }
+
+  .gallery-item__frame {
     width: 100%;
+    overflow: hidden;
   }
 
-  .gallery-card--landscape {
-    max-width: 30rem;
-  }
-
-  .gallery-card--portrait {
-    max-width: 25rem;
-  }
-
-  .gallery-card--square {
-    max-width: 27rem;
-  }
-
-  .gallery-card--reprise {
-    max-width: 34rem;
-  }
-
-  .gallery-frame {
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklch, var(--color-bg-surface) 92%, transparent),
-        color-mix(in oklch, var(--color-bg-muted) 74%, transparent)
-      );
-    border: 1px solid var(--color-border-subtle);
-    padding: clamp(var(--space-2), 1.2vw, var(--space-4));
-    box-shadow: 0 1px 0 color-mix(in oklch, var(--color-text-primary) 6%, transparent);
-  }
-
-  .gallery-frame--lead {
-    padding: clamp(var(--space-3), 1.6vw, var(--space-5));
-    min-height: min(78svh, 56rem);
-    display: grid;
-  }
-
-  .gallery-frame :global(img) {
+  .gallery-item__frame :global(img) {
     width: 100%;
     height: auto;
     display: block;
   }
 
-  .gallery-frame--lead :global(img) {
-    height: 100%;
-    object-fit: cover;
+  .gallery-item__caption {
+    display: flex;
+    align-items: center;
+    margin-top: var(--space-3);
   }
 
-  .gallery-section--1 .gallery-card:nth-of-type(2) {
-    grid-column: 3 / span 4;
+  .gallery-item__caption span {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--font-tracking-wider);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.6;
   }
 
-  .gallery-section--1 .gallery-card:nth-of-type(3) {
-    grid-column: 8 / span 5;
-    margin-top: var(--space-10);
+  /* ── Hero reveal ── */
+  .gallery-lead__frame {
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out-expo);
   }
 
-  .gallery-section--1 .gallery-card:nth-of-type(4) {
-    grid-column: 2 / span 4;
-    margin-top: 0;
+  .gallery-lead__frame[data-visible="1"] {
+    opacity: 1;
   }
 
-  .gallery-section--1 .gallery-card:nth-of-type(5) {
-    grid-column: 7 / span 5;
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-item,
+    .gallery-lead__frame {
+      transform: none;
+      transition: opacity 200ms linear;
+    }
   }
 
-  .gallery-section--2 .gallery-card:nth-of-type(2) {
-    grid-column: 2 / span 4;
-    margin-top: var(--space-8);
-  }
-
-  .gallery-section--2 .gallery-card:nth-of-type(3) {
-    grid-column: 7 / span 5;
-  }
-
-  .gallery-section--2 .gallery-card:nth-of-type(4) {
-    grid-column: 2 / span 4;
-  }
-
-  .gallery-section--2 .gallery-card:nth-of-type(5) {
-    grid-column: 7 / span 5;
-    margin-top: 0;
-  }
-
-  .gallery-section--3 .gallery-card:nth-of-type(2) {
-    grid-column: 3 / span 5;
-  }
-
-  .gallery-section--3 .gallery-card:nth-of-type(3) {
-    grid-column: 7 / span 5;
-    margin-top: var(--space-10);
-  }
-
-  .gallery-section--3 .gallery-card:nth-of-type(4) {
-    grid-column: 2 / span 4;
-  }
-
-  .gallery-section--3 .gallery-card:nth-of-type(5) {
-    grid-column: 7 / span 5;
-  }
-
-  .gallery-reprise .gallery-card:nth-of-type(1) {
-    grid-column: 2 / span 4;
-  }
-
-  .gallery-reprise .gallery-card:nth-of-type(2) {
-    grid-column: 7 / span 4;
-    margin-top: var(--space-12);
-  }
-
-  .gallery-reprise .gallery-card:nth-of-type(3) {
-    grid-column: 4 / span 5;
-  }
-
+  /* ── Hover ── */
   @media (hover: hover) {
-    .gallery-card:hover {
-      transform: translateY(calc(var(--space-1) * -1));
+    .gallery-item__frame :global(img) {
+      transition: transform var(--transition-slow);
     }
 
-    .gallery-card:hover .gallery-frame {
-      border-color: var(--color-border-default);
-    }
-  }
-
-  @media (max-width: 1023px) {
-    .gallery-page {
-      padding-bottom: var(--space-20);
-    }
-
-    .gallery-hero__copy {
-      grid-column: 1 / span 8;
-    }
-
-    .gallery-hero__lead {
-      max-width: none;
-    }
-
-    .gallery-hero__stack {
-      grid-column: 1 / span 5;
-      max-width: 22rem;
-    }
-
-    .gallery-section__label {
-      grid-column: 1 / span 3;
-    }
-
-    .gallery-section--1 .gallery-card:nth-of-type(2),
-    .gallery-section--2 .gallery-card:nth-of-type(2),
-    .gallery-section--3 .gallery-card:nth-of-type(2) {
-      grid-column: 4 / span 4;
-      margin-top: 0;
-    }
-
-    .gallery-section--1 .gallery-card:nth-of-type(3),
-    .gallery-section--2 .gallery-card:nth-of-type(3),
-    .gallery-section--3 .gallery-card:nth-of-type(3) {
-      grid-column: 8 / span 4;
-      margin-top: var(--space-6);
-    }
-
-    .gallery-section--1 .gallery-card:nth-of-type(4),
-    .gallery-section--2 .gallery-card:nth-of-type(4),
-    .gallery-section--3 .gallery-card:nth-of-type(4) {
-      grid-column: 3 / span 4;
-      margin-top: 0;
-    }
-
-    .gallery-section--1 .gallery-card:nth-of-type(5),
-    .gallery-section--2 .gallery-card:nth-of-type(5),
-    .gallery-section--3 .gallery-card:nth-of-type(5) {
-      grid-column: 7 / span 5;
-      margin-top: 0;
-    }
-
-    .gallery-reprise .gallery-card:nth-of-type(1) {
-      grid-column: 2 / span 4;
-    }
-
-    .gallery-reprise .gallery-card:nth-of-type(2) {
-      grid-column: 7 / span 4;
-      margin-top: var(--space-6);
-    }
-
-    .gallery-reprise .gallery-card:nth-of-type(3) {
-      grid-column: 4 / span 5;
+    .gallery-item:hover .gallery-item__frame :global(img) {
+      transform: scale(1.02);
     }
   }
 
-  @media (max-width: 720px) {
-    .gallery-page {
-      padding-top: var(--space-6);
-      padding-bottom: var(--space-16);
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    .gallery-lead {
+      padding: 0;
     }
 
-    .gallery-hero,
-    .gallery-section,
-    .gallery-reprise {
+    .gallery-lead__frame {
+      height: clamp(300px, 70svh, 520px);
+    }
+
+    .gallery-intro {
       grid-template-columns: 1fr;
-      row-gap: var(--space-4);
+      gap: var(--space-2);
+      padding-top: var(--space-8);
+      padding-bottom: var(--space-10);
     }
 
-    .gallery-hero {
-      margin-bottom: var(--space-12);
+    .gallery-intro__text {
+      max-width: none;
     }
 
-    .gallery-hero__copy,
-    .gallery-hero__lead,
-    .gallery-hero__stack,
-    .gallery-section__label,
-    .gallery-section .gallery-card,
-    .gallery-reprise .gallery-card {
-      grid-column: 1;
-    }
-
-    .gallery-hero__copy {
-      order: 2;
-      align-self: end;
-      gap: var(--space-3);
-      padding: var(--space-5);
-      margin-bottom: 0;
-    }
-
-    .gallery-hero__copy h1 {
-      max-width: 16ch;
+    .gallery-intro__text h1 {
       font-size: var(--font-size-2xl);
-      line-height: 1.04;
-      text-wrap: pretty;
     }
 
-    .gallery-hero__lead {
-      order: 1;
+    .gallery-columns {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-3);
+      padding-bottom: var(--space-24);
     }
 
-    .gallery-hero__stack {
-      order: 3;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .gallery-col {
       gap: var(--space-3);
-      align-items: start;
-      margin-top: var(--space-2);
     }
 
-    .gallery-frame--lead {
-      min-height: 58svh;
-      padding: var(--space-3);
-    }
-
-    .gallery-card--intro {
-      width: 100%;
-    }
-
-    .gallery-card,
-    .gallery-card--landscape,
-    .gallery-card--portrait,
-    .gallery-card--square,
-    .gallery-hero__lead,
-    .gallery-hero__stack {
-      min-width: 0;
-      max-width: none;
-    }
-
-    .gallery-section {
-      margin-top: var(--space-12);
-      padding-top: var(--space-2);
-    }
-
-    .gallery-reprise {
-      margin-top: var(--space-12);
-    }
-
-    .gallery-section__label {
-      display: flex;
-      align-items: baseline;
-      gap: var(--space-3);
-      padding-top: 0;
-      margin-bottom: var(--space-1);
-    }
-
-    .gallery-section__label p {
-      max-width: none;
-    }
-
-    .gallery-section .gallery-card + .gallery-card {
-      margin-top: var(--space-2);
-    }
-
-    .gallery-reprise .gallery-card + .gallery-card {
-      margin-top: var(--space-2);
+    .gallery-col--b {
+      padding-top: clamp(var(--space-10), 8vw, var(--space-20));
     }
   }
 </style>
