@@ -131,8 +131,8 @@
   /* Typography — leading */
   --font-leading-tight: 1.08;
   --font-leading-snug: 1.35;
-  --font-leading-normal: 1.6;
-  --font-leading-relaxed: 1.75;
+  --font-leading-normal: 1.5;
+  --font-leading-relaxed: 1.5;
 
   /* Typography — tracking */
   --font-tracking-tightest: 0em;

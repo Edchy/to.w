@@ -47,7 +47,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
 };
 ---
 
-<BaseLayout description="to.w — handgjorda smycken och objekt.">
+<BaseLayout description="to.w — handgjorda smycken och stickning">
   <div class="home">
     <h1 class="sr-only">Tove Wätte — handgjorda smycken och stickning</h1>
 
@@ -110,27 +110,29 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
             </div>
             <div class="project__text">
               <h2 class="project__heading">barnen</h2>
-              <p>Ett halsband graverat på återvunnet sterling silver, skapat i samarbete med <a href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. 20 exemplar — alla intäkter gick till Rädda Barnen och deras arbete för barn i Gaza. <a class="project__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se video</a></p>
+              <p>Det här halsbandet är framtaget till förmån för Rädda Barnen och deras livsviktiga arbete för människor i Gaza.</p>
+              <p>Det är graverat på återvunnet sterling silver och är ett samarbete mellan mig och <a href="https://www.instagram.com/vtelegin" target="_blank" rel="noopener noreferrer">Viktor Telegin</a>. Jag skapade 20 stycken halsband efter en ritning av Viktor.</p>
+              <p>Alla intäkter från försäljningen gick till Rädda Barnen och deras insatser för att skydda, stödja och ge barn möjlighet till trygghet, vård och framtidshopp i en mycket utsatt situation. <a class="project__reel" href={gazaReelUrl} target="_blank" rel="noopener noreferrer">Se video</a></p>
             </div>
           </article>
         )}
 
         {rowIndex === 1 && (
           <article class="project project--typett" aria-label="Projekt Typ Ett">
-            <div class="project__media project__media--pair">
+            <div class="project__media project__media--quad">
               <Image src={typ1Img} alt="Typ Ett-ringen" loading="lazy" width={640} height={800} />
+              <Image src={d1handImg} alt="D1-ringen på ett barns hand" loading="lazy" width={640} height={800} />
             </div>
-            <Image class="typett-hero" src={d1handImg} alt="D1-ringen på ett barns hand" loading="lazy" width={640} height={800} />
             <div class="project__text">
               <h2 class="project__heading">knuten</h2>
-              <p>En tunn ring med en knut högst upp, designad exklusivt för <a href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a>. Alla intäkter går till forskning om typ 1 diabetes.</p>
+              <p>Jag har haft äran att samarbeta med <a href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a> genom att designa och skapa en tunn ring med en knut placerad högst upp. Ringen säljs via deras hemsida och alla intäkter går oavkortat till forskning om diabetes.</p>
+              <p>Projektet ligger mig varmt om hjärtat — jag är förälder till ett barn med diabetes, som insjuknade innan sin 1-års dag.</p>
             </div>
           </article>
         )}
 
         {rowIndex === 2 && (
           <article class="project project--hoop" aria-label="Projekt hoop hoop">
-            <Image class="hoop-hero" src={broderJohnImg} alt="Broder John" loading="lazy" width={640} height={640} />
             <div class="project__media project__media--quad">
               <Image src={dontFollowMeImg} alt="Broder John-ring" loading="lazy" width={640} height={640} />
               <Image src={bjLolImg} alt="Broder John" loading="lazy" width={640} height={640} />
@@ -139,7 +141,8 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
             </div>
             <div class="project__text">
               <h2 class="project__heading">hoop hoop</h2>
-              <p>Har haft den stora äran att få göra ett par ringar åt <a href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer">Broder John</a> och <a href="https://www.hoopdiggas.com/" target="_blank" rel="noopener noreferrer">Hoopdiggas</a>.</p>
+              <p>Jag fick göra ett par ringar åt <a href="https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4?si=3z2af2KrRsuGUudeJo890A" target="_blank" rel="noopener noreferrer">Broder John</a> och <a href="https://www.hoopdiggas.com/" target="_blank" rel="noopener noreferrer">Hoopdiggas</a> — ett samarbete som kom till på ett naturligt sätt och som var roligt att jobba med.</p>
+              <p>Ringarna gjordes för hand i sterling silver, precis som allt annat jag gör.</p>
             </div>
           </article>
         )}
@@ -623,33 +626,25 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
   .project {
     position: relative;
     max-width: var(--layout-wide-width);
-    padding: clamp(var(--space-8), 5vw, var(--space-16));
-    border-radius: var(--radius-md);
-  }
-
-  .project--gaza {
-    background: var(--color-accent-subtle);
-  }
-
-  .project--typett {
-    background: var(--color-brand-subtle);
-  }
-
-  .project--hoop {
-    background: var(--color-bg-inverse);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-muted);
   }
 
   .project__heading {
-    font-size: clamp(3.8rem, 9vw, 9.4rem);
     font-weight: var(--font-weight-regular);
-    line-height: 0.88;
+    line-height: var(--font-leading-tight);
     letter-spacing: var(--font-tracking-tightest);
+    color: var(--color-text-primary);
+    margin: 0;
   }
 
   .project__text p {
     color: var(--color-text-secondary);
-    line-height: var(--font-leading-relaxed);
-    max-width: 46ch;
+    line-height: var(--font-leading-normal);
+    font-size: var(--font-size-base);
+    max-width: 44ch;
+    margin: 0;
   }
 
   .project__text a {
@@ -666,37 +661,39 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     }
   }
 
-  /* ── Gaza ─────────────────────────────────────────────── */
+  /* ── Gaza — image left, text right ────────────────────── */
 
   .project--gaza {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
-    gap: clamp(var(--space-8), 5vw, var(--space-20));
-    align-items: end;
-    justify-items: end;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    min-height: clamp(380px, 50vw, 620px);
+  }
+
+  .project--gaza .project__media {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .project--gaza .project__text {
-    justify-self: start;
-    padding-bottom: var(--space-6);
-    display: grid;
-    gap: var(--space-5);
-    padding-bottom: var(--space-5);
-    border-bottom: 2px solid var(--color-accent);
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
   }
 
   .project--gaza .project__heading {
-    margin-bottom: var(--space-3);
-    color: var(--color-accent);
+    font-size: clamp(3.5rem, 6vw, 7rem);
   }
 
   .gaza-media {
     position: relative;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
     background: var(--color-bg-surface);
-    aspect-ratio: 3 / 4;
-    max-height: 60vh;
   }
 
   .gaza-media__poster,
@@ -704,9 +701,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: var(--color-bg-surface);
-    outline: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
-    outline-offset: -6px;
+    object-position: center;
     transition: filter var(--transition-slow);
   }
 
@@ -768,239 +763,100 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       scale: 1.08;
       opacity: 0.9;
     }
-
-    /* Warm darkroom tint slides in over the image */
-    .project--gaza .gaza-media::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: color-mix(in oklch, var(--clay-400) 18%, transparent);
-      mix-blend-mode: multiply;
-      opacity: 0;
-      transition: opacity var(--transition-slow);
-      pointer-events: none;
-    }
-
-    .project--gaza:hover .gaza-media::after {
-      opacity: 1;
-    }
   }
 
-  /* ── Typ Ett ──────────────────────────────────────────── */
+  /* ── Typ Ett — text left, images right ─────────────────── */
 
   .project--typett {
     display: grid;
-    grid-template-columns: minmax(0, 0.52fr) minmax(0, 1fr);
-    gap: clamp(var(--space-10), 7vw, var(--space-32));
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .typett-hero {
-    position: absolute;
-    bottom: -14%;
-    right: 0;
-    width: clamp(180px, 32%, 380px);
-    height: auto;
-    object-fit: cover;
-    border-radius: var(--radius-sm);
-    z-index: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0;
+    align-items: stretch;
+    min-height: clamp(340px, 38vw, 480px);
   }
 
   .project--typett .project__text {
-    display: grid;
-    gap: var(--space-5);
-    padding-left: var(--space-5);
-    border-left: 2px solid var(--color-brand);
-    position: relative;
-    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
+    order: 1;
   }
 
   .project--typett .project__heading {
-    margin-bottom: var(--space-2);
-    color: var(--color-brand);
+    font-size: clamp(3.5rem, 6vw, 7rem);
   }
 
-  .project--typett .project__text p {
-    color: var(--color-text-primary);
-  }
-
-  .project__media--pair {
-    aspect-ratio: 3 / 4;
-  }
-
-  .project__media--pair img {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    object-fit: cover;
-    object-position: center 30%;
-    border-radius: var(--radius-sm);
-    transition: transform var(--transition-slow);
-  }
-
-  @media (hover: hover) {
-    .project--typett:hover .project__media--pair img:first-child {
-      transform: rotate(1.2deg) scale(1.02);
-    }
-
-    .project--typett:hover .project__media--pair img:last-child {
-      transform: rotate(-1.2deg) scale(1.02);
-    }
-  }
-
-  /* ── hoop hoop ────────────────────────────────────────── */
-
-  .project--hoop {
-    display: grid;
-    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
-    gap: clamp(var(--space-10), 6vw, var(--space-24));
-    align-items: center;
+  .project--typett .project__media {
+    order: 2;
     position: relative;
   }
 
-  .hoop-hero {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: clamp(220px, 40%, 480px);
-    height: auto;
+  /* img:nth-child(1) — main ring shot, fills the right column */
+  .project--typett .project__media--quad img:nth-child(1) {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
+  }
+
+  /* img:nth-child(2) — d1hand, small inset bottom-left */
+  .project--typett .project__media--quad img:nth-child(2) {
+    position: absolute;
+    bottom: var(--space-5);
+    left: calc(var(--space-5) * -1);
+    width: 42%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
     border-radius: var(--radius-sm);
-    z-index: var(--z-raised);
+    box-shadow: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--color-text-primary) 18%, transparent);
+  }
+
+  .project--typett .project__media--quad {
+    position: relative;
+    height: 100%;
+  }
+
+  /* ── hoop hoop — text above, image strip below ──────────── */
+
+  .project--hoop {
+    display: flex;
+    flex-direction: column;
   }
 
   .project--hoop .project__text {
-    display: grid;
-    gap: var(--space-5);
-    padding-top: var(--space-5);
-    border-top: 2px solid var(--brand-2-400);
-    position: relative;
-    z-index: calc(var(--z-raised) + 1);
-    color: var(--color-text-inverse);
-  }
-
-  .project--hoop .project__text p {
-    color: var(--color-text-inverse);
-    opacity: 0.85;
-  }
-
-  .project--hoop .project__text a {
-    color: var(--color-text-inverse);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
+    padding-bottom: clamp(var(--space-6), 3vw, var(--space-10));
   }
 
   .project--hoop .project__heading {
-    margin-bottom: var(--space-2);
-    color: var(--color-text-inverse);
+    font-size: clamp(3.5rem, 8vw, 9rem);
   }
 
-  .project__media--quad {
+  .project--hoop .project__media--quad {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2);
-    aspect-ratio: 1 / 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-1);
+    height: clamp(200px, 28vw, 360px);
   }
 
-  @media (min-width: 1024px) {
-    .project--hoop .project__media--quad {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-    }
-
-    .project--hoop .project__media--quad img:nth-child(1) {
-      grid-row: 1 / span 2;
-      grid-column: 1;
-      height: 100%;
-    }
-
-    .project--hoop .project__media--quad img:nth-child(2) {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .project--hoop .project__media--quad img:nth-child(3) {
-      grid-column: 2;
-      grid-row: 2;
-    }
-
-    .project--hoop .project__media--quad img:nth-child(4) {
-      display: none;
-    }
-  }
-
-
-  .project__media--quad img {
+  .project--hoop .project__media--quad img {
     width: 100%;
     height: 100%;
-    min-height: 0;
     object-fit: cover;
-    border-radius: var(--radius-sm);
-    outline: 1px solid color-mix(in oklch, var(--brand-2-400) 45%, transparent);
-    outline-offset: 5px;
-    transition: transform var(--transition-slow);
-  }
-
-  .project__media--quad > a {
-    position: relative;
-    display: block;
-    min-width: 0;
-    min-height: 0;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    transition: transform var(--transition-slow);
-  }
-
-  .project__media--quad > a img {
     display: block;
   }
 
-  .project__media-label {
-    position: absolute;
-    top: var(--space-2);
-    left: var(--space-2);
-    z-index: var(--z-raised);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-base);
-    color: var(--brand-2-400);
-    font-size: var(--font-size-xs);
-    line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-wide);
-    text-transform: uppercase;
-    transition:
-      background-color var(--transition-normal),
-      color var(--transition-normal),
-      transform var(--transition-normal);
-  }
-
-
-
-  @media (hover: hover) {
-    .project__media--quad > a:hover .project__media-label,
-    .project__media--quad > a:focus-visible .project__media-label {
-      background: var(--brand-2-100);
-      color: var(--brand-2-700);
-      transform: translate(var(--space-1), calc(var(--space-1) * -1));
-    }
-
-    .project--hoop:hover .project__media--quad > :nth-child(1) {
-      transform: scale(1.04);
-    }
-
-    .project--hoop:hover .project__media--quad > :nth-child(2) {
-      transform: scale(0.97);
-    }
-
-    .project--hoop:hover .project__media--quad > :nth-child(3) {
-      transform: scale(0.97);
-    }
-
-    .project--hoop:hover .project__media--quad > :nth-child(4) {
-      transform: scale(1.04);
-    }
-  }
+  .project--hoop .project__media--quad img:nth-child(1) { object-position: center 30%; }
+  .project--hoop .project__media--quad img:nth-child(2) { object-position: center 60%; }
+  .project--hoop .project__media--quad img:nth-child(3) { object-position: center 40%; }
+  .project--hoop .project__media--quad img:nth-child(4) { object-position: center 50%; }
 
   @keyframes quiet-rise {
     from {
@@ -1146,59 +1002,33 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       max-width: 480px;
     }
 
-    .project--gaza,
-    .project--typett,
-    .project--hoop {
+    /* Gaza: image on top, text below */
+    .project--gaza {
       grid-template-columns: 1fr;
-      justify-items: center;
-      align-items: start;
-      gap: var(--space-8);
-      overflow: visible;
+      grid-template-rows: auto auto;
+      min-height: auto;
     }
 
-    .project__media--quad {
-      width: 100%;
-      max-width: 560px;
+    .project--gaza .project__media {
+      grid-column: 1;
+      grid-row: 1;
+      height: clamp(260px, 50vw, 480px);
     }
 
-    .project--gaza .gaza-media {
-      width: min(100%, 360px);
-      max-height: none;
+    .project--gaza .project__text {
+      grid-column: 1;
+      grid-row: 2;
+      justify-content: flex-start;
     }
 
-    .project--typett .project__media--pair {
-      width: min(100%, 320px);
-      max-height: none;
+    /* Typett: keep side by side, just tighter */
+    .project--typett .project__media--quad {
+      height: 100%;
     }
 
-    .project--gaza .project__text,
-    .project--typett .project__text,
-    .project--hoop .project__text {
-      justify-self: center;
-      width: 100%;
-      max-width: 560px;
-      order: 1;
-      text-align: left;
-      border: 0;
-      padding: 0;
-    }
-
-    .project--gaza .gaza-media,
-    .project--typett .project__media--pair,
+    /* Hoop: strip shorter on tablet */
     .project--hoop .project__media--quad {
-      order: 2;
-    }
-
-    .project--typett .typett-hero {
-      display: none;
-    }
-
-    .project--hoop .hoop-hero {
-      display: none;
-    }
-
-    .project__heading {
-      font-size: clamp(var(--font-size-3xl), 8vw, 6rem);
+      height: clamp(160px, 22vw, 260px);
     }
   }
 
@@ -1256,18 +1086,62 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     }
 
     .project__heading {
-      font-size: var(--font-size-2xl);
+      font-size: clamp(2.5rem, 9vw, 3.5rem);
     }
 
-    .project__media--pair {
+    /* Gaza: image top, text below */
+    .project--gaza {
+      grid-template-columns: 1fr;
+    }
+
+    .project--gaza .project__media {
+      height: clamp(260px, 70vw, 400px);
+    }
+
+    .project--gaza .project__text {
+      padding: var(--space-6) var(--space-6) var(--space-8);
+    }
+
+    /* Typett: stack to single column, reset absolute inset */
+    .project--typett {
+      grid-template-columns: 1fr;
+    }
+
+    .project--typett .project__text {
+      order: 1;
+      padding-bottom: var(--space-8);
+    }
+
+    .project--typett .project__media {
+      order: 2;
+    }
+
+    .project--typett .project__media--quad {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+      height: clamp(200px, 55vw, 340px);
+    }
+
+    .project--typett .project__media--quad img:nth-child(1),
+    .project--typett .project__media--quad img:nth-child(2) {
+      position: static;
+      width: 100%;
+      height: 100%;
       aspect-ratio: auto;
+      bottom: auto;
+      left: auto;
+      box-shadow: none;
+      border-radius: 0;
     }
 
-    .project__media--pair img {
-      aspect-ratio: 4 / 5;
+    /* Hoop: 2×2 grid */
+    .project--hoop .project__media--quad {
+      grid-template-columns: repeat(2, 1fr);
+      height: auto;
     }
 
-    .project__media--quad {
+    .project--hoop .project__media--quad img {
       aspect-ratio: 1 / 1;
     }
 
