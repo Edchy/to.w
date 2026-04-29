@@ -62,6 +62,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <meta name="twitter:image" content={ogImageUrl} />
     <Font cssVariable="--font-body" />
     <Font cssVariable="--font-june-active" />
+    <Font cssVariable="--font-june-curious" />
+    <Font cssVariable="--font-seasum-stormy" />
+    <Font cssVariable="--font-seasum-calm" />
     <ClientRouter />
   </head>
   <body>
@@ -103,7 +106,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       </div>
     </header>
 
-    <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Meny" aria-modal="false">
+    <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Meny" aria-modal="true">
       <ul class="mobile-nav__list" role="list">
         {headerNavLinks.map(({ href, label }) => (
           <li>
@@ -126,14 +129,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       <div class="site-wrap site-footer__inner">
         <div class="footer-brand">
           <a href={baseUrl} class="footer-wordmark" aria-label="to.w — hem">to.w</a>
-          <ul class="footer-socials footer-socials--mobile" role="list">
-            <li>
-              <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
-            </li>
-            <li>
-              <a href={CONTACT_EMAIL_HREF}>email</a>
-            </li>
-          </ul>
         </div>
         <div class="footer-directory">
           <nav class="footer-group" aria-label="Sidfotsnavigering">
@@ -182,32 +177,66 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     if (btn.dataset.hamburgerInit) return;
     btn.dataset.hamburgerInit = '1';
 
+    const main = document.querySelector('main');
+    const footer = document.querySelector('.site-footer');
+
     function openMenu() {
       nav.classList.add('is-open');
       btn.setAttribute('aria-expanded', 'true');
       btn.setAttribute('aria-label', 'Stäng meny');
+      main?.setAttribute('inert', '');
+      footer?.setAttribute('inert', '');
+      const firstLink = nav.querySelector<HTMLElement>('a, button');
+      firstLink?.focus();
     }
 
     function closeMenu() {
       nav.classList.remove('is-open');
       btn.setAttribute('aria-expanded', 'false');
       btn.setAttribute('aria-label', 'Öppna meny');
+      main?.removeAttribute('inert');
+      footer?.removeAttribute('inert');
+      btn.focus();
     }
 
     btn.addEventListener('click', () => {
       btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
     });
 
+    nav.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
     document.addEventListener('astro:after-swap', () => {
       nav.classList.remove('is-open');
       btn.setAttribute('aria-expanded', 'false');
       btn.setAttribute('aria-label', 'Öppna meny');
+      main?.removeAttribute('inert');
+      footer?.removeAttribute('inert');
     });
   }
 
   document.addEventListener('astro:page-load', initHamburger);
   initHamburger();
 </script>
+
+<script is:inline>
+  // Tab title: soften presence when focus leaves
+  (function () {
+    const original = document.title;
+    document.addEventListener('visibilitychange', () => {
+      document.title = document.hidden ? '— to.w' : original;
+    });
+  })();
+
+  // Console art: handmade message for curious visitors
+  console.log(
+    '%c\n  t  o  .  w\n\n%chandgjorda smycken & stickning\nJärna, Sverige\n\nhttps://to.w\n',
+    'font-size:18px; letter-spacing:0.3em; color:#7a8c6a; font-family:monospace',
+    'font-size:11px; color:#9a9082; font-family:monospace; letter-spacing:0.05em'
+  );
+</script>
+
 
 <style>
   .site-wrap {
@@ -269,12 +298,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     color: var(--color-text-secondary);
-    transition: color var(--transition-fast), opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
   }
 
   .nav-link:hover {
     color: var(--color-text-primary);
     opacity: 0.82;
+    transform: translateY(-1px);
   }
 
   .nav-link--active {
@@ -450,6 +480,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-text-primary);
     letter-spacing: var(--font-tracking-normal);
     line-height: 1;
+    display: inline-block;
     transition:
       letter-spacing var(--transition-normal),
       opacity var(--transition-normal);
@@ -480,12 +511,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    transition: color var(--transition-fast), opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
   }
 
   .footer-links a:hover {
     color: var(--color-text-primary);
     opacity: 0.82;
+    transform: translateY(-1px);
   }
 
   .footer-socials {
@@ -506,12 +538,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    transition: color var(--transition-fast), opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
   }
 
   .footer-socials a:hover {
     color: var(--color-text-primary);
     opacity: 0.82;
+    transform: translateY(-1px);
   }
 
 
@@ -577,7 +610,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: center;
     gap: 7px;
     width: 44px;
-    height: var(--font-size-lg);
+    height: 44px;
     background: none;
     border: none;
     cursor: pointer;
@@ -660,10 +693,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     color: var(--color-text-primary);
   }
 
-  .footer-socials--mobile {
-    display: none;
-  }
-
   @media (min-width: 761px) {
     .site-footer {
       margin-top: var(--space-72);
@@ -681,10 +710,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     .site-footer__inner {
       grid-template-columns: 1fr;
       row-gap: var(--space-8);
-    }
-
-    .footer-socials--mobile {
-      display: none;
     }
 
     .footer-directory {

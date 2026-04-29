@@ -90,6 +90,11 @@
   /* Underline offset */
   --underline-offset: 3px;
 
+  /* Inline wavy underline */
+  --inline-underline-height: 3px;
+  --inline-underline-offset: 4px;
+  --inline-underline-wave-width: 20px;
+
   /* Motion */
   --duration-fast: 80ms;
   --duration-normal: 180ms;
@@ -112,6 +117,9 @@
   --font-body-text: var(--font-body);
   --font-heading-text: var(--font-body);
   --font-brand-text: var(--font-june-active);
+  --font-heading: var(--font-june-curious);
+  --font-seasum-stormy-text: var(--font-seasum-stormy);
+  --font-seasum-calm-text: var(--font-seasum-calm);
 
   /* Typography — sizes */
   --font-size-xs: 0.7rem;
@@ -140,6 +148,7 @@
   --font-tracking-normal: 0em;
   --font-tracking-wide: 0.04em;
   --font-tracking-wider: 0.09em;
+  --font-tracking-negative: -0.01em;
 
   /* Color — backgrounds */
   --color-bg-base: var(--off-white);

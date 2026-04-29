@@ -41,7 +41,12 @@ const restImages = galleryImages.filter((entry) => entry.path !== heroImage?.pat
 const colA = restImages.filter((_, i) => i % 2 === 0);
 const colB = restImages.filter((_, i) => i % 2 === 1);
 
-const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${index + 1}.`;
+const imageAlts: Record<string, string> = {
+  "hero.avif": "Närbild på ett handgjort silversmycke mot naturlig bakgrund.",
+};
+
+const imageAlt = (filename: string, index: number) =>
+  imageAlts[filename] ?? `Fotografi från Tove Wättes praktik, bild ${index + 1}.`;
 ---
 
 <BaseLayout title="Galleri" description="Galleri med fotografier från Tove Wättes praktik och ateljé.">
@@ -52,7 +57,7 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
         <figure class="gallery-lead__frame">
           <Image
             src={heroImage.image}
-            alt={imageAlt(0)}
+            alt={imageAlt(heroImage.filename, 0)}
             width={heroImage.image.width}
             height={heroImage.image.height}
             loading="eager"
@@ -77,11 +82,11 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
         {colA.map((entry, colIndex) => {
           const globalIndex = colIndex * 2;
           return (
-            <figure class="gallery-item" aria-label={imageAlt(globalIndex + 1)}>
+            <figure class="gallery-item">
               <div class="gallery-item__frame">
                 <Image
                   src={entry.image}
-                  alt={imageAlt(globalIndex + 1)}
+                  alt={imageAlt(entry.filename, globalIndex + 1)}
                   width={entry.image.width}
                   height={entry.image.height}
                   loading={globalIndex < 4 ? "eager" : "lazy"}
@@ -100,11 +105,11 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
         {colB.map((entry, colIndex) => {
           const globalIndex = colIndex * 2 + 1;
           return (
-            <figure class="gallery-item" aria-label={imageAlt(globalIndex + 1)}>
+            <figure class="gallery-item">
               <div class="gallery-item__frame">
                 <Image
                   src={entry.image}
-                  alt={imageAlt(globalIndex + 1)}
+                  alt={imageAlt(entry.filename, globalIndex + 1)}
                   width={entry.image.width}
                   height={entry.image.height}
                   loading={globalIndex < 4 ? "eager" : "lazy"}
@@ -119,6 +124,10 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
         })}
       </div>
     </div>
+
+    <nav class="gallery-back" aria-label="Tillbaka">
+      <a href="/">back</a>
+    </nav>
 
   </div>
 </BaseLayout>
@@ -154,6 +163,61 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
 
   document.addEventListener('astro:page-load', initGallery);
   initGallery();
+</script>
+
+<script>
+  // Ink-dot cursor trail over gallery images
+  function initInkTrail() {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const pool: HTMLElement[] = [];
+    const POOL_SIZE = 18;
+
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'ink-dot';
+      document.body.appendChild(dot);
+      pool.push(dot);
+    }
+
+    let head = 0;
+    let frame = 0;
+    let active = false;
+
+    const gallery = document.querySelector<HTMLElement>('.gallery-page');
+    if (!gallery) return;
+
+    gallery.addEventListener('mousemove', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.gallery-item__frame, .gallery-lead__frame')) {
+        active = false;
+        return;
+      }
+      active = true;
+
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const dot = pool[head % POOL_SIZE];
+        head++;
+        dot.style.left = `${e.clientX}px`;
+        dot.style.top = `${e.clientY}px`;
+        dot.style.opacity = '1';
+        dot.style.transform = `translate(-50%, -50%) scale(${0.5 + Math.random() * 0.7})`;
+        dot.dataset.born = String(performance.now());
+
+        setTimeout(() => {
+          dot.style.opacity = '0';
+          dot.style.transform = `translate(-50%, -50%) scale(${0.1 + Math.random() * 0.3})`;
+        }, 60 + Math.random() * 80);
+      });
+    });
+
+    gallery.addEventListener('mouseleave', () => { active = false; });
+  }
+
+  document.addEventListener('astro:page-load', initInkTrail);
+  initInkTrail();
 </script>
 
 <style>
@@ -218,7 +282,7 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
     line-height: 1.1;
     color: var(--color-text-primary);
     text-wrap: balance;
-    letter-spacing: -0.01em;
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .gallery-intro__text p {
@@ -296,6 +360,28 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
     opacity: 0.6;
   }
 
+  /* ── Back link ── */
+
+  .gallery-back {
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--layout-gutter) clamp(var(--space-16), 8vw, var(--space-32));
+  }
+
+  .gallery-back a {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .gallery-back a:hover {
+    color: var(--color-brand);
+  }
+
   /* ── Hero reveal ── */
   .gallery-lead__frame {
     opacity: 0;
@@ -354,7 +440,7 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
     .gallery-columns {
       grid-template-columns: 1fr 1fr;
       column-gap: var(--space-3);
-      padding-bottom: var(--space-24);
+      padding-bottom: var(--space-16);
     }
 
     .gallery-col {
@@ -364,5 +450,24 @@ const imageAlt = (index: number) => `Fotografi ur Tove Wättes galleri, bild ${i
     .gallery-col--b {
       padding-top: clamp(var(--space-10), 8vw, var(--space-20));
     }
+
+    .gallery-back {
+      padding-bottom: var(--space-16);
+    }
+  }
+
+  :global(.ink-dot) {
+    position: fixed;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-text-primary);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition:
+      opacity 260ms var(--ease-out-expo),
+      transform 340ms var(--ease-out-expo);
+    will-change: transform, opacity;
   }
 </style>

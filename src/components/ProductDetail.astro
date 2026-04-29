@@ -19,7 +19,21 @@ const { title, price, description, images, imagesHd, transitionName } = Astro.pr
 const stageImages = imagesHd ?? images;
 
 const fmt = new Intl.NumberFormat("sv-SE").format;
-const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}`;
+const formattedPrice = fmt(price);
+const orderSubject = encodeURIComponent(`Beställning: ${title}`);
+const orderBody = encodeURIComponent(`Hej Tove,
+
+Jag vill gärna beställa ${title} (${formattedPrice} kr).
+
+Storlek / variant:
+Antal:
+Leverans: post / hämtas i ateljén / överlämning i Järna
+Adress, om post:
+Telefon:
+Övrigt:
+
+Vänliga hälsningar,`);
+const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBody}`;
 ---
 
 <div class="pd">
@@ -68,7 +82,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       >
         {title}
       </h1>
-      <span class="pd__price">{fmt(price)} kr</span>
+      <span class="pd__price">{formattedPrice} kr</span>
       <a class="pd__buy" href={orderHref}>
         <span class="pd__buy-text">Beställ</span>
       </a>
@@ -77,6 +91,12 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     <div class="pd__support">
       <div class="pd__body">
         {description && <p class="pd__description">{description}</p>}
+        <p class="pd__order-note">
+          Ingen vanlig webbshop än: skicka ett mejl med vad du vill beställa,
+          hur du vill få det levererat och eventuella frågor. Jag återkommer
+          med bekräftelse, betalningsinfo för Swish och när jag kan börja göra
+          i ordning beställningen.
+        </p>
       </div>
     </div>
 
@@ -241,6 +261,16 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     line-height: var(--font-leading-relaxed);
     color: var(--color-text-primary);
     margin: 0;
+  }
+
+  .pd__order-note {
+    max-width: 52ch;
+    margin: var(--space-4) 0 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-tertiary);
   }
 
   /* ── CTA ── */
