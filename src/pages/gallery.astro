@@ -37,9 +37,28 @@ const galleryImages = Object.entries(galleryModules)
 const heroImage = galleryImages.find((entry) => entry.filename === "hero.avif") ?? galleryImages[0];
 const restImages = galleryImages.filter((entry) => entry.path !== heroImage?.path);
 
-// Split into two columns for masonry feel
-const colA = restImages.filter((_, i) => i % 2 === 0);
-const colB = restImages.filter((_, i) => i % 2 === 1);
+// Section sizes — adjust as image count grows
+const INTRO = 10;
+const STACK = 6;
+const MID   = 8;
+const FILM  = 4;
+
+const introImages = restImages.slice(0, INTRO);
+const stackImages = restImages.slice(INTRO, INTRO + STACK);
+const midImages   = restImages.slice(INTRO + STACK, INTRO + STACK + MID);
+const filmImages  = restImages.slice(INTRO + STACK + MID, INTRO + STACK + MID + FILM);
+const tailImages  = restImages.slice(INTRO + STACK + MID + FILM);
+
+function cols<T>(arr: T[]): [T[], T[]] {
+  return [arr.filter((_, i) => i % 2 === 0), arr.filter((_, i) => i % 2 === 1)];
+}
+
+const [introA, introB] = cols(introImages);
+const [midA,   midB]   = cols(midImages);
+const [tailA,  tailB]  = cols(tailImages);
+
+// Global index for sequential captions across all masonry sections
+const globalIndexOf = new Map(restImages.map((e, i) => [e.path, i]));
 
 const imageAlts: Record<string, string> = {
   "hero.avif": "Närbild på ett handgjort silversmycke mot naturlig bakgrund.",
@@ -77,53 +96,209 @@ const imageAlt = (filename: string, index: number) =>
       </div>
     </div>
 
-    <div class="gallery-columns" aria-label="Galleribilder">
-      <div class="gallery-col gallery-col--a">
-        {colA.map((entry, colIndex) => {
-          const globalIndex = colIndex * 2;
-          return (
-            <figure class="gallery-item">
-              <div class="gallery-item__frame">
-                <Image
-                  src={entry.image}
-                  alt={imageAlt(entry.filename, globalIndex + 1)}
-                  width={entry.image.width}
-                  height={entry.image.height}
-                  loading={globalIndex < 4 ? "eager" : "lazy"}
-                  fetchpriority={globalIndex === 0 ? "high" : "auto"}
-                />
-              </div>
-              <figcaption class="gallery-item__caption">
-                <span>{String(globalIndex + 1).padStart(2, "0")}</span>
-              </figcaption>
-            </figure>
-          );
-        })}
-      </div>
-
-      <div class="gallery-col gallery-col--b">
-        {colB.map((entry, colIndex) => {
-          const globalIndex = colIndex * 2 + 1;
-          return (
-            <figure class="gallery-item">
-              <div class="gallery-item__frame">
-                <Image
-                  src={entry.image}
-                  alt={imageAlt(entry.filename, globalIndex + 1)}
-                  width={entry.image.width}
-                  height={entry.image.height}
-                  loading={globalIndex < 4 ? "eager" : "lazy"}
-                  fetchpriority="auto"
-                />
-              </div>
-              <figcaption class="gallery-item__caption">
-                <span>{String(globalIndex + 1).padStart(2, "0")}</span>
-              </figcaption>
-            </figure>
-          );
-        })}
+    <!-- Section 1: Masonry intro -->
+    <div class="gallery-section gallery-section--masonry" aria-label="Galleribilder">
+      <div class="gallery-columns">
+        <div class="gallery-col gallery-col--a">
+          {introA.map((entry) => {
+            const gi = globalIndexOf.get(entry.path) ?? 0;
+            return (
+              <figure class="gallery-item">
+                <div class="gallery-item__frame">
+                  <Image
+                    src={entry.image}
+                    alt={imageAlt(entry.filename, gi + 1)}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    loading={gi < 4 ? "eager" : "lazy"}
+                    fetchpriority={gi === 0 ? "high" : "auto"}
+                  />
+                </div>
+                <figcaption class="gallery-item__caption">
+                  <span>{String(gi + 1).padStart(2, "0")}</span>
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
+        <div class="gallery-col gallery-col--b">
+          {introB.map((entry) => {
+            const gi = globalIndexOf.get(entry.path) ?? 0;
+            return (
+              <figure class="gallery-item">
+                <div class="gallery-item__frame">
+                  <Image
+                    src={entry.image}
+                    alt={imageAlt(entry.filename, gi + 1)}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    loading={gi < 4 ? "eager" : "lazy"}
+                    fetchpriority="auto"
+                  />
+                </div>
+                <figcaption class="gallery-item__caption">
+                  <span>{String(gi + 1).padStart(2, "0")}</span>
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
       </div>
     </div>
+
+    <!-- Section 2: Stack -->
+    {stackImages.length > 0 && (
+      <div class="gallery-section gallery-section--stack" aria-label="Staplade bilder">
+        <div class="stack-scroll-driver">
+          <div class="stack-sticky">
+            <div class="stack-stage">
+              {stackImages.map((entry, i) => (
+                <figure class="stack-card" style={`--card-index: ${i}`}>
+                  <div class="stack-card__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                    />
+                  </div>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section 3: Masonry mid -->
+    {midImages.length > 0 && (
+      <div class="gallery-section gallery-section--masonry" aria-label="Galleribilder, fortsättning">
+        <div class="gallery-columns">
+          <div class="gallery-col gallery-col--a">
+            {midA.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+          <div class="gallery-col gallery-col--b">
+            {midB.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section 4: Film strip -->
+    {filmImages.length > 0 && (
+      <div class="gallery-section gallery-section--filmstrip" aria-label="Filmremsa">
+        <div class="filmstrip-scroll-driver">
+          <div class="filmstrip-sticky">
+            <div class="filmstrip-track">
+              {filmImages.map((entry, i) => (
+                <figure class="filmstrip-card" style={`--film-index: ${i}`}>
+                  <div class="filmstrip-card__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                    />
+                  </div>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section 5: Tail masonry -->
+    {tailImages.length > 0 && (
+      <div class="gallery-section gallery-section--masonry" aria-label="Galleribilder, avslutning">
+        <div class="gallery-columns">
+          <div class="gallery-col gallery-col--a">
+            {tailA.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+          <div class="gallery-col gallery-col--b">
+            {tailB.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    )}
 
     <nav class="gallery-back" aria-label="Tillbaka">
       <a href="/">back</a>
@@ -135,29 +310,123 @@ const imageAlt = (filename: string, index: number) =>
 <script>
   function initGallery() {
     const items = document.querySelectorAll<HTMLElement>('.gallery-item');
-    const lead = document.querySelector<HTMLElement>('.gallery-lead__frame');
+    const lead  = document.querySelector<HTMLElement>('.gallery-lead__frame');
 
-    if (!items.length) return;
+    if (items.length) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              (entry.target as HTMLElement).dataset.visible = '1';
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -48px 0px', threshold: 0.06 }
+      );
+      items.forEach((el) => observer.observe(el));
+    }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            (entry.target as HTMLElement).dataset.visible = '1';
-            observer.unobserve(entry.target);
+    if (lead) {
+      requestAnimationFrame(() => { lead.dataset.visible = '1'; });
+    }
+
+    // Stack: JS-driven fan on scroll
+    const stackDriver = document.querySelector<HTMLElement>('.stack-scroll-driver');
+    const stackCards  = Array.from(document.querySelectorAll<HTMLElement>('.stack-card'));
+
+    // Fan targets: [rotationDeg, translateXpx relative to stage, translateYpx relative to stage]
+    // Values are fractions of stage size set at runtime
+    const FAN: [number, number, number][] = [
+      [-22,  -0.9, 0.05],
+      [-11,  -0.45, -0.03],
+      [  1,     0, -0.08],
+      [  8,   0.45, -0.03],
+      [ 16,   0.85,  0.03],
+      [ 24,   1.25,  0.08],
+    ];
+    // Base pile rotations (matches CSS --card-index logic)
+    const BASE_ROT = [-6, -3, 0, 2, 4, 6];
+
+    if (stackDriver && stackCards.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let stackRaf = 0;
+
+      const tickStack = () => {
+        const rect   = stackDriver.getBoundingClientRect();
+        const total  = rect.height - window.innerHeight;
+        // progress: 0 when top of driver hits top of viewport, 1 when bottom hits bottom
+        const raw    = -rect.top / total;
+        const p      = Math.max(0, Math.min(1, raw));
+
+        // ease-out-expo
+        const eased  = p === 0 ? 0 : 1 - Math.pow(2, -10 * p);
+
+        const stage  = stackDriver.querySelector<HTMLElement>('.stack-stage');
+        const stageW = stage ? stage.offsetWidth : 400;
+
+        stackCards.forEach((card, i) => {
+          const [toRot, toTx, toTy] = FAN[i] ?? [0, 0, 0];
+          const fromRot = BASE_ROT[i] ?? 0;
+          const rot  = fromRot + (toRot - fromRot) * eased;
+          const tx   = toTx  * stageW * eased;
+          const ty   = toTy  * stageW * eased;
+          card.style.transform = `rotate(${rot}deg) translate(${tx}px, ${ty}px)`;
+        });
+
+        stackRaf = requestAnimationFrame(tickStack);
+      };
+
+      const stackObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            cancelAnimationFrame(stackRaf);
+            tickStack();
+          } else {
+            cancelAnimationFrame(stackRaf);
           }
         });
-      },
-      { rootMargin: '0px 0px -48px 0px', threshold: 0.06 }
-    );
+      }, { threshold: 0 });
 
-    items.forEach((el) => observer.observe(el));
+      stackObserver.observe(stackDriver);
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(stackRaf);
+        stackObserver.disconnect();
+      }, { once: true });
+    }
 
-    // Hero: reveal on load
-    if (lead) {
-      requestAnimationFrame(() => {
-        lead.dataset.visible = '1';
-      });
+    // Filmstrip: JS-driven horizontal slide on scroll
+    const filmDriver = document.querySelector<HTMLElement>('.filmstrip-scroll-driver');
+    const filmTrack  = document.querySelector<HTMLElement>('.filmstrip-track');
+
+    if (filmDriver && filmTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let filmRaf = 0;
+
+      const tickFilm = () => {
+        const rect    = filmDriver.getBoundingClientRect();
+        const total   = rect.height - window.innerHeight;
+        const raw     = -rect.top / total;
+        const p       = Math.max(0, Math.min(1, raw));
+        const travel  = filmTrack.scrollWidth - window.innerWidth;
+        filmTrack.style.transform = `translateX(${-travel * p}px)`;
+        filmRaf = requestAnimationFrame(tickFilm);
+      };
+
+      const filmObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            cancelAnimationFrame(filmRaf);
+            tickFilm();
+          } else {
+            cancelAnimationFrame(filmRaf);
+          }
+        });
+      }, { threshold: 0 });
+
+      filmObserver.observe(filmDriver);
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(filmRaf);
+        filmObserver.disconnect();
+      }, { once: true });
     }
   }
 
@@ -319,7 +588,7 @@ const imageAlt = (filename: string, index: number) =>
     margin: 0;
     width: 100%;
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(20px);
     transition:
       opacity 680ms var(--ease-out-expo),
       transform 680ms var(--ease-out-expo);
@@ -360,6 +629,108 @@ const imageAlt = (filename: string, index: number) =>
     opacity: 0.6;
   }
 
+  /* ── Stack section ── */
+
+  .gallery-section--stack {
+    margin-block: clamp(var(--space-32), 15vw, var(--space-72));
+  }
+
+  .stack-scroll-driver {
+    position: relative;
+    height: 400vh;
+  }
+
+  .stack-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .stack-stage {
+    position: relative;
+    width: min(80vw, 500px);
+    height: min(80vw, 500px);
+  }
+
+  .stack-card {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center bottom;
+    transform: rotate(calc((var(--card-index) - 2) * 3deg));
+  }
+
+  .stack-card:nth-child(1) { z-index: 1; }
+  .stack-card:nth-child(2) { z-index: 2; }
+  .stack-card:nth-child(3) { z-index: 6; }
+  .stack-card:nth-child(4) { z-index: 4; }
+  .stack-card:nth-child(5) { z-index: 5; }
+  .stack-card:nth-child(6) { z-index: 3; }
+
+  .stack-card__frame {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .stack-card__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── Filmstrip section ── */
+
+  .gallery-section--filmstrip {
+    margin-block: clamp(var(--space-32), 15vw, var(--space-72));
+  }
+
+  .filmstrip-scroll-driver {
+    position: relative;
+    height: 300vh;
+  }
+
+  .filmstrip-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .filmstrip-track {
+    display: flex;
+    gap: clamp(var(--space-6), 3vw, var(--space-16));
+    padding-inline: var(--layout-gutter);
+    will-change: transform;
+  }
+
+  .filmstrip-card {
+    margin: 0;
+    flex-shrink: 0;
+    width: clamp(260px, 40vw, 520px);
+  }
+
+  .filmstrip-card__frame {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .filmstrip-card__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   /* ── Back link ── */
 
   .gallery-back {
@@ -398,6 +769,20 @@ const imageAlt = (filename: string, index: number) =>
     .gallery-lead__frame {
       transform: none;
       transition: opacity 200ms linear;
+    }
+
+    .filmstrip-sticky {
+      position: static;
+      height: auto;
+      overflow: visible;
+    }
+
+    .filmstrip-track {
+      flex-wrap: wrap;
+    }
+
+    .filmstrip-scroll-driver {
+      height: auto;
     }
   }
 
