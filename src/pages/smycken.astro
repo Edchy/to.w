@@ -7,7 +7,7 @@ const allJewelry = await getCollection("jewelry");
 const jewelry = allJewelry.sort((a, b) => b.data.date.localeCompare(a.data.date));
 ---
 
-<BaseLayout title="Smycken" description="Handgjorda smycken av Tove Wätte.">
+<BaseLayout title="Smycken" description="Handgjorda smycken i silver av Tove Wätte, formade i små upplagor och beställda direkt via mejl.">
   <h1 class="sr-only">Smycken</h1>
   <ProductListing items={jewelry} section="smycken" ariaLabel="Smycken" />
 </BaseLayout>

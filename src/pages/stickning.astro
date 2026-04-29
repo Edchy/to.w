@@ -7,7 +7,7 @@ const allKnitting = await getCollection("knitting");
 const knitting = allKnitting.sort((a, b) => b.data.date.localeCompare(a.data.date));
 ---
 
-<BaseLayout title="Stickning" description="Stickade plagg och objekt av Tove Wätte.">
+<BaseLayout title="Stickning" description="Stickade plagg, objekt och mönster av Tove Wätte, med fokus på form, struktur och handgjort arbete.">
   <h1 class="sr-only">Stickning</h1>
   <ProductListing items={knitting} section="stickning" ariaLabel="Stickning" />
 </BaseLayout>

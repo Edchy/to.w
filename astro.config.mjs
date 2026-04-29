@@ -21,6 +21,19 @@ export default defineConfig({
     },
     {
       provider: fontProviders.local(),
+      name: "Chillax",
+      cssVariable: "--font-chillax",
+      formats: ["woff2"],
+      options: {
+        variants: [
+          {
+            src: ["./src/assets/fonts/Chillax-Variable.woff2"],
+          },
+        ],
+      },
+    },
+    {
+      provider: fontProviders.local(),
       name: "JuneExpt Curious",
       cssVariable: "--font-june-curious",
       formats: ["otf"],

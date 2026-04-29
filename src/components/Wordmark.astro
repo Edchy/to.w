@@ -1,0 +1,81 @@
+---
+type Props = {
+  href: string;
+  size?: "nav" | "footer";
+};
+
+const { href, size = "nav" } = Astro.props;
+---
+
+<a href={href} class:list={["wordmark", `wordmark--${size}`]} aria-label="to.w — hem">
+  <span class="wordmark__name">to.w</span>
+  <span class="wordmark__sub">Silver & Mönster</span>
+</a>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0;
+    width: fit-content;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition:
+      letter-spacing var(--transition-normal),
+      opacity var(--transition-normal);
+  }
+
+  @media (hover: hover) {
+    .wordmark:hover {
+      letter-spacing: var(--font-tracking-wide);
+      opacity: 0.82;
+    }
+  }
+
+  .wordmark__name {
+    font-family: var(--font-brand-text);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: inherit;
+    line-height: 1;
+  }
+
+  .wordmark__sub {
+    font-family: var(--font-brand-text);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: 0.18em;
+    text-transform: lowercase;
+    color: var(--color-text-primary);
+    line-height: 1;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Nav size */
+  .wordmark--nav {
+    color: var(--color-wordmark-nav);
+  }
+
+  .wordmark--nav .wordmark__name {
+    font-size: var(--font-size-xl);
+  }
+
+  .wordmark--nav .wordmark__sub {
+    display: none;
+  }
+
+  /* Footer size */
+  .wordmark--footer .wordmark__name {
+    font-size: clamp(3rem, 8vw, 8rem);
+  }
+
+  .wordmark--footer .wordmark__sub {
+    font-size: var(--font-size-lg);
+    margin-top: -8px;
+  }
+
+  @media (max-width: 760px) {
+    .wordmark--footer .wordmark__name {
+      font-size: var(--font-size-2xl);
+    }
+  }
+</style>

@@ -3,6 +3,8 @@ import "../styles/global.css";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
+import ThemePicker from "../components/ThemePicker.astro";
+import Wordmark from "../components/Wordmark.astro";
 
 type Props = {
   title?: string;
@@ -11,7 +13,7 @@ type Props = {
 };
 
 const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false } = Astro.props;
-const pageTitle = title ? `${title} — to.w` : "to.w";
+const pageTitle = title ? `to.w - ${title}` : "to.w";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 const currentYear = new Date().getFullYear();
@@ -60,7 +62,11 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <script is:inline>
+      (function(){var t=localStorage.getItem('tow-theme')||'moss';document.documentElement.setAttribute('data-theme',t);})();
+    </script>
     <Font cssVariable="--font-body" />
+    <Font cssVariable="--font-chillax" />
     <Font cssVariable="--font-june-active" />
     <Font cssVariable="--font-june-curious" />
     <Font cssVariable="--font-seasum-stormy" />
@@ -84,7 +90,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     <header class="site-header">
       <div class="site-wrap site-header__inner">
-        <a href={baseUrl} class="site-logo" aria-label="to.w — hem">to.w</a>
+        <Wordmark href={baseUrl} size="nav" />
         <nav aria-label="Huvudnavigering">
           <ul class="nav-list" role="list">
             {headerNavLinks.map(({ href, label }) => (
@@ -121,6 +127,8 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       </ul>
     </div>
 
+    <ThemePicker />
+
     <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />
     </main>
@@ -128,7 +136,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <footer class:list={["site-footer", { "site-footer--hidden": noPadding }]}>
       <div class="site-wrap site-footer__inner">
         <div class="footer-brand">
-          <a href={baseUrl} class="footer-wordmark" aria-label="to.w — hem">to.w</a>
+          <Wordmark href={baseUrl} size="footer" />
         </div>
         <div class="footer-directory">
           <nav class="footer-group" aria-label="Sidfotsnavigering">
@@ -258,26 +266,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: center;
     justify-content: space-between;
     height: 100%;
-  }
-
-  .site-logo {
-    font-family: var(--font-brand-text);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-normal);
-    color: var(--color-text-primary);
-    line-height: 1;
-    transition:
-      letter-spacing var(--transition-normal),
-      opacity var(--transition-normal);
-  }
-
-  @media (hover: hover) {
-    .site-logo:hover,
-    .footer-wordmark:hover {
-      letter-spacing: var(--font-tracking-wide);
-      opacity: 0.82;
-    }
   }
 
   .nav-list {
@@ -472,18 +460,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-  }
-
-  .footer-wordmark {
-    font-family: var(--font-brand-text);
-    font-size: clamp(3rem, 8vw, 8rem);
-    color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-normal);
-    line-height: 1;
-    display: inline-block;
-    transition:
-      letter-spacing var(--transition-normal),
-      opacity var(--transition-normal);
   }
 
   .footer-directory {
@@ -725,9 +701,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       padding-top: var(--space-2);
     }
 
-    .footer-wordmark {
-      font-size: var(--font-size-2xl);
-    }
   }
 
 </style>
