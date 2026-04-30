@@ -92,9 +92,9 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
       >
         {title}
       </h1>
-      {detailText && <p class="pd__details">{detailText}</p>}
-      {hasSizes && <p class="pd__details">{sizeLabel}: {sizes.join(", ")}</p>}
       <span class="pd__price">{formattedPrice} kr</span>
+      {detailText && <p class="pd__details pd__details-meta">{detailText}</p>}
+      {hasSizes && <p class="pd__details">{sizeLabel}: {sizes.join(", ")}</p>}
     </div>
 
     <div class="pd__support">
@@ -104,7 +104,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
           <span class="pd__buy-text">Beställ</span>
         </a>
         <p class="pd__order-note">
-          Varje smycke tillverkas individuellt efter beställning.<br/> Jag återkommer så snart jag kan med bekräftelse, betalningsinfo (Swish, överföring, kontant) och ungefärlig leveranstid. Om du har frågor eller särskilda önskemål, tveka inte att <a href={CONTACT_EMAIL_HREF}>kontakta mig</a>!
+          Varje smycke tillverkas individuellt efter beställning. Jag återkommer så snart jag kan med bekräftelse, betalningsinfo (Swish, överföring, kontant) och ungefärlig leveranstid. Om du har frågor eller särskilda önskemål, tveka inte att <a href={CONTACT_EMAIL_HREF}>kontakta mig</a>!
         </p>
       </div>
     </div>
@@ -238,7 +238,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
   .pd__title {
     font-family: var(--font-heading-text);
     font-size: clamp(var(--font-size-3xl), 6vw, var(--font-size-display));
-    font-weight: var(--font-weight-regular);
+    font-weight: var(--font-weight-semibold);
     line-height: var(--font-leading-tight);
     letter-spacing: var(--font-tracking-normal);
     color: var(--color-text-primary);
@@ -251,7 +251,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
   }
 
   .pd__price {
-    font-family: var(--font-body-text);
+    font-family: var(--font-heading-text);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
@@ -280,7 +280,6 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
   }
 
   .pd__order-note {
-    max-width: 65ch;
     margin: var(--space-4) 0 0;
     padding-top: var(--space-4);
     border-top: 1px solid var(--color-border-subtle);
@@ -394,25 +393,52 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
     }
 
     .pd__summary,
-    .pd__support {
-      display: flex;
-      flex-direction: column;
+    .pd__support,
+    .pd__body {
+      display: contents;
     }
 
     .pd__summary {
-      grid-column: 1;
-      grid-row: 1;
-      gap: var(--space-5);
-    }
-
-    .pd__support {
       grid-column: 2;
       grid-row: 1;
-      gap: var(--space-5);
+      display: grid;
+      align-items: start;
+      row-gap: var(--space-3);
     }
 
     .pd__title {
-      font-size: var(--font-size-3xl);
+      grid-column: 1;
+      order: 1;
+      font-size: var(--font-size-display);
+    }
+
+    .pd__price {
+      grid-column: 1;
+      order: 2;
+      white-space: nowrap;
+    }
+
+    .pd__details {
+      grid-column: 1;
+      order: 3;
+    }
+
+    .pd__description {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .pd__buy {
+      grid-column: 2;
+      order: 4;
+      align-self: start;
+      width: 100%;
+    }
+
+    .pd__order-note {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      margin-top: var(--space-5);
     }
 
   }
@@ -464,16 +490,37 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
     }
 
     .pd__title {
-      font-size: var(--font-size-3xl);
+      grid-column: auto;
+      order: initial;
+      font-size: var(--font-size-display);
       margin-top: 0;
     }
 
     .pd__price {
+      grid-column: auto;
+      order: initial;
       font-size: var(--font-size-lg);
     }
 
+    .pd__details,
+    .pd__description,
+    .pd__order-note {
+      grid-column: auto;
+      grid-row: auto;
+      order: initial;
+    }
+
     .pd__buy {
+      grid-column: auto;
+      grid-row: auto;
+      order: initial;
+      align-self: auto;
       width: 100%;
+      max-width: none;
+    }
+
+    .pd__details-meta {
+      display: none;
     }
   }
 
