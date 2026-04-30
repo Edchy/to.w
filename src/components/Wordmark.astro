@@ -63,20 +63,42 @@ const { href, size = "nav" } = Astro.props;
   }
 
   /* Footer size */
+  .wordmark--footer {
+    --wordmark-footer-name-size: clamp(5rem, 10vw, 10rem);
+    --wordmark-footer-sub-size: clamp(0.7rem, 1.1vw, 0.9rem);
+    --wordmark-footer-sub-tracking: 0.6em;
+    --wordmark-footer-sub-offset: calc(var(--space-1) * -1.5);
+    color: var(--color-wordmark-nav);
+  }
+
   .wordmark--footer .wordmark__name {
-    font-size: clamp(5rem, 10vw, 10rem);
+    font-size: var(--wordmark-footer-name-size);
   }
 
   .wordmark--footer .wordmark__sub {
-    font-size: clamp(0.7rem, 1.1vw, 0.9rem);
-    letter-spacing: 0.6em;
-    margin-top: -6px;
+    color: var(--color-wordmark-nav);
+    font-size: var(--wordmark-footer-sub-size);
+    letter-spacing: var(--wordmark-footer-sub-tracking);
+    margin-top: var(--wordmark-footer-sub-offset);
     text-align: center;
   }
 
+  @media (min-width: 761px) and (max-width: 900px) {
+    .wordmark--footer {
+      --wordmark-footer-sub-tracking: 0.48em;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .wordmark--footer {
+      --wordmark-footer-sub-size: clamp(0.85rem, 1.2vw, 1rem);
+      --wordmark-footer-sub-offset: calc(var(--space-2) * -1);
+    }
+  }
+
   @media (max-width: 760px) {
-    .wordmark--footer .wordmark__sub {
-      letter-spacing: 0.35em;
+    .wordmark--footer {
+      --wordmark-footer-sub-tracking: 0.35em;
     }
   }
 </style>
