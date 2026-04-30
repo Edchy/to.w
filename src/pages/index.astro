@@ -663,7 +663,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
 
   .project__heading {
     font-family: var(--font-heading-text);
-    font-weight: var(--font-weight-regular);
+    font-weight: var(--font-weight-semibold);
     line-height: var(--font-leading-tight);
     letter-spacing: var(--font-tracking-tightest);
     color: var(--color-text-primary);
@@ -1043,6 +1043,10 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
 
     .about {
       grid-template-columns: 1fr;
+    }
+
+    .project__text p {
+      max-width: none;
     }
 
     .about__photo-wrap {
