@@ -1,0 +1,9 @@
+{
+  "title": "rutger",
+  "price": 1600,
+  "sizes": ["17", "18", "19", "20"],
+  "description": "tba",
+  "material": "tba",
+  "images": ["./rut.avif", "./rutger.avif"],
+  "date": "2026-04-22"
+}

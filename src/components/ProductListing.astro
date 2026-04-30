@@ -59,7 +59,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(50% - var(--space-4), 260px), 1fr));
     gap: clamp(var(--space-8), 5vw, var(--space-16)) clamp(var(--space-4), 2.2vw, var(--space-8));
     align-items: start;
   }
@@ -178,7 +178,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   @media (hover: hover) {
     .product-card:hover .product-card__media {
-      background-color: var(--color-bg-surface);
+      background-color: var(--color-bg-statement);
       border-color: var(--color-border-default);
       transform: translateY(calc(var(--space-1) * -1));
     }

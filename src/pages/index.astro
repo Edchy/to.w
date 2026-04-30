@@ -42,9 +42,22 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 const captionSideBySlug: Record<string, "left" | "right"> = {
   bark: "left",
-  frost: "left",
+  frost: "right",
   golden: "left",
 };
+
+const frameColors = [
+  { frame: "var(--color-accent-subtle)",  hover: "var(--color-bg-muted)" },
+  { frame: "var(--color-bg-statement)",   hover: "var(--color-brand-subtle)" },
+  { frame: "var(--color-brand-subtle)",   hover: "var(--color-accent-subtle)" },
+  { frame: "var(--color-bg-muted)",       hover: "var(--color-bg-statement)" },
+  { frame: "var(--color-bg-surface)",     hover: "var(--color-accent-subtle)" },
+  { frame: "var(--color-brand-subtle)",   hover: "var(--color-bg-muted)" },
+  { frame: "var(--color-accent-subtle)",  hover: "var(--color-brand-subtle)" },
+  { frame: "var(--color-bg-statement)",   hover: "var(--color-bg-surface)" },
+  { frame: "var(--color-bg-muted)",       hover: "var(--color-accent-subtle)" },
+  { frame: "var(--color-brand-subtle)",   hover: "var(--color-bg-statement)" },
+];
 ---
 
 <BaseLayout description="to.w är Tove Wättes samlade plats för handgjorda smycken i silver, stickade objekt, projekt och bilder från arbetet.">
@@ -66,6 +79,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
                   captionSide && "work-card--caption-side",
                   captionSide && `work-card--caption-${captionSide}`,
                 ]}
+                style={`--work-frame: ${frameColors[globalIndex % frameColors.length].frame}; --work-frame-hover: ${frameColors[globalIndex % frameColors.length].hover};`}
                 href={href}
                 aria-label={`Visa ${entry.data.title}`}
               >
@@ -124,13 +138,14 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
               <Image src={d1handImg} alt="D1-ringen på ett barns hand" loading="lazy" width={640} height={800} />
             </div>
             <div class="project__text">
-              <h2 class="project__heading">knuten till forskning</h2>
+              <h2 class="project__heading">knuten</h2>
               <p>Jag har haft äran att samarbeta med <a href="https://webbshop.barndiabetesfonden.se/produkter/knut-ring-silver" target="_blank" rel="noopener noreferrer">Barndiabetesfonden</a> genom att designa och skapa en tunn ring med en knut placerad högst upp. Ringen säljs via deras hemsida och alla intäkter går oavkortat till forskning om diabetes.</p>
               <p>Projektet ligger mig varmt om hjärtat — jag är förälder till ett barn med diabetes, som insjuknade innan sin 1-års dag.</p>
             </div>
           </article>
         )}
 
+        {/* hoop hoop — paused
         {rowIndex === 2 && (
           <article class="project project--hoop" aria-label="Projekt hoop hoop">
             <div class="project__media project__media--quad">
@@ -146,6 +161,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
             </div>
           </article>
         )}
+        */}
       </>
     ))}
 
@@ -194,6 +210,11 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     margin-top: clamp(var(--space-32), 15vw, var(--space-72));
   }
 
+  .work--row-3,
+  .work--row-3 + .work--row-4 {
+    margin-top: clamp(var(--space-32), 15vw, var(--space-72));
+  }
+
   .work--row-4 + .work--row-5 {
     margin-top: clamp(var(--space-24), 12vw, var(--space-48));
   }
@@ -212,9 +233,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     color: var(--color-text-primary);
   }
 
-  .work-card:nth-child(6n + 1) {
-    --work-frame: var(--color-accent-subtle);
-    --work-frame-hover: var(--color-bg-muted);
+  .work-card:nth-child(8n + 1) {
     --work-tilt: 1.4deg;
     --reveal-x: calc(var(--space-6) * -1);
     --reveal-rot: -1.6deg;
@@ -222,8 +241,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     grid-column: 2 / span 4;
   }
 
-  .work-card:nth-child(6n + 2) {
-    --work-frame: var(--color-brand-subtle);
+  .work-card:nth-child(8n + 2) {
     --work-frame-hover: var(--color-accent-subtle);
     --work-tilt: -2.2deg;
     --reveal-x: var(--space-8);
@@ -233,8 +251,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     margin-top: var(--space-20);
   }
 
-  .work-card:nth-child(6n + 3) {
-    --work-frame: var(--color-bg-surface);
+  .work-card:nth-child(8n + 3) {
     --work-frame-hover: var(--color-brand-subtle);
     --work-tilt: 1deg;
     --reveal-x: calc(var(--space-4) * -1);
@@ -282,8 +299,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     margin-top: var(--space-24);
   }
 
-  .work-card:nth-child(6n + 4) {
-    --work-frame: var(--color-bg-muted);
+  .work-card:nth-child(8n + 4) {
     --work-frame-hover: var(--color-brand-subtle);
     --work-tilt: -1.3deg;
     --reveal-x: var(--space-6);
@@ -293,9 +309,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     margin-top: var(--space-24);
   }
 
-  .work-card:nth-child(6n + 5) {
-    --work-frame: var(--color-brand-subtle);
-    --work-frame-hover: var(--color-bg-muted);
+  .work-card:nth-child(8n + 5) {
     --work-tilt: 1.8deg;
     --reveal-x: calc(var(--space-8) * -1);
     --reveal-rot: -1deg;
@@ -304,9 +318,19 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     margin-top: var(--space-12);
   }
 
-  .work-card:nth-child(6n) {
-    --work-frame: var(--color-accent-subtle);
-    --work-frame-hover: var(--color-brand-subtle);
+  .work-card:nth-child(8n + 6) {
+    --work-tilt: 1.2deg;
+    --reveal-x: var(--space-5);
+    --reveal-rot: -0.9deg;
+  }
+
+  .work-card:nth-child(8n + 7) {
+    --work-tilt: -1.6deg;
+    --reveal-x: calc(var(--space-6) * -1);
+    --reveal-rot: 1.1deg;
+  }
+
+  .work-card:nth-child(8n) {
     --work-tilt: -1deg;
     --reveal-x: var(--space-4);
     --reveal-rot: 0.8deg;
@@ -401,6 +425,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       justify-items: end;
       text-align: right;
     }
+
   }
 
   .work-card__title {
@@ -432,7 +457,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
 
   .work-card__price {
     width: fit-content;
-    padding: var(--space-1) var(--space-2);
+    padding-block: var(--space-1) var(--space-2);
     font-family: var(--font-heading-text);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);

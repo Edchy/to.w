@@ -1,13 +1,13 @@
 {
   "title": "bark",
-  "price": 1900,
-  "sizes": ["17", "18", "19", "20"],
-  "description": "En ring med karaktär – formad för hand i vax och gjuten i 100% återvunnet sterling silver (925). Den runda formen är täckt av handgjorda mönster som ger ringen en taktil yta och ett levande uttryck. Varje mönster är unikt, och ytan bär spår av processen. En ring med tydlig närvaro och känsla av hantverk.",
-  "body": "Varje ring är unik – strukturen varierar från exemplar till exemplar",
+  "price": 1400,
+  "sizes": ["17", "18", "19", "20", "21"],
+  "description": "En ring med karaktär. Formad för hand i vax och gjuten i 100% återvunnet sterling silver (925). Den runda formen är täckt av handgjorda mönster som ger ringen en taktil yta och ett levande uttryck. Varje mönster är unikt, och ytan bär spår av processen. En ring med tydlig närvaro och känsla av hantverk.",
+  "body": "Varje ring är unik. Strukturen varierar från exemplar till exemplar",
   "material": "Återvunnet sterling silver (925)",
   "technique": "Vaxmodellering med handgjorda strukturer",
   "design": "Rund form med skulpterade mönster",
-  "images": ["./DSC_5556_VSCO.webp"],
-  "imagesHd": ["./DSC_5556_VSCO.webp"],
+  "images": ["./bark.avif", "./bark-photo.webp"],
+  "imagesHd": ["./bark-photo.webp"],
   "date": "2026-04-15"
 }
