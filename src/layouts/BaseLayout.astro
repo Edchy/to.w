@@ -165,7 +165,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
           </div>
         </div>
         <div class="footer-colophon">
-          <p>&copy; {currentYear} to.w</p>
+          <p>&copy; {currentYear} tove wätte</p>
           <p>
             website by
             <a href="https://nope.digital" target="_blank" rel="noopener noreferrer">nope digital</a>
@@ -187,19 +187,47 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     const main = document.querySelector('main');
     const footer = document.querySelector('.site-footer');
+    let lockedScrollY = 0;
+    let isScrollLocked = false;
+
+    function lockPageScroll() {
+      if (isScrollLocked) return;
+      lockedScrollY = window.scrollY;
+      isScrollLocked = true;
+      document.documentElement.classList.add('has-mobile-nav-open');
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${lockedScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+
+    function unlockPageScroll() {
+      if (!isScrollLocked) return;
+      isScrollLocked = false;
+      document.documentElement.classList.remove('has-mobile-nav-open');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      window.scrollTo(0, lockedScrollY);
+    }
 
     function openMenu() {
       nav.classList.add('is-open');
+      lockPageScroll();
       btn.setAttribute('aria-expanded', 'true');
       btn.setAttribute('aria-label', 'Stäng meny');
       main?.setAttribute('inert', '');
       footer?.setAttribute('inert', '');
-      const firstLink = nav.querySelector<HTMLElement>('a, button');
+      const firstLink = nav.querySelector('a, button');
       firstLink?.focus();
     }
 
     function closeMenu() {
       nav.classList.remove('is-open');
+      unlockPageScroll();
       btn.setAttribute('aria-expanded', 'false');
       btn.setAttribute('aria-label', 'Öppna meny');
       main?.removeAttribute('inert');
@@ -211,12 +239,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
     });
 
-    nav.addEventListener('keydown', (e: KeyboardEvent) => {
+    nav.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeMenu();
     });
 
     document.addEventListener('astro:after-swap', () => {
       nav.classList.remove('is-open');
+      unlockPageScroll();
       btn.setAttribute('aria-expanded', 'false');
       btn.setAttribute('aria-label', 'Öppna meny');
       main?.removeAttribute('inert');
@@ -444,7 +473,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .site-footer {
     margin-top: var(--space-24);
     padding-top: var(--space-16);
-    padding-bottom: var(--space-16);
+    padding-bottom: var(--space-10);
     background-color: var(--color-bg-muted);
     border-top: 1px solid var(--color-border-subtle);
   }
@@ -551,23 +580,26 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .footer-colophon {
     grid-column: 1 / -1;
     display: flex;
-    justify-content: space-between;
-    gap: var(--space-6);
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
     padding-top: var(--space-6);
   }
 
   .footer-colophon p {
     margin: 0;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-text-tertiary);
+    opacity: 0.75;
     letter-spacing: var(--font-tracking-wide);
     line-height: var(--font-leading-snug);
     text-transform: lowercase;
+    text-align: center;
   }
 
   .footer-colophon a {
     color: inherit;
-    text-decoration: underline;
+    text-decoration: none;
     text-underline-offset: var(--space-1);
     transition: color var(--transition-fast), opacity var(--transition-fast);
   }
@@ -584,7 +616,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 7px;
+    gap: var(--space-1);
     width: 44px;
     height: 44px;
     background: none;
@@ -605,10 +637,10 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   }
 
   .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
-    transform: translateY(4.5px) rotate(45deg);
+    transform: translateY(3px) rotate(45deg);
   }
   .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
-    transform: translateY(-4.5px) rotate(-45deg);
+    transform: translateY(-3px) rotate(-45deg);
   }
 
   @media (max-width: 760px) {
@@ -641,6 +673,11 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+  }
+
+  :global(html.has-mobile-nav-open),
+  :global(html.has-mobile-nav-open body) {
+    overflow: hidden;
   }
 
   .mobile-nav__list {
@@ -696,7 +733,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     .footer-colophon {
       flex-direction: column;
-      justify-content: flex-start;
+      align-items: center;
       gap: var(--space-2);
       padding-top: var(--space-2);
     }

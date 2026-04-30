@@ -76,6 +76,7 @@
   --weight-light: 300;
   --weight-regular: 400;
   --weight-medium: 500;
+  --weight-semibold: 600;
   --weight-bold: 700;
 
   /* Border radius */
@@ -136,6 +137,7 @@
   --font-weight-light: var(--weight-light);
   --font-weight-regular: var(--weight-regular);
   --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
   --font-weight-bold: var(--weight-bold);
 
   /* Typography — leading */

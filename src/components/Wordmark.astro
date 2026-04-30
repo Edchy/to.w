@@ -14,8 +14,7 @@ const { href, size = "nav" } = Astro.props;
 
 <style>
   .wordmark {
-    display: inline-flex;
-    flex-direction: column;
+    display: inline-grid;
     gap: 0;
     width: fit-content;
     color: var(--color-text-primary);
@@ -34,7 +33,7 @@ const { href, size = "nav" } = Astro.props;
 
   .wordmark__name {
     font-family: var(--font-brand-text);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-semibold);
     letter-spacing: inherit;
     line-height: 1;
   }
@@ -42,12 +41,12 @@ const { href, size = "nav" } = Astro.props;
   .wordmark__sub {
     font-family: var(--font-brand-text);
     font-weight: var(--font-weight-regular);
-    letter-spacing: 0.18em;
     text-transform: lowercase;
     color: var(--color-text-primary);
     line-height: 1;
     width: 100%;
-    text-align: center;
+    overflow: hidden;
+    letter-spacing: inherit;
   }
 
   /* Nav size */
@@ -65,17 +64,19 @@ const { href, size = "nav" } = Astro.props;
 
   /* Footer size */
   .wordmark--footer .wordmark__name {
-    font-size: clamp(3rem, 8vw, 8rem);
+    font-size: clamp(5rem, 10vw, 10rem);
   }
 
   .wordmark--footer .wordmark__sub {
-    font-size: var(--font-size-lg);
-    margin-top: -8px;
+    font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+    letter-spacing: 0.6em;
+    margin-top: -6px;
+    text-align: center;
   }
 
   @media (max-width: 760px) {
-    .wordmark--footer .wordmark__name {
-      font-size: var(--font-size-2xl);
+    .wordmark--footer .wordmark__sub {
+      letter-spacing: 0.35em;
     }
   }
 </style>

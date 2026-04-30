@@ -655,7 +655,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
     max-width: var(--layout-statement-width);
     margin-left: auto;
     margin-right: auto;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-sm);
     overflow: hidden;
     background: var(--color-bg-muted);
   }
@@ -907,11 +907,11 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
   @keyframes quiet-rise {
     from {
       opacity: 0;
-      transform: translate(var(--reveal-x, 0), var(--space-8)) rotate(var(--reveal-rot, 0deg)) scale(0.98);
+      transform: translateY(var(--space-8)) scale(0.98);
     }
     to {
       opacity: 1;
-      transform: translate(0, 0) rotate(0deg) scale(1);
+      transform: translateY(0) scale(1);
     }
   }
 
@@ -1178,7 +1178,7 @@ const captionSideBySlug: Record<string, "left" | "right"> = {
       bottom: auto;
       left: auto;
       box-shadow: none;
-      border-radius: 0;
+      border-radius: var(--radius-sm);
     }
 
     /* Hoop: 2×2 grid */
