@@ -3,6 +3,8 @@ import "../styles/global.css";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
+import ThemePicker from "../components/ThemePicker.astro";
+import Wordmark from "../components/Wordmark.astro";
 
 type Props = {
   title?: string;
@@ -10,16 +12,24 @@ type Props = {
   noPadding?: boolean;
 };
 
-const { title, description = "to.w — handgjorda smycken och objekt.", noPadding = false } = Astro.props;
-const pageTitle = title ? `${title} — to.w` : "to.w";
+const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false } = Astro.props;
+const pageTitle = title ? `to.w - ${title}` : "to.w";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 const currentYear = new Date().getFullYear();
 
-const navLinks = [
+const siteOrigin = Astro.site?.origin ?? "";
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
+const ogImageUrl = `${siteOrigin}${withBase("/og.png")}`;
+
+const footerNavLinks = [
   { href: "/stickning", label: "stickning" },
   { href: "/smycken", label: "smycken" },
-
+  { href: "/gallery", label: "galleri" },
+];
+const headerNavLinks = [
+  ...footerNavLinks,
+  { href: "/#kontakt", label: "kontakt" },
 ];
 
 const basePath = new URL(baseUrl, "https://example.com").pathname.replace(/\/$/, "");
@@ -30,25 +40,49 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 <html lang="sv">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="to.w" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="sv_SE" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <script is:inline>
+      (function(){var t=localStorage.getItem('tow-theme')||'moss';document.documentElement.setAttribute('data-theme',t);})();
+    </script>
     <Font cssVariable="--font-body" />
+    <Font cssVariable="--font-chillax" />
     <Font cssVariable="--font-june-active" />
     <Font cssVariable="--font-june-curious" />
+    <Font cssVariable="--font-seasum-stormy" />
+    <Font cssVariable="--font-seasum-calm" />
     <ClientRouter />
   </head>
   <body>
     <div class="shop-banner" role="note" aria-live="polite" transition:persist>
       <p class="shop-banner__full">
-        webbshopen byggs om — du kan fortfarande beställa via <a href={CONTACT_EMAIL_HREF}>mejl</a> och betala med swish.
+        webbshopen byggs om — men du kan fortfarande beställa via <a href={CONTACT_EMAIL_HREF}>mejl</a> och betala med swish.
       </p>
       <div class="shop-banner__carousel" aria-hidden="true">
         <span class="shop-banner__track">
-          <span class="shop-banner__item">webbshopen byggs om — beställ via mejl och betala med swish</span>
+          <span class="shop-banner__item">webbshopen byggs om — men du kan ändå beställa via mejl och betala med swish</span>
           <span class="shop-banner__sep" aria-hidden="true">·</span>
-          <span class="shop-banner__item">webbshopen byggs om — beställ via mejl och betala med swish</span>
+          <span class="shop-banner__item">webbshopen byggs om — men du kan ändå beställa via mejl och betala med swish</span>
           <span class="shop-banner__sep" aria-hidden="true">·</span>
         </span>
       </div>
@@ -56,10 +90,10 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     <header class="site-header">
       <div class="site-wrap site-header__inner">
-        <a href={baseUrl} class="site-logo" aria-label="to.w — hem">to.w</a>
+        <Wordmark href={baseUrl} size="nav" />
         <nav aria-label="Huvudnavigering">
           <ul class="nav-list" role="list">
-            {navLinks.map(({ href, label }) => (
+            {headerNavLinks.map(({ href, label }) => (
               <li>
                 <a
                   href={withBase(href)}
@@ -71,8 +105,29 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
             ))}
           </ul>
         </nav>
+        <button class="hamburger" aria-label="Öppna meny" aria-expanded="false" aria-controls="mobile-nav">
+          <span class="hamburger__bar"></span>
+          <span class="hamburger__bar"></span>
+        </button>
       </div>
     </header>
+
+    <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Meny" aria-modal="true">
+      <ul class="mobile-nav__list" role="list">
+        {headerNavLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={withBase(href)}
+              class:list={["mobile-nav__link", { "mobile-nav__link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <ThemePicker />
 
     <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />
@@ -81,20 +136,12 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <footer class:list={["site-footer", { "site-footer--hidden": noPadding }]}>
       <div class="site-wrap site-footer__inner">
         <div class="footer-brand">
-          <a href={baseUrl} class="footer-wordmark" aria-label="to.w — hem">to.w</a>
-          <ul class="footer-socials footer-socials--mobile" role="list">
-            <li>
-              <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
-            </li>
-            <li>
-              <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
-            </li>
-          </ul>
+          <Wordmark href={baseUrl} size="footer" />
         </div>
         <div class="footer-directory">
           <nav class="footer-group" aria-label="Sidfotsnavigering">
             <ul class="footer-links" role="list">
-              {navLinks.map(({ href, label }) => (
+              {footerNavLinks.map(({ href, label }) => (
                 <li>
                   <a
                     href={withBase(href)}
@@ -112,15 +159,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
                 <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
               </li>
               <li>
-                <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+                <a href={CONTACT_EMAIL_HREF}>email</a>
               </li>
             </ul>
           </div>
         </div>
         <div class="footer-colophon">
-          <p>&copy; {currentYear} to.w</p>
+          <p>&copy; {currentYear} tove wätte</p>
           <p>
-            webbplats av
+            website by
             <a href="https://nope.digital" target="_blank" rel="noopener noreferrer">nope digital</a>
           </p>
         </div>
@@ -128,6 +175,105 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     </footer>
   </body>
 </html>
+
+<script is:inline>
+  function initHamburger() {
+    const btn = document.querySelector('.hamburger');
+    const nav = document.getElementById('mobile-nav');
+    if (!btn || !nav) return;
+
+    if (btn.dataset.hamburgerInit) return;
+    btn.dataset.hamburgerInit = '1';
+
+    const main = document.querySelector('main');
+    const footer = document.querySelector('.site-footer');
+    let lockedScrollY = 0;
+    let isScrollLocked = false;
+
+    function lockPageScroll() {
+      if (isScrollLocked) return;
+      lockedScrollY = window.scrollY;
+      isScrollLocked = true;
+      document.documentElement.classList.add('has-mobile-nav-open');
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${lockedScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+
+    function unlockPageScroll() {
+      if (!isScrollLocked) return;
+      isScrollLocked = false;
+      document.documentElement.classList.remove('has-mobile-nav-open');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      window.scrollTo(0, lockedScrollY);
+    }
+
+    function openMenu() {
+      nav.classList.add('is-open');
+      lockPageScroll();
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-label', 'Stäng meny');
+      main?.setAttribute('inert', '');
+      footer?.setAttribute('inert', '');
+      const firstLink = nav.querySelector('a, button');
+      firstLink?.focus();
+    }
+
+    function closeMenu() {
+      nav.classList.remove('is-open');
+      unlockPageScroll();
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Öppna meny');
+      main?.removeAttribute('inert');
+      footer?.removeAttribute('inert');
+      btn.focus();
+    }
+
+    btn.addEventListener('click', () => {
+      btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
+    });
+
+    nav.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    document.addEventListener('astro:after-swap', () => {
+      nav.classList.remove('is-open');
+      unlockPageScroll();
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Öppna meny');
+      main?.removeAttribute('inert');
+      footer?.removeAttribute('inert');
+    });
+  }
+
+  document.addEventListener('astro:page-load', initHamburger);
+  initHamburger();
+</script>
+
+<script is:inline>
+  // Tab title: soften presence when focus leaves
+  (function () {
+    const original = document.title;
+    document.addEventListener('visibilitychange', () => {
+      document.title = document.hidden ? '— to.w' : original;
+    });
+  })();
+
+  // Console art: handmade message for curious visitors
+  console.log(
+    '%c\n  t  o  .  w\n\n%chandgjorda smycken & stickning\nJärna, Sverige\n\nhttps://to.w\n',
+    'font-size:18px; letter-spacing:0.3em; color:#7a8c6a; font-family:monospace',
+    'font-size:11px; color:#9a9082; font-family:monospace; letter-spacing:0.05em'
+  );
+</script>
+
 
 <style>
   .site-wrap {
@@ -139,10 +285,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-header {
     position: relative;
+    z-index: var(--z-modal);
     height: var(--nav-height);
-    background-color: color-mix(in oklch, var(--color-bg-base) 92%, transparent);
-    backdrop-filter: blur(var(--blur-nav));
-    -webkit-backdrop-filter: blur(var(--blur-nav));
+    background-color: color-mix(in oklch, var(--color-bg-base) 94%, transparent);
   }
 
   .site-header__inner {
@@ -150,23 +295,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: center;
     justify-content: space-between;
     height: 100%;
-  }
-
-  .site-logo {
-    font-family: var(--font-brand-text);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wide);
-    color: var(--color-brand);
-    line-height: 1;
-    transition: letter-spacing 380ms var(--ease-out-expo);
-  }
-
-  @media (hover: hover) {
-    .site-logo:hover,
-    .footer-wordmark:hover {
-      letter-spacing: 0.14em;
-    }
   }
 
   .nav-list {
@@ -186,17 +314,18 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    color: var(--color-brand);
-    transition: color var(--transition-fast), opacity var(--transition-fast);
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
   }
 
   .nav-link:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
+    transform: translateY(-1px);
   }
 
   .nav-link--active {
-    color: var(--color-brand);
+    color: var(--color-text-primary);
     text-decoration: none;
     position: relative;
   }
@@ -206,38 +335,45 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     position: absolute;
     left: -1px;
     right: -2px;
-    bottom: -4px;
-    height: 1.5px;
-    background: var(--color-brand);
-    border-radius: var(--radius-sm);
-    transform: rotate(-1.5deg);
-    transform-origin: left center;
+    bottom: var(--nav-active-underline-offset);
+    height: var(--nav-active-underline-height);
+    background-color: var(--color-brand);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: round;
+    -webkit-mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-repeat: round;
+    mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    transform: translateX(var(--nav-active-underline-shift-x)) rotate(var(--nav-active-underline-rotation));
+    transform-origin: center;
   }
 
   .shop-banner {
     position: relative;
+    padding-block: .5rem;
     z-index: var(--z-raised);
-    background: var(--color-accent-subtle);
+    background: var(--color-bg-statement);
     text-align: center;
-    padding: var(--space-1) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .shop-banner p,
   .shop-banner__slide {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-wide);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
     margin: 0;
   }
 
   .shop-banner a {
-    color: var(--color-brand);
+    color: var(--color-text-primary);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
 
   .shop-banner a:hover {
-    color: var(--color-accent-dark);
+    opacity: 0.7;
   }
 
   .shop-banner__carousel {
@@ -250,14 +386,15 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: center;
     gap: var(--space-6);
     white-space: nowrap;
-    animation: banner-scroll 18s linear infinite;
+    animation: banner-scroll 34s linear infinite;
   }
 
   .shop-banner__item,
   .shop-banner__sep {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    letter-spacing: var(--font-tracking-wide);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
     flex-shrink: 0;
   }
 
@@ -277,6 +414,22 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     .shop-banner__carousel {
       display: block;
+    }
+  }
+
+  @media (max-width: 1300px) {
+    .nav-list {
+      gap: var(--space-5);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .site-header {
+      height: var(--nav-height);
+    }
+
+    .nav-list {
+      display: none;
     }
   }
 
@@ -319,9 +472,10 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .site-footer {
     margin-top: var(--space-24);
-    padding-top: var(--space-12);
-    padding-bottom: var(--space-12);
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-10);
     background-color: var(--color-bg-muted);
+    border-top: 1px solid var(--color-border-subtle);
   }
 
   .site-footer__inner {
@@ -335,15 +489,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-  }
-
-  .footer-wordmark {
-    font-family: var(--font-brand-text);
-    font-size: var(--font-size-display);
-    color: var(--color-brand);
-    letter-spacing: var(--font-tracking-normal);
-    line-height: var(--font-leading-tight);
-    transition: letter-spacing 380ms var(--ease-out-expo);
   }
 
   .footer-directory {
@@ -368,15 +513,16 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     min-height: 44px;
     padding-block: var(--space-1);
     font-size: var(--font-size-sm);
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    transition: color var(--transition-fast), opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
   }
 
   .footer-links a:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
+    transform: translateY(-1px);
   }
 
   .footer-socials {
@@ -394,55 +540,170 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     min-height: 44px;
     padding-block: var(--space-1);
     font-size: var(--font-size-sm);
-    color: var(--color-brand);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
-    transition: color var(--transition-fast), opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
   }
 
   .footer-socials a:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
+    transform: translateY(-1px);
   }
 
 
   .footer-link--active {
-    color: var(--color-accent-dark);
-    text-decoration: underline;
-    text-underline-offset: var(--space-1);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    position: relative;
+  }
+
+  .footer-link--active::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    right: -2px;
+    bottom: var(--nav-active-underline-offset);
+    height: var(--nav-active-underline-height);
+    background-color: var(--color-brand);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: round;
+    -webkit-mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C4 2.8, 10 2.8, 14 4 S24 5.2, 28 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-repeat: round;
+    mask-size: var(--nav-active-underline-wave-width) var(--nav-active-underline-height);
+    transform: translateX(var(--nav-active-underline-shift-x)) rotate(var(--nav-active-underline-rotation));
+    transform-origin: center;
   }
 
   .footer-colophon {
     grid-column: 1 / -1;
     display: flex;
-    justify-content: space-between;
-    gap: var(--space-6);
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
     padding-top: var(--space-6);
   }
 
   .footer-colophon p {
     margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-brand);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    opacity: 0.75;
     letter-spacing: var(--font-tracking-wide);
     line-height: var(--font-leading-snug);
     text-transform: lowercase;
+    text-align: center;
   }
 
   .footer-colophon a {
     color: inherit;
-    text-decoration: underline;
+    text-decoration: none;
     text-underline-offset: var(--space-1);
     transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   .footer-colophon a:hover {
-    color: var(--color-accent-dark);
-    opacity: 0.7;
+    color: var(--color-text-primary);
+    opacity: 0.82;
   }
 
-  .footer-socials--mobile {
+  /* ── Hamburger button ── */
+
+  .hamburger {
     display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-1);
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .hamburger__bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: var(--radius-full);
+    transform-origin: center;
+    transition: transform var(--transition-normal);
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
+    transform: translateY(3px) rotate(45deg);
+  }
+  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
+    transform: translateY(-3px) rotate(-45deg);
+  }
+
+  @media (max-width: 760px) {
+    .hamburger {
+      display: flex;
+    }
+  }
+
+  /* ── Mobile nav panel ── */
+
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    top: var(--nav-height);
+    background-color: var(--color-bg-base);
+    z-index: var(--z-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow);
+  }
+
+  .mobile-nav.is-open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  :global(html.has-mobile-nav-open),
+  :global(html.has-mobile-nav-open body) {
+    overflow: hidden;
+  }
+
+  .mobile-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .mobile-nav__link {
+    display: block;
+    padding-block: var(--space-4);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .mobile-nav__link:hover,
+  .mobile-nav__link--active {
+    color: var(--color-text-primary);
   }
 
   @media (min-width: 761px) {
@@ -455,7 +716,8 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   @media (max-width: 760px) {
     .site-footer {
       margin-top: var(--space-48);
-      background-color: transparent;
+      padding-top: var(--space-12);
+      padding-bottom: var(--space-12);
     }
 
     .site-footer__inner {
@@ -463,21 +725,19 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       row-gap: var(--space-8);
     }
 
-    .footer-directory,
-    .footer-colophon {
-      display: none;
-    }
-
-    .footer-socials--mobile {
-      display: flex;
-      flex-direction: row;
+    .footer-directory {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-6);
-      margin-top: var(--space-4);
+      padding-top: 0;
     }
 
-    .footer-wordmark {
-      font-size: var(--font-size-3xl);
+    .footer-colophon {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding-top: var(--space-2);
     }
+
   }
 
 </style>

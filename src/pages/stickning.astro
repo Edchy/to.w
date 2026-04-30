@@ -1,23 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProductListing from "../components/ProductListing.astro";
+import { getCollection } from "astro:content";
+
+const allKnitting = await getCollection("knitting");
+const knitting = allKnitting.sort((a, b) => b.data.date.localeCompare(a.data.date));
 ---
 
-<BaseLayout title="Stickning">
-  <section class="placeholder">
-    <p>Stickning — kommer snart.</p>
-  </section>
+<BaseLayout title="Stickning" description="Stickade plagg, objekt och mönster av Tove Wätte, med fokus på form, struktur och handgjort arbete.">
+  <h1 class="sr-only">Stickning</h1>
+  <ProductListing items={knitting} section="stickning" ariaLabel="Stickning" />
 </BaseLayout>
-
-<style>
-  .placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    padding-inline: var(--layout-gutter);
-    font-size: var(--font-size-base);
-    letter-spacing: var(--font-tracking-wide);
-    color: var(--color-brand);
-    text-transform: lowercase;
-  }
-</style>

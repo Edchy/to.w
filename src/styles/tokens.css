@@ -12,31 +12,37 @@
      1. PRIMITIVES
   ───────────────────────────────────────────────────────── */
 
-  /*save for later */
-  --brand-2-700: oklch(45% 0.08 15);
-  --brand-2-400: oklch(65% 0.08 15);
-  --brand-2-100: oklch(80% 0.06 15);
+  /* Paper scale — quiet gallery ground */
+  --brand-2-700: oklch(26% 0.025 75);
+  --brand-2-400: oklch(45% 0.020 78);
+  --brand-2-100: oklch(91% 0.018 86);
 
-  /* Brand accent — ochre */
-  --brand-700: oklch(42% 0.1 85);
-  --brand-400: oklch(58% 0.12 85);
-  --brand-100: oklch(88% 0.07 85);
+  /* Brand accent — softened moss */
+  --brand-700: oklch(43% 0.055 135);
+  --brand-400: oklch(61% 0.045 128);
+  --brand-100: oklch(87% 0.030 118);
 
-  /* Neutrals — warm-tinted (h75 amber), dark end off-black, light end beige */
-  --neutral-950: oklch(14% 0.01 75);
-  --neutral-900: oklch(20% 0.01 75);
-  --neutral-800: oklch(30% 0.01 75);
-  --neutral-700: oklch(40% 0.009 75);
-  --neutral-600: oklch(52% 0.009 75);
-  --neutral-500: oklch(62% 0.008 75);
-  --neutral-400: oklch(73% 0.008 75);
-  --neutral-300: oklch(83% 0.007 75);
-  --neutral-200: oklch(90% 0.007 75);
-  --neutral-100: oklch(95% 0.008 75);
-  --neutral-50: oklch(97.5% 0.01 75);
+  /* Secondary accent — fired clay */
+  --signal-red-700: oklch(50% 0.24 29);
+  --clay-700: oklch(43% 0.055 38);
+  --clay-400: oklch(64% 0.048 42);
+  --clay-100: oklch(88% 0.028 48);
 
-  /* Off-white surface */
-  --off-white: oklch(97% 0.005 90);
+  /* Neutrals — warm paper and soft ink */
+  --neutral-950: oklch(20% 0.020 75);
+  --neutral-900: oklch(26% 0.018 75);
+  --neutral-800: oklch(34% 0.016 75);
+  --neutral-700: oklch(43% 0.014 75);
+  --neutral-600: oklch(54% 0.012 78);
+  --neutral-500: oklch(65% 0.011 80);
+  --neutral-400: oklch(75% 0.010 82);
+  --neutral-300: oklch(84% 0.012 84);
+  --neutral-200: oklch(90% 0.014 86);
+  --neutral-100: oklch(95% 0.012 88);
+  --neutral-50:  oklch(97% 0.010 90);
+
+  /* Paper ground */
+  --off-white: oklch(96% 0.011 88);
 
   /* Spacing scale — 4pt base */
   --space-1: 4px;
@@ -55,25 +61,29 @@
   --space-48: 192px;
   --space-72: 288px;
 
-  /* Fluid type scale — Utopia
-   * Min 320px / Max 1400px, base 16→18px, scale 1.25→1.333
+  /* Fluid type scale — calmer editorial
+   * Min 320px / Max 1400px, base 15→17px, scale 1.18→1.25
    */
-  --step--1: clamp(0.8rem, calc(0.78rem + 0.11vw), 0.88rem);
-  --step-0: clamp(1rem, calc(0.96rem + 0.22vw), 1.13rem);
-  --step-1: clamp(1.25rem, calc(1.18rem + 0.37vw), 1.5rem);
-  --step-2: clamp(1.56rem, calc(1.44rem + 0.62vw), 2rem);
-  --step-3: clamp(1.95rem, calc(1.75rem + 1.02vw), 2.66rem);
-  --step-4: clamp(2.44rem, calc(2.12rem + 1.63vw), 3.55rem);
-  --step-5: clamp(3.05rem, calc(2.56rem + 2.5vw), 4.74rem);
+  --step--1: clamp(0.82rem, calc(0.79rem + 0.08vw), 0.88rem);
+  --step-0: clamp(0.95rem, calc(0.91rem + 0.16vw), 1.06rem);
+  --step-1: clamp(1.13rem, calc(1.07rem + 0.28vw), 1.31rem);
+  --step-2: clamp(1.35rem, calc(1.23rem + 0.52vw), 1.64rem);
+  --step-3: clamp(1.6rem,  calc(1.40rem + 0.90vw),  2.05rem);
+  --step-4: clamp(1.9rem,  calc(1.55rem + 1.55vw),  2.56rem);
+  --step-5: clamp(2.4rem,  calc(1.65rem + 3.20vw),  4.4rem);
 
   /* Font weights */
   --weight-light: 300;
   --weight-regular: 400;
   --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
 
   /* Border radius */
-  --radius-sm: 2px;
-  --radius-md: 4px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 18px;
+  --radius-organic: 28px;
   --radius-full: 9999px;
 
   /* Blur */
@@ -82,10 +92,15 @@
   /* Underline offset */
   --underline-offset: 3px;
 
+  /* Inline wavy underline */
+  --inline-underline-height: 3px;
+  --inline-underline-offset: 4px;
+  --inline-underline-wave-width: 20px;
+
   /* Motion */
-  --duration-fast: 120ms;
-  --duration-normal: 240ms;
-  --duration-slow: 400ms;
+  --duration-fast: 80ms;
+  --duration-normal: 180ms;
+  --duration-slow: 320ms;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-quart: cubic-bezier(0.5, 0, 0.75, 0);
@@ -102,8 +117,11 @@
 
   /* Typography — families */
   --font-body-text: var(--font-body);
-  --font-heading-text: var(--font-june-curious);
-  --font-brand-text: var(--font-june-active);
+  --font-heading-text: var(--font-chillax);
+  --font-brand-text: var(--font-chillax);
+  --font-heading: var(--font-chillax);
+  --font-seasum-stormy-text: var(--font-seasum-stormy);
+  --font-seasum-calm-text: var(--font-seasum-calm);
 
   /* Typography — sizes */
   --font-size-xs: 0.7rem;
@@ -119,43 +137,50 @@
   --font-weight-light: var(--weight-light);
   --font-weight-regular: var(--weight-regular);
   --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+  --font-weight-bold: var(--weight-bold);
 
   /* Typography — leading */
-  --font-leading-tight: 1.1;
+  --font-leading-tight: 1.08;
   --font-leading-snug: 1.35;
-  --font-leading-normal: 1.55;
-  --font-leading-relaxed: 1.7;
+  --font-leading-normal: 1.5;
+  --font-leading-relaxed: 1.5;
 
   /* Typography — tracking */
-  --font-tracking-tight: -0.02em;
+  --font-tracking-tightest: 0em;
+  --font-tracking-tight: 0em;
   --font-tracking-normal: 0em;
-  --font-tracking-wide: 0.06em;
-  --font-tracking-wider: 0.12em;
+  --font-tracking-wide: 0.04em;
+  --font-tracking-wider: 0.09em;
+  --font-tracking-negative: -0.01em;
 
   /* Color — backgrounds */
   --color-bg-base: var(--off-white);
-  --color-bg-surface: var(--brand-2-100);
-  --color-bg-muted: oklch(83% 0.04 15);
-  --color-bg-statement: color-mix(in oklch, var(--brand-2-100) 72%, var(--off-white));
+  --color-bg-surface: var(--neutral-50);
+  --color-bg-muted: var(--brand-2-100);
+  --color-bg-statement: oklch(92% 0.018 102);
   --color-bg-inverse: var(--neutral-950);
 
   /* Color — text */
-  --color-text-primary: var(--brand-2-700);
-  --color-text-secondary: var(--brand-2-400);
-  --color-text-tertiary: oklch(72% 0.05 15);
-  --color-text-inverse: var(--off-white);
+  --color-text-primary: var(--neutral-950);
+  --color-text-secondary: var(--neutral-700);
+  --color-text-tertiary: var(--neutral-600);
+  --color-text-inverse: var(--neutral-50);
 
   /* Color — brand */
-  --color-brand: var(--brand-2-700);
-  --color-brand-mid: var(--brand-2-400);
-  --color-brand-subtle: var(--brand-2-100);
-  --color-accent: var(--brand-2-700);
-  --color-accent-dark: var(--neutral-900);
-  --color-accent-subtle: var(--brand-2-100);
+  --color-brand: var(--brand-700);
+  --color-brand-mid: var(--brand-400);
+  --color-brand-subtle: var(--brand-100);
+  --color-accent: var(--clay-700);
+  --color-accent-dark: var(--neutral-950);
+  --color-contact-accent: var(--signal-red-700);
+  --color-accent-subtle: var(--clay-100);
+  --color-wordmark-nav: var(--color-text-primary);
+  --color-contact-icon: var(--color-contact-accent);
 
   /* Color — borders */
-  --color-border-default: oklch(75% 0.05 15);
-  --color-border-subtle: var(--brand-2-100);
+  --color-border-default: oklch(80% 0.016 86);
+  --color-border-subtle: oklch(88% 0.014 88);
 
   /* Spacing — semantic */
   --space-xs: var(--space-1);
@@ -169,12 +194,16 @@
   --space-5xl: 192px;
 
   /* Layout */
-  --layout-site-width: 1200px;
-  --layout-wide-width: 1360px;
-  --layout-statement-width: 1040px;
+  --layout-site-width: 1440px;
+  --layout-wide-width: 1600px;
+  --layout-statement-width: 1200px;
   --layout-endeavour-media-min: 320px;
   --layout-content-width: 68ch;
   --layout-gutter: clamp(var(--space-6), 5vw, var(--space-12));
+
+  /* Breakpoints */
+  --bp-md: 700px;   /* mobile → tablet */
+  --bp-lg: 1024px;  /* tablet → desktop */
 
   /* Motion */
   --transition-fast: var(--duration-fast) var(--ease-out-quart);
@@ -186,22 +215,189 @@
   ───────────────────────────────────────────────────────── */
 
   /* Image */
-  --image-border-width: 10px;
-  --image-border-color: var(--brand-2-400);
+  --image-border-width: 8px;
+  --image-border-color: var(--brand-2-100);
+  --image-radius: var(--radius-organic);
 
   /* Endeavours */
-  --endeavours-bg: var(--brand-2-100);
-  --endeavours-color: var(--brand-2-700);
-  --endeavours-text: var(--neutral-900);
+  --endeavours-bg: var(--color-bg-statement);
+  --endeavours-color: var(--color-brand);
+  --endeavours-text: var(--color-text-primary);
 
   /* Nav */
-  --nav-height: 100px;
+  --nav-height: 72px;
   --nav-font: var(--font-body-text);
+  --nav-active-underline-offset: 9px;
+  --nav-active-underline-shift-x: 2px;
+  --nav-active-underline-rotation: -2.5deg;
+  --nav-active-underline-height: 6px;
+  --nav-active-underline-wave-width: 28px;
 
   /* Portfolio grid */
   --grid-gutter: clamp(var(--space-3), 2vw, var(--space-6));
   --grid-row-gap: clamp(var(--space-32), 10vw, var(--space-72));
 
   /* Lightbox */
-  --lightbox-scrim: oklch(35% 0.06 15 / 0.85);
+  --lightbox-scrim: oklch(28% 0.025 75 / 0.72);
+}
+
+/* ─────────────────────────────────────────────────────────
+   THEMES — applied via [data-theme] on <html>
+───────────────────────────────────────────────────────── */
+
+/* 1. Moss & Clay (default — preserved here for picker) */
+[data-theme="moss"] {
+  --off-white: oklch(96% 0.011 88);
+  --brand-700: oklch(43% 0.055 135);
+  --brand-400: oklch(61% 0.045 128);
+  --brand-100: oklch(87% 0.030 118);
+  --clay-700: oklch(43% 0.055 38);
+  --clay-400: oklch(64% 0.048 42);
+  --clay-100: oklch(88% 0.028 48);
+  --neutral-950: oklch(20% 0.020 75);
+  --neutral-900: oklch(26% 0.018 75);
+  --neutral-800: oklch(34% 0.016 75);
+  --neutral-700: oklch(43% 0.014 75);
+  --neutral-600: oklch(54% 0.012 78);
+  --neutral-500: oklch(65% 0.011 80);
+  --neutral-400: oklch(75% 0.010 82);
+  --neutral-300: oklch(84% 0.012 84);
+  --neutral-200: oklch(90% 0.014 86);
+  --neutral-100: oklch(95% 0.012 88);
+  --neutral-50: oklch(97% 0.010 90);
+  --color-bg-base: oklch(96% 0.011 88);
+  --color-bg-muted: oklch(91% 0.018 86);
+  --color-bg-statement: oklch(92% 0.018 102);
+  --color-bg-inverse: oklch(20% 0.020 75);
+  --color-text-primary: oklch(20% 0.020 75);
+  --color-text-secondary: oklch(43% 0.014 75);
+  --color-text-tertiary: oklch(54% 0.012 78);
+  --color-text-inverse: oklch(97% 0.010 90);
+  --color-brand: oklch(43% 0.055 135);
+  --color-brand-mid: oklch(61% 0.045 128);
+  --color-brand-subtle: oklch(87% 0.030 118);
+  --color-accent: oklch(43% 0.055 38);
+  --color-accent-subtle: oklch(88% 0.028 48);
+  --color-contact-accent: oklch(50% 0.24 29);
+  --color-border-default: oklch(80% 0.016 86);
+  --color-border-subtle: oklch(88% 0.014 88);
+  --image-border-color: oklch(91% 0.018 86);
+  --lightbox-scrim: oklch(28% 0.025 75 / 0.72);
+}
+
+/* 2. Ink & Electric Violet */
+[data-theme="ink"] {
+  --color-bg-base: oklch(16% 0.025 285);
+  --color-bg-surface: oklch(20% 0.022 285);
+  --color-bg-muted: oklch(22% 0.028 285);
+  --color-bg-statement: oklch(24% 0.030 300);
+  --color-bg-inverse: oklch(95% 0.008 285);
+  --color-text-primary: oklch(94% 0.008 285);
+  --color-text-secondary: oklch(72% 0.012 285);
+  --color-text-tertiary: oklch(58% 0.010 285);
+  --color-text-inverse: oklch(16% 0.025 285);
+  --color-brand: oklch(68% 0.22 300);
+  --color-brand-mid: oklch(72% 0.20 300);
+  --color-brand-subtle: oklch(28% 0.08 300);
+  --color-accent: oklch(65% 0.20 25);
+  --color-accent-subtle: oklch(28% 0.08 25);
+  --color-contact-accent: oklch(68% 0.22 25);
+  --color-border-default: oklch(30% 0.025 285);
+  --color-border-subtle: oklch(24% 0.020 285);
+  --image-border-color: oklch(28% 0.030 285);
+  --lightbox-scrim: oklch(10% 0.020 285 / 0.85);
+}
+
+/* 3. Ochre & Cobalt */
+[data-theme="ochre"] {
+  --color-bg-base: oklch(88% 0.055 78);
+  --color-bg-surface: oklch(91% 0.045 78);
+  --color-bg-muted: oklch(84% 0.060 75);
+  --color-bg-statement: oklch(82% 0.065 70);
+  --color-bg-inverse: oklch(24% 0.040 265);
+  --color-text-primary: oklch(22% 0.035 265);
+  --color-text-secondary: oklch(38% 0.040 265);
+  --color-text-tertiary: oklch(50% 0.035 265);
+  --color-text-inverse: oklch(92% 0.040 78);
+  --color-brand: oklch(40% 0.16 265);
+  --color-brand-mid: oklch(55% 0.14 265);
+  --color-brand-subtle: oklch(80% 0.040 265);
+  --color-accent: oklch(75% 0.18 100);
+  --color-accent-subtle: oklch(86% 0.08 95);
+  --color-contact-accent: oklch(58% 0.22 135);
+  --color-border-default: oklch(76% 0.055 75);
+  --color-border-subtle: oklch(82% 0.045 78);
+  --image-border-color: oklch(80% 0.050 75);
+  --lightbox-scrim: oklch(22% 0.035 265 / 0.80);
+}
+
+/* 4. Blush & Burgundy */
+[data-theme="blush"] {
+  --color-bg-base: oklch(93% 0.020 20);
+  --color-bg-surface: oklch(95% 0.016 20);
+  --color-bg-muted: oklch(90% 0.025 18);
+  --color-bg-statement: oklch(88% 0.030 15);
+  --color-bg-inverse: oklch(26% 0.055 10);
+  --color-text-primary: oklch(24% 0.050 10);
+  --color-text-secondary: oklch(40% 0.045 10);
+  --color-text-tertiary: oklch(52% 0.035 12);
+  --color-text-inverse: oklch(95% 0.012 20);
+  --color-brand: oklch(32% 0.08 10);
+  --color-brand-mid: oklch(46% 0.065 10);
+  --color-brand-subtle: oklch(86% 0.030 15);
+  --color-accent: oklch(72% 0.20 128);
+  --color-accent-subtle: oklch(88% 0.055 128);
+  --color-contact-accent: oklch(60% 0.22 128);
+  --color-border-default: oklch(82% 0.022 18);
+  --color-border-subtle: oklch(88% 0.018 20);
+  --image-border-color: oklch(88% 0.025 18);
+  --lightbox-scrim: oklch(24% 0.050 10 / 0.78);
+}
+
+/* 5. Terracotta & Plum */
+[data-theme="terra"] {
+  --color-bg-base: oklch(66% 0.10 42);
+  --color-bg-surface: oklch(70% 0.09 44);
+  --color-bg-muted: oklch(62% 0.11 40);
+  --color-bg-statement: oklch(60% 0.12 38);
+  --color-bg-inverse: oklch(28% 0.06 310);
+  --color-text-primary: oklch(22% 0.05 310);
+  --color-text-secondary: oklch(92% 0.015 42);
+  --color-text-tertiary: oklch(84% 0.020 42);
+  --color-text-inverse: oklch(95% 0.010 42);
+  --color-brand: oklch(32% 0.10 310);
+  --color-brand-mid: oklch(48% 0.09 310);
+  --color-brand-subtle: oklch(64% 0.07 310);
+  --color-accent: oklch(80% 0.14 88);
+  --color-accent-subtle: oklch(72% 0.10 85);
+  --color-contact-accent: oklch(97% 0.005 90);
+  --color-contact-icon: oklch(20% 0.05 310);
+  --color-wordmark-nav: oklch(97% 0.005 90);
+  --color-border-default: oklch(58% 0.10 40);
+  --color-border-subtle: oklch(62% 0.09 42);
+  --image-border-color: oklch(60% 0.10 40);
+  --lightbox-scrim: oklch(20% 0.05 310 / 0.82);
+}
+
+/* 6. Sage & Oxblood */
+[data-theme="sage"] {
+  --color-bg-base: oklch(96% 0.012 88);
+  --color-bg-surface: oklch(97% 0.010 88);
+  --color-bg-muted: oklch(92% 0.018 140);
+  --color-bg-statement: oklch(90% 0.022 140);
+  --color-bg-inverse: oklch(22% 0.045 15);
+  --color-text-primary: oklch(22% 0.040 15);
+  --color-text-secondary: oklch(38% 0.035 15);
+  --color-text-tertiary: oklch(52% 0.025 15);
+  --color-text-inverse: oklch(96% 0.010 88);
+  --color-brand: oklch(50% 0.09 145);
+  --color-brand-mid: oklch(62% 0.075 142);
+  --color-brand-subtle: oklch(86% 0.030 140);
+  --color-accent: oklch(36% 0.12 15);
+  --color-accent-subtle: oklch(88% 0.030 18);
+  --color-contact-accent: oklch(60% 0.18 62);
+  --color-border-default: oklch(80% 0.016 120);
+  --color-border-subtle: oklch(88% 0.014 120);
+  --image-border-color: oklch(88% 0.020 140);
+  --lightbox-scrim: oklch(22% 0.040 15 / 0.78);
 }

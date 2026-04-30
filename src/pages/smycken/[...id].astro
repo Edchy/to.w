@@ -11,10 +11,15 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 
-const { title, description } = entry.data;
+const { title, description, material, technique, design } = entry.data;
 const productSlug = getProductSlug(entry.id);
+const metaDescription =
+  description ??
+  [title, material, technique, design, "Handgjort smycke i silver av Tove Wätte."]
+    .filter(Boolean)
+    .join(" ");
 ---
 
-<BaseLayout title={title} description={description} noPadding>
+<BaseLayout title={title} description={metaDescription} noPadding>
   <ProductDetail {...entry.data} transitionName={`product-${productSlug}`} />
 </BaseLayout>

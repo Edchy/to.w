@@ -11,13 +11,39 @@ type Props = {
   technique?: string;
   design?: string;
   images: ImageMetadata[];
+  imagesHd?: ImageMetadata[];
   transitionName?: string;
 };
 
-const { title, price, description, images, transitionName } = Astro.props;
+const { title, price, sizes, description, material, technique, design, images, imagesHd, transitionName } = Astro.props;
+const stageImages = imagesHd ?? images;
 
 const fmt = new Intl.NumberFormat("sv-SE").format;
-const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}`;
+const formattedPrice = fmt(price);
+const hasSizes = sizes.length > 0;
+const sizeLabel = sizes.length === 1 ? "storlek" : "storlekar";
+const orderSizeLine =
+  sizes.length === 1
+    ? `Storlek / variant: ${sizes[0]}`
+    : `Storlek / variant${hasSizes ? ` (välj: ${sizes.join(", ")})` : ""}:`;
+const detailText = [material, technique, design]
+  .map((value) => value?.trim())
+  .filter(Boolean)
+  .join(" ");
+const orderSubject = encodeURIComponent(`Beställning: ${title}`);
+const orderBody = encodeURIComponent(`Hej Tove,
+
+Jag vill gärna beställa ${title} (${formattedPrice} kr).
+
+${orderSizeLine}
+Antal:
+LEVERANS: [post / hämtas i ateljén / överlämning i Järna]
+Adress, om post:
+Telefon:
+Övrigt:
+
+Vänliga hälsningar,`);
+const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBody}`;
 ---
 
 <div class="pd">
@@ -31,11 +57,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     aria-roledescription="bildgalleri"
     tabindex="0"
   >
-    {images.map((img, i) => (
+    {stageImages.map((img, i) => (
       <div class="pd__slide" data-slide aria-hidden={i !== 0}>
         <Image
           src={img}
-          alt={images.length > 1 ? `${title} — bild ${i + 1}` : title}
+          alt={stageImages.length > 1 ? `${title} — bild ${i + 1}` : title}
           width={1600}
           height={1200}
           loading={i === 0 ? "eager" : "lazy"}
@@ -44,10 +70,10 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       </div>
     ))}
 
-    {images.length > 1 && (
+    {stageImages.length > 1 && (
       <div class="pd__thumbs" role="group" aria-label="Välj bild">
         {images.map((img, i) => (
-          <button class="pd__thumb" type="button" data-thumb={i} aria-label={`Visa bild ${i + 1} av ${images.length}`} aria-pressed={i === 0}>
+          <button class="pd__thumb" type="button" data-thumb={i} aria-label={`Visa bild ${i + 1} av ${stageImages.length}`} aria-pressed={i === 0}>
             <Image src={img} alt="" width={120} height={120} loading="lazy" />
           </button>
         ))}
@@ -66,15 +92,20 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       >
         {title}
       </h1>
-      <span class="pd__price">{fmt(price)} kr</span>
-      <a class="pd__buy" href={orderHref}>
-        <span class="pd__buy-text">Beställ</span>
-      </a>
+      {detailText && <p class="pd__details">{detailText}</p>}
+      {hasSizes && <p class="pd__details">{sizeLabel}: {sizes.join(", ")}</p>}
+      <span class="pd__price">{formattedPrice} kr</span>
     </div>
 
     <div class="pd__support">
       <div class="pd__body">
         {description && <p class="pd__description">{description}</p>}
+        <a class="pd__buy" href={orderHref}>
+          <span class="pd__buy-text">Beställ</span>
+        </a>
+        <p class="pd__order-note">
+          Varje smycke tillverkas individuellt efter beställning.<br/> Jag återkommer så snart jag kan med bekräftelse, betalningsinfo (Swish, överföring, kontant) och ungefärlig leveranstid. Om du har frågor eller särskilda önskemål, tveka inte att <a href={CONTACT_EMAIL_HREF}>kontakta mig</a>!
+        </p>
       </div>
     </div>
 
@@ -106,7 +137,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   .pd__stage.is-left { cursor: w-resize; }
 
   .pd__stage:focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 1px solid var(--color-brand);
     outline-offset: -2px;
   }
 
@@ -128,7 +159,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     display: block;
     -webkit-user-drag: none;
     pointer-events: none;
-    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 8%, transparent);
+    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 6%, transparent);
     outline-offset: -1px;
     transition: transform 600ms var(--ease-out-expo);
     will-change: transform;
@@ -158,7 +189,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     height: var(--space-12);
     padding: 0;
     border: 1.5px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     background: none;
     cursor: pointer;
     overflow: hidden;
@@ -180,7 +211,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
   .pd__thumb[aria-pressed="true"] {
     opacity: 1;
-    border-color: var(--color-text-inverse);
+    border-color: var(--color-brand);
   }
 
   /* ── Right: info panel ── */
@@ -189,7 +220,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: var(--space-12) var(--layout-gutter);
+    padding: var(--space-10) var(--layout-gutter);
     gap: var(--space-5);
     min-height: 0;
   }
@@ -200,19 +231,19 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   @keyframes title-settle {
-    from { letter-spacing: 0.04em; }
-    to   { letter-spacing: var(--font-tracking-tight); }
+    from { opacity: 0.84; }
+    to   { opacity: 1; }
   }
 
   .pd__title {
     font-family: var(--font-heading-text);
-    font-size: clamp(4rem, 10vw, 9rem);
+    font-size: clamp(var(--font-size-3xl), 6vw, var(--font-size-display));
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-tight);
-    color: var(--color-brand);
-    margin: 0 0 0 -0.055em;
-    animation: title-settle 1400ms var(--ease-out-expo) both;
+    letter-spacing: var(--font-tracking-normal);
+    color: var(--color-text-primary);
+    margin: 0;
+    animation: title-settle 900ms var(--ease-out-expo) both;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -222,9 +253,9 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   .pd__price {
     font-family: var(--font-body-text);
     font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-light);
+    font-weight: var(--font-weight-regular);
     letter-spacing: var(--font-tracking-wide);
-    color: var(--color-accent);
+    color: var(--color-text-secondary);
     font-variant-numeric: tabular-nums;
   }
 
@@ -241,6 +272,49 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     margin: 0;
   }
 
+  .pd__details {
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .pd__order-note {
+    max-width: 65ch;
+    margin: var(--space-4) 0 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-xs);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-tertiary);
+  }
+
+  .pd__order-note a {
+    position: relative;
+    display: inline-block;
+    color: var(--color-text-secondary);
+  }
+
+  .pd__order-note a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--inline-underline-offset) * -1);
+    height: var(--inline-underline-height);
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 6' preserveAspectRatio='none'%3E%3Cpath d='M0 3 C3 2, 7 2, 10 3 S17 4, 20 3' fill='none' stroke='black' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: round;
+    -webkit-mask-size: var(--inline-underline-wave-width) var(--inline-underline-height);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 6' preserveAspectRatio='none'%3E%3Cpath d='M0 3 C3 2, 7 2, 10 3 S17 4, 20 3' fill='none' stroke='black' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-repeat: round;
+    mask-size: var(--inline-underline-wave-width) var(--inline-underline-height);
+  }
+
+  .pd__order-note a:hover {
+    color: var(--color-brand);
+  }
+
   /* ── CTA ── */
 
   .pd__buy {
@@ -249,34 +323,35 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     justify-content: center;
     gap: var(--space-2);
     width: 100%;
-    max-width: var(--space-48);
+    max-width: 280px;
     min-height: var(--space-12);
-    padding: 0 var(--space-6);
-    background-color: var(--color-brand);
-    border: 0;
-    border-radius: var(--radius-full);
-    color: var(--color-text-inverse);
+    padding: 0 var(--space-8);
+    background-color: var(--color-bg-statement);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
     font-family: var(--font-body-text);
     font-size: var(--font-size-base);
-    letter-spacing: var(--font-tracking-wide);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
     text-decoration: none;
     position: relative;
     overflow: hidden;
-    transition: scale var(--transition-fast);
+    transition: background-color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-fast);
   }
 
   .pd__buy::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--color-accent-dark);
+    background: var(--color-brand-subtle);
     border-radius: inherit;
     translate: 0 100%;
     transition: translate 360ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .pd__buy:active {
-    scale: 0.96;
+    transform: translateY(var(--space-1));
   }
 
   .pd__buy-text {
@@ -285,6 +360,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   @media (hover: hover) {
+    .pd__buy:hover {
+      border-color: var(--color-brand);
+      box-shadow: calc(var(--space-1) * -1) calc(var(--space-1) * -1) 0 0 var(--color-brand-subtle);
+    }
+
     .pd__buy:hover::before { translate: 0 0; }
   }
 
@@ -332,7 +412,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     }
 
     .pd__title {
-      font-size: clamp(var(--font-size-3xl), 8vw, 6rem);
+      font-size: var(--font-size-3xl);
     }
 
   }
@@ -346,8 +426,21 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     }
 
     .pd__stage {
-      height: min(58svh, 480px);
-      min-height: 300px;
+      height: min(50svh, 420px);
+      min-height: 260px;
+    }
+
+    .pd__slide img {
+      object-fit: contain;
+      background: var(--color-bg-muted);
+    }
+
+    .pd__thumbs {
+      right: var(--space-3);
+      top: auto;
+      bottom: var(--space-3);
+      transform: none;
+      flex-direction: row;
     }
 
     .pd__info {
@@ -381,6 +474,23 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
     .pd__buy {
       width: 100%;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .pd__stage {
+      height: min(44svh, 340px);
+      min-height: 220px;
+    }
+
+    .pd__thumb {
+      width: var(--space-10);
+      height: var(--space-10);
+      border-radius: var(--radius-sm);
+    }
+
+    .pd__info {
+      padding-top: var(--space-6);
     }
   }
 </style>

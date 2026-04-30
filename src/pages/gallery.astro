@@ -1,0 +1,858 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+type GalleryImage = {
+  path: string;
+  filename: string;
+  image: ImageMetadata;
+  orientation: "landscape" | "portrait" | "square";
+};
+
+const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
+  "../content/gallery/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const galleryImages = Object.entries(galleryModules)
+  .map(([path, module]) => {
+    const filename = path.split("/").pop() ?? path;
+    const image = module.default;
+    const ratio = image.width / image.height;
+
+    return {
+      path,
+      filename,
+      image,
+      orientation: ratio > 1.08 ? "landscape" : ratio < 0.92 ? "portrait" : "square",
+    } satisfies GalleryImage;
+  })
+  .sort((a, b) => {
+    if (a.filename === "hero.avif") return -1;
+    if (b.filename === "hero.avif") return 1;
+    return a.filename.localeCompare(b.filename, "sv");
+  });
+
+const heroImage = galleryImages.find((entry) => entry.filename === "hero.avif") ?? galleryImages[0];
+const restImages = galleryImages.filter((entry) => entry.path !== heroImage?.path);
+
+// Section sizes — adjust as image count grows
+const INTRO = 10;
+const STACK = 6;
+const MID   = 8;
+const FILM  = 4;
+
+const introImages = restImages.slice(0, INTRO);
+const stackImages = restImages.slice(INTRO, INTRO + STACK);
+const midImages   = restImages.slice(INTRO + STACK, INTRO + STACK + MID);
+const filmImages  = restImages.slice(INTRO + STACK + MID, INTRO + STACK + MID + FILM);
+const tailImages  = restImages.slice(INTRO + STACK + MID + FILM);
+
+function cols<T>(arr: T[]): [T[], T[]] {
+  return [arr.filter((_, i) => i % 2 === 0), arr.filter((_, i) => i % 2 === 1)];
+}
+
+const [introA, introB] = cols(introImages);
+const [midA,   midB]   = cols(midImages);
+const [tailA,  tailB]  = cols(tailImages);
+
+// Global index for sequential captions across all masonry sections
+const globalIndexOf = new Map(restImages.map((e, i) => [e.path, i]));
+
+const imageAlts: Record<string, string> = {
+  "hero.avif": "Närbild på ett handgjort silversmycke mot naturlig bakgrund.",
+};
+
+const imageAlt = (filename: string, index: number) =>
+  imageAlts[filename] ?? `Fotografi från Tove Wättes praktik, bild ${index + 1}.`;
+---
+
+<BaseLayout title="Galleri" description="Fotografier från Tove Wättes arbete, material, smycken, stickning och miljöerna runt den handgjorda praktiken.">
+  <div class="gallery-page">
+
+    {heroImage && (
+      <section class="gallery-lead" aria-label="Huvudbild">
+        <figure class="gallery-lead__frame">
+          <Image
+            src={heroImage.image}
+            alt={imageAlt(heroImage.filename, 0)}
+            width={heroImage.image.width}
+            height={heroImage.image.height}
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+      </section>
+    )}
+
+    <div class="gallery-intro">
+      <div class="gallery-intro__index">
+        <span>galleri</span>
+      </div>
+      <div class="gallery-intro__text">
+        <h1>ett urval bilder från arbetet, materialen och mellanrummen</h1>
+        <p>Fotografier tagna under åren — i ateljen, i naturen, nära händerna som gör.</p>
+      </div>
+    </div>
+
+    <!-- Section 1: Masonry intro -->
+    <div class="gallery-section gallery-section--masonry" aria-label="Galleribilder">
+      <div class="gallery-columns">
+        <div class="gallery-col gallery-col--a">
+          {introA.map((entry) => {
+            const gi = globalIndexOf.get(entry.path) ?? 0;
+            return (
+              <figure class="gallery-item">
+                <div class="gallery-item__frame">
+                  <Image
+                    src={entry.image}
+                    alt={imageAlt(entry.filename, gi + 1)}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    loading={gi < 4 ? "eager" : "lazy"}
+                    fetchpriority={gi === 0 ? "high" : "auto"}
+                  />
+                </div>
+                <figcaption class="gallery-item__caption">
+                  <span>{String(gi + 1).padStart(2, "0")}</span>
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
+        <div class="gallery-col gallery-col--b">
+          {introB.map((entry) => {
+            const gi = globalIndexOf.get(entry.path) ?? 0;
+            return (
+              <figure class="gallery-item">
+                <div class="gallery-item__frame">
+                  <Image
+                    src={entry.image}
+                    alt={imageAlt(entry.filename, gi + 1)}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    loading={gi < 4 ? "eager" : "lazy"}
+                    fetchpriority="auto"
+                  />
+                </div>
+                <figcaption class="gallery-item__caption">
+                  <span>{String(gi + 1).padStart(2, "0")}</span>
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Stack -->
+    {stackImages.length > 0 && (
+      <div class="gallery-section gallery-section--stack" aria-label="Staplade bilder">
+        <div class="stack-scroll-driver">
+          <div class="stack-sticky">
+            <div class="stack-stage">
+              {stackImages.map((entry, i) => (
+                <figure class="stack-card" style={`--card-index: ${i}`}>
+                  <div class="stack-card__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                    />
+                  </div>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section 3: Masonry mid -->
+    {midImages.length > 0 && (
+      <div class="gallery-section gallery-section--masonry" aria-label="Galleribilder, fortsättning">
+        <div class="gallery-columns">
+          <div class="gallery-col gallery-col--a">
+            {midA.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+          <div class="gallery-col gallery-col--b">
+            {midB.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section 4: Film strip -->
+    {filmImages.length > 0 && (
+      <div class="gallery-section gallery-section--filmstrip" aria-label="Filmremsa">
+        <div class="filmstrip-scroll-driver">
+          <div class="filmstrip-sticky">
+            <div class="filmstrip-track">
+              {filmImages.map((entry, i) => (
+                <figure class="filmstrip-card" style={`--film-index: ${i}`}>
+                  <div class="filmstrip-card__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                    />
+                  </div>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section 5: Tail masonry -->
+    {tailImages.length > 0 && (
+      <div class="gallery-section gallery-section--masonry" aria-label="Galleribilder, avslutning">
+        <div class="gallery-columns">
+          <div class="gallery-col gallery-col--a">
+            {tailA.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+          <div class="gallery-col gallery-col--b">
+            {tailB.map((entry) => {
+              const gi = globalIndexOf.get(entry.path) ?? 0;
+              return (
+                <figure class="gallery-item">
+                  <div class="gallery-item__frame">
+                    <Image
+                      src={entry.image}
+                      alt={imageAlt(entry.filename, gi + 1)}
+                      width={entry.image.width}
+                      height={entry.image.height}
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                  <figcaption class="gallery-item__caption">
+                    <span>{String(gi + 1).padStart(2, "0")}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <nav class="gallery-back" aria-label="Tillbaka">
+      <a href="/">back</a>
+    </nav>
+
+  </div>
+</BaseLayout>
+
+<script>
+  function initGallery() {
+    const items = document.querySelectorAll<HTMLElement>('.gallery-item');
+    const lead  = document.querySelector<HTMLElement>('.gallery-lead__frame');
+
+    if (items.length) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              (entry.target as HTMLElement).dataset.visible = '1';
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -48px 0px', threshold: 0.06 }
+      );
+      items.forEach((el) => observer.observe(el));
+    }
+
+    if (lead) {
+      requestAnimationFrame(() => { lead.dataset.visible = '1'; });
+    }
+
+    // Stack: JS-driven fan on scroll
+    const stackDriver = document.querySelector<HTMLElement>('.stack-scroll-driver');
+    const stackCards  = Array.from(document.querySelectorAll<HTMLElement>('.stack-card'));
+
+    // Fan targets: [rotationDeg, translateXpx relative to stage, translateYpx relative to stage]
+    // Values are fractions of stage size set at runtime
+    const FAN: [number, number, number][] = [
+      [-22,  -0.9, 0.05],
+      [-11,  -0.45, -0.03],
+      [  1,     0, -0.08],
+      [  8,   0.45, -0.03],
+      [ 16,   0.85,  0.03],
+      [ 24,   1.25,  0.08],
+    ];
+    // Base pile rotations (matches CSS --card-index logic)
+    const BASE_ROT = [-6, -3, 0, 2, 4, 6];
+
+    if (stackDriver && stackCards.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let stackRaf = 0;
+
+      const tickStack = () => {
+        const rect   = stackDriver.getBoundingClientRect();
+        const total  = rect.height - window.innerHeight;
+        // progress: 0 when top of driver hits top of viewport, 1 when bottom hits bottom
+        const raw    = -rect.top / total;
+        const p      = Math.max(0, Math.min(1, raw));
+
+        // ease-out-expo
+        const eased  = p === 0 ? 0 : 1 - Math.pow(2, -10 * p);
+
+        const stage  = stackDriver.querySelector<HTMLElement>('.stack-stage');
+        const stageW = stage ? stage.offsetWidth : 400;
+
+        stackCards.forEach((card, i) => {
+          const [toRot, toTx, toTy] = FAN[i] ?? [0, 0, 0];
+          const fromRot = BASE_ROT[i] ?? 0;
+          const rot  = fromRot + (toRot - fromRot) * eased;
+          const tx   = toTx  * stageW * eased;
+          const ty   = toTy  * stageW * eased;
+          card.style.transform = `rotate(${rot}deg) translate(${tx}px, ${ty}px)`;
+        });
+
+        stackRaf = requestAnimationFrame(tickStack);
+      };
+
+      const stackObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            cancelAnimationFrame(stackRaf);
+            tickStack();
+          } else {
+            cancelAnimationFrame(stackRaf);
+          }
+        });
+      }, { threshold: 0 });
+
+      stackObserver.observe(stackDriver);
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(stackRaf);
+        stackObserver.disconnect();
+      }, { once: true });
+    }
+
+    // Filmstrip: JS-driven horizontal slide on scroll
+    const filmDriver = document.querySelector<HTMLElement>('.filmstrip-scroll-driver');
+    const filmTrack  = document.querySelector<HTMLElement>('.filmstrip-track');
+
+    if (filmDriver && filmTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let filmRaf = 0;
+
+      const tickFilm = () => {
+        const rect    = filmDriver.getBoundingClientRect();
+        const total   = rect.height - window.innerHeight;
+        const raw     = -rect.top / total;
+        const p       = Math.max(0, Math.min(1, raw));
+        const travel  = filmTrack.scrollWidth - window.innerWidth;
+        filmTrack.style.transform = `translateX(${-travel * p}px)`;
+        filmRaf = requestAnimationFrame(tickFilm);
+      };
+
+      const filmObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            cancelAnimationFrame(filmRaf);
+            tickFilm();
+          } else {
+            cancelAnimationFrame(filmRaf);
+          }
+        });
+      }, { threshold: 0 });
+
+      filmObserver.observe(filmDriver);
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(filmRaf);
+        filmObserver.disconnect();
+      }, { once: true });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initGallery);
+  initGallery();
+</script>
+
+<script>
+  // Ink-dot cursor trail over gallery images
+  function initInkTrail() {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const pool: HTMLElement[] = [];
+    const POOL_SIZE = 18;
+
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'ink-dot';
+      document.body.appendChild(dot);
+      pool.push(dot);
+    }
+
+    let head = 0;
+    let frame = 0;
+    let active = false;
+
+    const gallery = document.querySelector<HTMLElement>('.gallery-page');
+    if (!gallery) return;
+
+    gallery.addEventListener('mousemove', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.gallery-item__frame, .gallery-lead__frame')) {
+        active = false;
+        return;
+      }
+      active = true;
+
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const dot = pool[head % POOL_SIZE];
+        head++;
+        dot.style.left = `${e.clientX}px`;
+        dot.style.top = `${e.clientY}px`;
+        dot.style.opacity = '1';
+        dot.style.transform = `translate(-50%, -50%) scale(${0.5 + Math.random() * 0.7})`;
+        dot.dataset.born = String(performance.now());
+
+        setTimeout(() => {
+          dot.style.opacity = '0';
+          dot.style.transform = `translate(-50%, -50%) scale(${0.1 + Math.random() * 0.3})`;
+        }, 60 + Math.random() * 80);
+      });
+    });
+
+    gallery.addEventListener('mouseleave', () => { active = false; });
+  }
+
+  document.addEventListener('astro:page-load', initInkTrail);
+  initInkTrail();
+</script>
+
+<style>
+  .gallery-page {
+    max-width: var(--layout-wide-width);
+    margin: 0 auto;
+  }
+
+  /* ── Lead hero ── */
+
+  .gallery-lead {
+    width: 100%;
+    padding: 0 var(--layout-gutter);
+  }
+
+  .gallery-lead__frame {
+    margin: 0;
+    width: 100%;
+    height: clamp(480px, 80svh, 860px);
+    overflow: hidden;
+  }
+
+  .gallery-lead__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* ── Intro text ── */
+
+  .gallery-intro {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-8);
+    padding: clamp(var(--space-10), 5vw, var(--space-20)) var(--layout-gutter);
+    padding-bottom: clamp(var(--space-16), 7vw, var(--space-32));
+    align-items: baseline;
+  }
+
+  .gallery-intro__index {
+    padding-top: 0.2em;
+  }
+
+  .gallery-intro__index span {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .gallery-intro__text {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 44ch;
+  }
+
+  .gallery-intro__text h1 {
+    font-size: clamp(var(--font-size-xl), 3vw, var(--font-size-3xl));
+    font-weight: var(--font-weight-regular);
+    line-height: 1.1;
+    color: var(--color-text-primary);
+    text-wrap: balance;
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .gallery-intro__text p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--font-leading-relaxed);
+    letter-spacing: var(--font-tracking-wide);
+  }
+
+  /* ── Two-column masonry ── */
+
+  .gallery-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+    padding: 0 var(--layout-gutter) clamp(var(--space-24), 12vw, var(--space-72));
+    align-items: start;
+  }
+
+  .gallery-col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(var(--space-6), 4.5vw, var(--space-20));
+  }
+
+  /* Column B starts lower for staggered rhythm */
+  .gallery-col--b {
+    padding-top: clamp(var(--space-16), 12vw, var(--space-48));
+  }
+
+  /* ── Gallery item ── */
+
+  .gallery-item {
+    margin: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 680ms var(--ease-out-expo),
+      transform 680ms var(--ease-out-expo);
+  }
+
+  .gallery-item[data-visible="1"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Column B items get a 120ms lag — reinforces the staggered layout */
+  .gallery-col--b .gallery-item[data-visible="1"] {
+    transition-delay: 120ms;
+  }
+
+  .gallery-item__frame {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .gallery-item__frame :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .gallery-item__caption {
+    display: flex;
+    align-items: center;
+    margin-top: var(--space-3);
+  }
+
+  .gallery-item__caption span {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--font-tracking-wider);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.6;
+  }
+
+  /* ── Stack section ── */
+
+  .gallery-section--stack {
+    margin-block: clamp(var(--space-32), 15vw, var(--space-72));
+  }
+
+  .stack-scroll-driver {
+    position: relative;
+    height: 400vh;
+  }
+
+  .stack-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .stack-stage {
+    position: relative;
+    width: min(80vw, 500px);
+    height: min(80vw, 500px);
+  }
+
+  .stack-card {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center bottom;
+    transform: rotate(calc((var(--card-index) - 2) * 3deg));
+  }
+
+  .stack-card:nth-child(1) { z-index: 1; }
+  .stack-card:nth-child(2) { z-index: 2; }
+  .stack-card:nth-child(3) { z-index: 6; }
+  .stack-card:nth-child(4) { z-index: 4; }
+  .stack-card:nth-child(5) { z-index: 5; }
+  .stack-card:nth-child(6) { z-index: 3; }
+
+  .stack-card__frame {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .stack-card__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── Filmstrip section ── */
+
+  .gallery-section--filmstrip {
+    margin-block: clamp(var(--space-32), 15vw, var(--space-72));
+  }
+
+  .filmstrip-scroll-driver {
+    position: relative;
+    height: 300vh;
+  }
+
+  .filmstrip-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .filmstrip-track {
+    display: flex;
+    gap: clamp(var(--space-6), 3vw, var(--space-16));
+    padding-inline: var(--layout-gutter);
+    will-change: transform;
+  }
+
+  .filmstrip-card {
+    margin: 0;
+    flex-shrink: 0;
+    width: clamp(260px, 40vw, 520px);
+  }
+
+  .filmstrip-card__frame {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .filmstrip-card__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── Back link ── */
+
+  .gallery-back {
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--layout-gutter) clamp(var(--space-16), 8vw, var(--space-32));
+  }
+
+  .gallery-back a {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .gallery-back a:hover {
+    color: var(--color-brand);
+  }
+
+  /* ── Hero reveal ── */
+  .gallery-lead__frame {
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out-expo);
+  }
+
+  .gallery-lead__frame[data-visible="1"] {
+    opacity: 1;
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-item,
+    .gallery-lead__frame {
+      transform: none;
+      transition: opacity 200ms linear;
+    }
+
+    .filmstrip-sticky {
+      position: static;
+      height: auto;
+      overflow: visible;
+    }
+
+    .filmstrip-track {
+      flex-wrap: wrap;
+    }
+
+    .filmstrip-scroll-driver {
+      height: auto;
+    }
+  }
+
+  /* ── Hover ── */
+  @media (hover: hover) {
+    .gallery-item__frame :global(img) {
+      transition: transform var(--transition-slow);
+    }
+
+    .gallery-item:hover .gallery-item__frame :global(img) {
+      transform: scale(1.02);
+    }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    .gallery-lead {
+      padding: 0;
+    }
+
+    .gallery-lead__frame {
+      height: clamp(300px, 70svh, 520px);
+    }
+
+    .gallery-intro {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      padding-top: var(--space-8);
+      padding-bottom: var(--space-10);
+    }
+
+    .gallery-intro__text {
+      max-width: none;
+    }
+
+    .gallery-intro__text h1 {
+      font-size: var(--font-size-2xl);
+    }
+
+    .gallery-columns {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-3);
+      padding-bottom: var(--space-16);
+    }
+
+    .gallery-col {
+      gap: var(--space-3);
+    }
+
+    .gallery-col--b {
+      padding-top: clamp(var(--space-10), 8vw, var(--space-20));
+    }
+
+    .gallery-back {
+      padding-bottom: var(--space-16);
+    }
+  }
+
+  :global(.ink-dot) {
+    position: fixed;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-full);
+    background: var(--color-text-primary);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition:
+      opacity 260ms var(--ease-out-expo),
+      transform 340ms var(--ease-out-expo);
+    will-change: transform, opacity;
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+const themes = [
+  { id: "moss",  label: "moss & clay",     swatches: ["oklch(43% 0.055 135)", "oklch(43% 0.055 38)",  "oklch(96% 0.011 88)"]  },
+  { id: "ink",   label: "ink & violet",    swatches: ["oklch(16% 0.025 285)", "oklch(68% 0.22 300)", "oklch(65% 0.20 25)"]   },
+  { id: "ochre", label: "ochre & cobalt",  swatches: ["oklch(88% 0.055 78)",  "oklch(40% 0.16 265)", "oklch(75% 0.18 100)"]  },
+  { id: "blush", label: "blush & burgundy",swatches: ["oklch(93% 0.020 20)",  "oklch(32% 0.08 10)",  "oklch(72% 0.20 128)"]  },
+  { id: "terra", label: "terra & plum",    swatches: ["oklch(66% 0.10 42)",   "oklch(32% 0.10 310)", "oklch(80% 0.14 88)"]   },
+  { id: "sage",  label: "sage & oxblood",  swatches: ["oklch(96% 0.012 88)",  "oklch(50% 0.09 145)", "oklch(36% 0.12 15)"]   },
+];
+---
+
+<div class="theme-picker" id="theme-picker" aria-label="Välj färgtema">
+  <span class="theme-picker__label">tema</span>
+  <div class="theme-picker__options" role="radiogroup" aria-label="Färgteman">
+    {themes.map((t) => (
+      <button
+        class="theme-picker__swatch"
+        data-theme-id={t.id}
+        title={t.label}
+        aria-label={t.label}
+        type="button"
+      >
+        {t.swatches.map((color) => (
+          <span class="theme-picker__dot" style={`background:${color}`} />
+        ))}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var STORAGE_KEY = 'tow-theme';
+
+    function applyTheme(id) {
+      document.documentElement.setAttribute('data-theme', id);
+      localStorage.setItem(STORAGE_KEY, id);
+      document.querySelectorAll('.theme-picker__swatch').forEach(function (btn) {
+        btn.classList.toggle('is-active', btn.dataset.themeId === id);
+        btn.setAttribute('aria-checked', btn.dataset.themeId === id ? 'true' : 'false');
+      });
+    }
+
+    function init() {
+      var saved = localStorage.getItem(STORAGE_KEY) || 'moss';
+      applyTheme(saved);
+
+      document.querySelectorAll('.theme-picker__swatch').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          applyTheme(btn.dataset.themeId);
+        });
+      });
+    }
+
+    document.addEventListener('astro:page-load', init);
+    init();
+  })();
+</script>
+
+<style>
+  .theme-picker {
+    position: fixed;
+    bottom: var(--space-6);
+    right: var(--space-6);
+    z-index: var(--z-overlay);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+
+  .theme-picker__label {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+    width: 100%;
+    text-align: center;
+  }
+
+  .theme-picker__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    background: color-mix(in oklch, var(--color-bg-base) 90%, transparent);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    backdrop-filter: blur(var(--blur-nav));
+  }
+
+  .theme-picker__swatch {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    background: none;
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: var(--space-1);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .theme-picker__swatch:hover {
+    transform: translateX(-2px);
+    border-color: var(--color-border-default);
+  }
+
+  .theme-picker__swatch.is-active {
+    border-color: var(--color-brand);
+  }
+
+  .theme-picker__dot {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+  }
+</style>

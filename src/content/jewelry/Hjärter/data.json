@@ -1,11 +1,11 @@
 {
-  "title": "hjarter",
+  "title": "hjärter",
   "price": 780,
   "sizes": ["16", "17", "18"],
-  "description": "Smal ring med diskret hjärtformat sigill. Delikat och lätt.",
-  "material": "Sterling silver",
-  "technique": "Gjutning",
-  "design": "Sigillring med hjärtmotiv",
+  "description": "En personlig tolkning av hjärtats form – skulpterad för hand i vax och gjuten i 100% återvunnet sterling silver (925). Ringen har en mjukt markerad hjärtform upptill, medan formen smalnar av mot fingerleden för en bekväm passform. Ett subtilt men uttrycksfullt smycke, med en känsla av både närhet och hantverk.",
+  "material": "Återvunnet sterling silver (925)",
+  "technique": "Vaxmodellering & silversmide",
+  "design": "Mjukt formad hjärtform upptill",
   "images": ["./DSC_5564_VSCO.webp"],
   "date": "2026-04-19"
 }

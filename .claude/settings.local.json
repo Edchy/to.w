@@ -6,7 +6,9 @@
       "Bash(node *)",
       "Bash(npm view *)",
       "Bash(npx astro *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(python3 -c \"import sys; html=sys.stdin.read\\(\\); idx=html.find\\('work work--row-1'\\); print\\(html[idx-20:idx+200]\\)\")"
     ]
   }
 }
