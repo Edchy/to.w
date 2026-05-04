@@ -3,7 +3,6 @@ import "../styles/global.css";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
-import ThemePicker from "../components/ThemePicker.astro";
 import Wordmark from "../components/Wordmark.astro";
 
 type Props = {
@@ -37,7 +36,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 ---
 
 <!doctype html>
-<html lang="sv">
+<html lang="sv" data-theme="moss">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -62,10 +61,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <script is:inline>
-      (function(){var t=localStorage.getItem('tow-theme')||'moss';document.documentElement.setAttribute('data-theme',t);})();
-    </script>
-    <Font cssVariable="--font-body" />
+<Font cssVariable="--font-body" />
     <Font cssVariable="--font-chillax" />
     <ClientRouter />
   </head>
@@ -122,8 +118,6 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
         ))}
       </ul>
     </div>
-
-    <ThemePicker />
 
     <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />

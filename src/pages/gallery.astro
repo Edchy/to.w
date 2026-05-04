@@ -312,23 +312,33 @@ const imageAlt = (filename: string, index: number) =>
     const items = document.querySelectorAll<HTMLElement>('.gallery-item');
     const lead  = document.querySelector<HTMLElement>('.gallery-lead__frame');
 
+    const isDesktop = window.matchMedia('(min-width: 700px)').matches;
+
     if (items.length) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              (entry.target as HTMLElement).dataset.visible = '1';
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { rootMargin: '0px 0px -48px 0px', threshold: 0.06 }
-      );
-      items.forEach((el) => observer.observe(el));
+      if (isDesktop) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                (entry.target as HTMLElement).dataset.visible = '1';
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -48px 0px', threshold: 0.06 }
+        );
+        items.forEach((el) => observer.observe(el));
+      } else {
+        items.forEach((el) => { el.dataset.visible = '1'; });
+      }
     }
 
     if (lead) {
-      requestAnimationFrame(() => { lead.dataset.visible = '1'; });
+      if (isDesktop) {
+        requestAnimationFrame(() => { lead.dataset.visible = '1'; });
+      } else {
+        lead.dataset.visible = '1';
+      }
     }
 
     // Stack: JS-driven fan on scroll
@@ -348,7 +358,7 @@ const imageAlt = (filename: string, index: number) =>
     // Base pile rotations (matches CSS --card-index logic)
     const BASE_ROT = [-6, -3, 0, 2, 4, 6];
 
-    if (stackDriver && stackCards.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (stackDriver && stackCards.length && isDesktop && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       let stackRaf = 0;
 
       const tickStack = () => {
@@ -398,7 +408,7 @@ const imageAlt = (filename: string, index: number) =>
     const filmDriver = document.querySelector<HTMLElement>('.filmstrip-scroll-driver');
     const filmTrack  = document.querySelector<HTMLElement>('.filmstrip-track');
 
-    if (filmDriver && filmTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (filmDriver && filmTrack && isDesktop && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       let filmRaf = 0;
 
       const tickFilm = () => {
@@ -587,21 +597,6 @@ const imageAlt = (filename: string, index: number) =>
   .gallery-item {
     margin: 0;
     width: 100%;
-    opacity: 0;
-    transform: translateY(20px);
-    transition:
-      opacity 680ms var(--ease-out-expo),
-      transform 680ms var(--ease-out-expo);
-  }
-
-  .gallery-item[data-visible="1"] {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Column B items get a 120ms lag — reinforces the staggered layout */
-  .gallery-col--b .gallery-item[data-visible="1"] {
-    transition-delay: 120ms;
   }
 
   .gallery-item__frame {
@@ -635,54 +630,37 @@ const imageAlt = (filename: string, index: number) =>
     margin-block: clamp(var(--space-32), 15vw, var(--space-72));
   }
 
+  /* Stack: 2-col grid on mobile, scroll-driven on desktop */
   .stack-scroll-driver {
     position: relative;
-    height: 400vh;
   }
 
   .stack-sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+    row-gap: clamp(var(--space-6), 4.5vw, var(--space-20));
+    padding: 0 var(--layout-gutter);
   }
 
   .stack-stage {
-    position: relative;
-    width: min(80vw, 500px);
-    height: min(80vw, 500px);
+    display: contents;
   }
 
   .stack-card {
-    position: absolute;
-    inset: 0;
     margin: 0;
-    width: 100%;
-    height: 100%;
-    transform-origin: center bottom;
-    transform: rotate(calc((var(--card-index) - 2) * 3deg));
+    transform: none !important;
   }
-
-  .stack-card:nth-child(1) { z-index: 1; }
-  .stack-card:nth-child(2) { z-index: 2; }
-  .stack-card:nth-child(3) { z-index: 6; }
-  .stack-card:nth-child(4) { z-index: 4; }
-  .stack-card:nth-child(5) { z-index: 5; }
-  .stack-card:nth-child(6) { z-index: 3; }
 
   .stack-card__frame {
     width: 100%;
-    height: 100%;
     overflow: hidden;
   }
 
   .stack-card__frame :global(img) {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
   }
 
   /* ── Filmstrip section ── */
@@ -691,31 +669,27 @@ const imageAlt = (filename: string, index: number) =>
     margin-block: clamp(var(--space-32), 15vw, var(--space-72));
   }
 
+  /* Filmstrip: 2-col grid on mobile, scroll-driven on desktop */
   .filmstrip-scroll-driver {
     position: relative;
-    height: 300vh;
   }
 
   .filmstrip-sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+    row-gap: clamp(var(--space-6), 4.5vw, var(--space-20));
+    padding: 0 var(--layout-gutter);
   }
 
   .filmstrip-track {
-    display: flex;
-    gap: clamp(var(--space-6), 3vw, var(--space-16));
-    padding-inline: var(--layout-gutter);
-    will-change: transform;
+    display: contents;
   }
 
   .filmstrip-card {
     margin: 0;
     flex-shrink: 0;
-    width: clamp(260px, 40vw, 520px);
+    width: 100%;
   }
 
   .filmstrip-card__frame {
@@ -753,36 +727,161 @@ const imageAlt = (filename: string, index: number) =>
     color: var(--color-brand);
   }
 
-  /* ── Hero reveal ── */
-  .gallery-lead__frame {
-    opacity: 0;
-    transition: opacity 900ms var(--ease-out-expo);
+  /* ── Scroll animations — desktop only ── */
+  @media (min-width: 700px) {
+    .gallery-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition:
+        opacity 680ms var(--ease-out-expo),
+        transform 680ms var(--ease-out-expo);
+    }
+
+    .gallery-item[data-visible="1"] {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery-col--b .gallery-item[data-visible="1"] {
+      transition-delay: 120ms;
+    }
+
+    .gallery-lead__frame {
+      opacity: 0;
+      transition: opacity 900ms var(--ease-out-expo);
+    }
+
+    .gallery-lead__frame[data-visible="1"] {
+      opacity: 1;
+    }
+
+    .stack-scroll-driver {
+      height: 400vh;
+    }
+
+    .stack-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .stack-stage {
+      display: block;
+      position: relative;
+      width: min(80vw, 500px);
+      height: min(80vw, 500px);
+    }
+
+    .stack-card {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform-origin: center bottom;
+      transform: rotate(calc((var(--card-index) - 2) * 3deg));
+    }
+
+    .stack-card:nth-child(1) { z-index: 1; }
+    .stack-card:nth-child(2) { z-index: 2; }
+    .stack-card:nth-child(3) { z-index: 6; }
+    .stack-card:nth-child(4) { z-index: 4; }
+    .stack-card:nth-child(5) { z-index: 5; }
+    .stack-card:nth-child(6) { z-index: 3; }
+
+    .stack-card__frame {
+      height: 100%;
+    }
+
+    .stack-card__frame :global(img) {
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .filmstrip-scroll-driver {
+      height: 300vh;
+    }
+
+    .filmstrip-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .filmstrip-track {
+      display: flex;
+      gap: clamp(var(--space-6), 3vw, var(--space-16));
+      padding-inline: var(--layout-gutter);
+      will-change: transform;
+    }
+
+    .filmstrip-card {
+      width: clamp(260px, 40vw, 520px);
+    }
   }
 
-  .gallery-lead__frame[data-visible="1"] {
-    opacity: 1;
-  }
-
-  /* ── Reduced motion ── */
-  @media (prefers-reduced-motion: reduce) {
+  /* ── Reduced motion (desktop only — mobile already uses grid) ── */
+  @media (min-width: 700px) and (prefers-reduced-motion: reduce) {
     .gallery-item,
     .gallery-lead__frame {
       transform: none;
       transition: opacity 200ms linear;
     }
 
+    .stack-scroll-driver,
+    .filmstrip-scroll-driver {
+      height: auto;
+    }
+
+    .stack-sticky {
+      position: static;
+      height: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+      row-gap: clamp(var(--space-6), 4.5vw, var(--space-20));
+      padding: 0 var(--layout-gutter);
+    }
+
+    .stack-stage {
+      display: contents;
+    }
+
+    .stack-card {
+      position: static;
+      width: 100%;
+      height: auto;
+      transform: none !important;
+    }
+
+    .stack-card__frame :global(img) {
+      height: auto;
+      object-fit: unset;
+    }
+
     .filmstrip-sticky {
       position: static;
       height: auto;
-      overflow: visible;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
+      row-gap: clamp(var(--space-6), 4.5vw, var(--space-20));
+      padding: 0 var(--layout-gutter);
     }
 
     .filmstrip-track {
-      flex-wrap: wrap;
+      display: contents;
     }
 
-    .filmstrip-scroll-driver {
-      height: auto;
+    .filmstrip-card {
+      width: 100%;
     }
   }
 
