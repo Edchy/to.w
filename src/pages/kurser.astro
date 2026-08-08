@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { courses } from "../data/courses";
-import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
+import { CONTACT_EMAIL_HREF } from "../config/site";
 
 const openCourses = courses.filter((course) => course.open);
 
@@ -76,8 +76,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
         <p class="signup__lede">
           Fyll i formuläret så hör jag av mig via mejl med bekräftelse och praktiska detaljer.
           Det här är en intresseanmälan, inte en bokning — platsen är din först när jag har
-          svarat. Har du frågor innan du anmäler dig?
-          <a class="signup__inline-link" href={CONTACT_EMAIL_HREF}>Mejla mig</a>.
+          svarat. Undrar du något? Skriv det i meddelandefältet så svarar jag på det med.
         </p>
       </div>
 
@@ -91,6 +90,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       >
         {/* Netlify routes the submission by this name. */}
         <input type="hidden" name="form-name" value="intresseanmalan" />
+
+        {/* Sets the notification email's subject line. */}
+        <input type="hidden" name="subject" value="Ny intresseanmälan — kurs" />
 
         {/* Honeypot — hidden from people, tempting to bots. */}
         <p class="signup__honeypot" aria-hidden="true">
@@ -107,7 +109,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
         <div class="field">
           <label class="field__label" for="email">E-post</label>
-          <input class="field__input" type="email" id="email" name="epost" autocomplete="email" required />
+          {/* Must be named "email" — Netlify uses this field as the notification's reply-to. */}
+          <input class="field__input" type="email" id="email" name="email" autocomplete="email" required />
         </div>
 
         <div class="field">
@@ -130,9 +133,15 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
         <div class="field field--wide">
           <label class="field__label" for="message">
-            Meddelande <span class="field__optional">(valfritt)</span>
+            Meddelande eller fråga <span class="field__optional">(valfritt)</span>
           </label>
-          <textarea class="field__input field__input--area" id="message" name="meddelande" rows="4"></textarea>
+          <textarea
+            class="field__input field__input--area"
+            id="message"
+            name="meddelande"
+            rows="4"
+            placeholder="Har du en fråga om kursen, eller något jag bör veta? Skriv det här."
+          ></textarea>
         </div>
 
         <div class="signup__actions">
@@ -351,7 +360,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .field__optional {
-    color: var(--color-text-tertiary);
+    color: var(--color-text-secondary);
   }
 
   .field__input {
@@ -391,6 +400,12 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     line-height: var(--font-leading-normal);
   }
 
+  /* Explicit placeholder color — the browser default is too light to read */
+  .field__input::placeholder {
+    color: var(--color-text-tertiary);
+    opacity: 1;
+  }
+
   .signup__actions {
     grid-column: 1 / -1;
     display: grid;
@@ -418,7 +433,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     max-width: 56ch;
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-snug);
-    color: var(--color-text-tertiary);
+    color: var(--color-text-secondary);
   }
 
   .signup__inline-link {

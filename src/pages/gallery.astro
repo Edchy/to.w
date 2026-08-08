@@ -149,23 +149,21 @@ const imageAlt = (filename: string, index: number) =>
     <!-- Section 2: Stack -->
     {stackImages.length > 0 && (
       <div class="gallery-section gallery-section--stack" aria-label="Staplade bilder">
-        <div class="stack-scroll-driver">
-          <div class="stack-sticky">
-            <div class="stack-stage">
-              {stackImages.map((entry, i) => (
-                <figure class="stack-card" style={`--card-index: ${i}`}>
-                  <div class="stack-card__frame">
-                    <Image
-                      src={entry.image}
-                      alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
-                      width={entry.image.width}
-                      height={entry.image.height}
-                      loading="lazy"
-                    />
-                  </div>
-                </figure>
-              ))}
-            </div>
+        <div class="stack-grid">
+          <div class="stack-stage">
+            {stackImages.map((entry) => (
+              <figure class="stack-card">
+                <div class="stack-card__frame">
+                  <Image
+                    src={entry.image}
+                    alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    loading="lazy"
+                  />
+                </div>
+              </figure>
+            ))}
           </div>
         </div>
       </div>
@@ -226,23 +224,21 @@ const imageAlt = (filename: string, index: number) =>
     <!-- Section 4: Film strip -->
     {filmImages.length > 0 && (
       <div class="gallery-section gallery-section--filmstrip" aria-label="Filmremsa">
-        <div class="filmstrip-scroll-driver">
-          <div class="filmstrip-sticky">
-            <div class="filmstrip-track">
-              {filmImages.map((entry, i) => (
-                <figure class="filmstrip-card" style={`--film-index: ${i}`}>
-                  <div class="filmstrip-card__frame">
-                    <Image
-                      src={entry.image}
-                      alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
-                      width={entry.image.width}
-                      height={entry.image.height}
-                      loading="lazy"
-                    />
-                  </div>
-                </figure>
-              ))}
-            </div>
+        <div class="filmstrip-grid">
+          <div class="filmstrip-track">
+            {filmImages.map((entry) => (
+              <figure class="filmstrip-card">
+                <div class="filmstrip-card__frame">
+                  <Image
+                    src={entry.image}
+                    alt={imageAlt(entry.filename, (globalIndexOf.get(entry.path) ?? 0) + 1)}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    loading="lazy"
+                  />
+                </div>
+              </figure>
+            ))}
           </div>
         </div>
       </div>
@@ -341,103 +337,6 @@ const imageAlt = (filename: string, index: number) =>
       }
     }
 
-    // Stack: JS-driven fan on scroll
-    const stackDriver = document.querySelector<HTMLElement>('.stack-scroll-driver');
-    const stackCards  = Array.from(document.querySelectorAll<HTMLElement>('.stack-card'));
-
-    // Fan targets: [rotationDeg, translateXpx relative to stage, translateYpx relative to stage]
-    // Values are fractions of stage size set at runtime
-    const FAN: [number, number, number][] = [
-      [-22,  -0.9, 0.05],
-      [-11,  -0.45, -0.03],
-      [  1,     0, -0.08],
-      [  8,   0.45, -0.03],
-      [ 16,   0.85,  0.03],
-      [ 24,   1.25,  0.08],
-    ];
-    // Base pile rotations (matches CSS --card-index logic)
-    const BASE_ROT = [-6, -3, 0, 2, 4, 6];
-
-    if (stackDriver && stackCards.length && isDesktop && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      let stackRaf = 0;
-
-      const tickStack = () => {
-        const rect   = stackDriver.getBoundingClientRect();
-        const total  = rect.height - window.innerHeight;
-        // progress: 0 when top of driver hits top of viewport, 1 when bottom hits bottom
-        const raw    = -rect.top / total;
-        const p      = Math.max(0, Math.min(1, raw));
-
-        // ease-out-expo
-        const eased  = p === 0 ? 0 : 1 - Math.pow(2, -10 * p);
-
-        const stage  = stackDriver.querySelector<HTMLElement>('.stack-stage');
-        const stageW = stage ? stage.offsetWidth : 400;
-
-        stackCards.forEach((card, i) => {
-          const [toRot, toTx, toTy] = FAN[i] ?? [0, 0, 0];
-          const fromRot = BASE_ROT[i] ?? 0;
-          const rot  = fromRot + (toRot - fromRot) * eased;
-          const tx   = toTx  * stageW * eased;
-          const ty   = toTy  * stageW * eased;
-          card.style.transform = `rotate(${rot}deg) translate(${tx}px, ${ty}px)`;
-        });
-
-        stackRaf = requestAnimationFrame(tickStack);
-      };
-
-      const stackObserver = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            cancelAnimationFrame(stackRaf);
-            tickStack();
-          } else {
-            cancelAnimationFrame(stackRaf);
-          }
-        });
-      }, { threshold: 0 });
-
-      stackObserver.observe(stackDriver);
-      document.addEventListener('astro:before-swap', () => {
-        cancelAnimationFrame(stackRaf);
-        stackObserver.disconnect();
-      }, { once: true });
-    }
-
-    // Filmstrip: JS-driven horizontal slide on scroll
-    const filmDriver = document.querySelector<HTMLElement>('.filmstrip-scroll-driver');
-    const filmTrack  = document.querySelector<HTMLElement>('.filmstrip-track');
-
-    if (filmDriver && filmTrack && isDesktop && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      let filmRaf = 0;
-
-      const tickFilm = () => {
-        const rect    = filmDriver.getBoundingClientRect();
-        const total   = rect.height - window.innerHeight;
-        const raw     = -rect.top / total;
-        const p       = Math.max(0, Math.min(1, raw));
-        const travel  = filmTrack.scrollWidth - window.innerWidth;
-        filmTrack.style.transform = `translateX(${-travel * p}px)`;
-        filmRaf = requestAnimationFrame(tickFilm);
-      };
-
-      const filmObserver = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            cancelAnimationFrame(filmRaf);
-            tickFilm();
-          } else {
-            cancelAnimationFrame(filmRaf);
-          }
-        });
-      }, { threshold: 0 });
-
-      filmObserver.observe(filmDriver);
-      document.addEventListener('astro:before-swap', () => {
-        cancelAnimationFrame(filmRaf);
-        filmObserver.disconnect();
-      }, { once: true });
-    }
   }
 
   document.addEventListener('astro:page-load', initGallery);
@@ -630,12 +529,8 @@ const imageAlt = (filename: string, index: number) =>
     margin-block: clamp(var(--space-32), 15vw, var(--space-72));
   }
 
-  /* Stack: 2-col grid on mobile, scroll-driven on desktop */
-  .stack-scroll-driver {
-    position: relative;
-  }
-
-  .stack-sticky {
+  /* Stack: two-column grid at every width */
+  .stack-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
@@ -649,7 +544,6 @@ const imageAlt = (filename: string, index: number) =>
 
   .stack-card {
     margin: 0;
-    transform: none !important;
   }
 
   .stack-card__frame {
@@ -669,12 +563,8 @@ const imageAlt = (filename: string, index: number) =>
     margin-block: clamp(var(--space-32), 15vw, var(--space-72));
   }
 
-  /* Filmstrip: 2-col grid on mobile, scroll-driven on desktop */
-  .filmstrip-scroll-driver {
-    position: relative;
-  }
-
-  .filmstrip-sticky {
+  /* Filmstrip: two-column grid at every width */
+  .filmstrip-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
@@ -755,133 +645,14 @@ const imageAlt = (filename: string, index: number) =>
       opacity: 1;
     }
 
-    .stack-scroll-driver {
-      height: 400vh;
-    }
-
-    .stack-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      padding: 0;
-    }
-
-    .stack-stage {
-      display: block;
-      position: relative;
-      width: min(80vw, 500px);
-      height: min(80vw, 500px);
-    }
-
-    .stack-card {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      transform-origin: center bottom;
-      transform: rotate(calc((var(--card-index) - 2) * 3deg));
-    }
-
-    .stack-card:nth-child(1) { z-index: 1; }
-    .stack-card:nth-child(2) { z-index: 2; }
-    .stack-card:nth-child(3) { z-index: 6; }
-    .stack-card:nth-child(4) { z-index: 4; }
-    .stack-card:nth-child(5) { z-index: 5; }
-    .stack-card:nth-child(6) { z-index: 3; }
-
-    .stack-card__frame {
-      height: 100%;
-    }
-
-    .stack-card__frame :global(img) {
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .filmstrip-scroll-driver {
-      height: 300vh;
-    }
-
-    .filmstrip-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .filmstrip-track {
-      display: flex;
-      gap: clamp(var(--space-6), 3vw, var(--space-16));
-      padding-inline: var(--layout-gutter);
-      will-change: transform;
-    }
-
-    .filmstrip-card {
-      width: clamp(260px, 40vw, 520px);
-    }
   }
 
-  /* ── Reduced motion (desktop only — mobile already uses grid) ── */
+  /* ── Reduced motion ── */
   @media (min-width: 700px) and (prefers-reduced-motion: reduce) {
     .gallery-item,
     .gallery-lead__frame {
       transform: none;
       transition: opacity 200ms linear;
-    }
-
-    .stack-scroll-driver,
-    .filmstrip-scroll-driver {
-      height: auto;
-    }
-
-    .stack-sticky {
-      position: static;
-      height: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
-      row-gap: clamp(var(--space-6), 4.5vw, var(--space-20));
-      padding: 0 var(--layout-gutter);
-    }
-
-    .stack-stage {
-      display: contents;
-    }
-
-    .stack-card {
-      position: static;
-      width: 100%;
-      height: auto;
-      transform: none !important;
-    }
-
-    .stack-card__frame :global(img) {
-      height: auto;
-      object-fit: unset;
-    }
-
-    .filmstrip-sticky {
-      position: static;
-      height: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      column-gap: clamp(var(--space-4), 2.4vw, var(--space-10));
-      row-gap: clamp(var(--space-6), 4.5vw, var(--space-20));
-      padding: 0 var(--layout-gutter);
-    }
-
-    .filmstrip-track {
-      display: contents;
-    }
-
-    .filmstrip-card {
-      width: 100%;
     }
   }
 
