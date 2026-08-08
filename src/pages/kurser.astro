@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
 import { courses, spotsLabel, spotsWord } from "../data/courses";
 import { CONTACT_EMAIL_HREF } from "../config/site";
 
@@ -29,8 +30,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
     {courses.map((course) => (
       <article class="course" aria-labelledby={`course-${course.slug}`}>
+        <h2 class="course__heading" id={`course-${course.slug}`}>{course.title}</h2>
+
         <div class="course__body">
-          <h2 class="course__heading" id={`course-${course.slug}`}>{course.title}</h2>
           <p class="course__intro">{course.intro}</p>
 
           {course.body.map((paragraph) => (
@@ -45,8 +47,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
           </ul>
         </div>
 
-        <aside class="course__facts">
-          <dl class="facts">
+        <aside class="course__aside">
+          <div class="course__facts">
+            <dl class="facts">
             <div class="facts__row">
               <dt>Datum</dt>
               <dd>{course.date}</dd>
@@ -71,6 +74,16 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
           {!course.open && (
             <p class="facts__note">Den här kursen är full — anmäl gärna intresse för nästa tillfälle.</p>
           )}
+          </div>
+
+          <Image
+            class="course__image"
+            src={course.image}
+            alt={course.imageAlt}
+            loading="eager"
+            width={1113}
+            height={766}
+          />
         </aside>
       </article>
     ))}
@@ -197,21 +210,29 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .course {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(268px, 0.42fr);
-    gap: clamp(var(--space-8), 5vw, var(--space-16));
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.58fr);
+    grid-template-areas:
+      "heading aside"
+      "body    aside";
+    /* Row gap only under the heading — the aside spans both rows */
+    gap: var(--space-5) clamp(var(--space-8), 5vw, var(--space-16));
     align-items: start;
     padding: clamp(var(--space-8), 5vw, var(--space-16));
     background: var(--color-bg-statement);
     border-radius: var(--radius-sm);
+    /* Clips the image where it bleeds past the card's right padding */
+    overflow: hidden;
   }
 
   .course__body {
+    grid-area: body;
     display: grid;
     gap: var(--space-5);
     max-width: 60ch;
   }
 
   .course__heading {
+    grid-area: heading;
     font-size: var(--font-size-3xl);
     line-height: var(--font-leading-tight);
   }
@@ -263,12 +284,39 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   /* ── Facts panel ───────────────────────────────────────── */
 
-  .course__facts {
+  .course__aside {
+    grid-area: aside;
     position: sticky;
     top: calc(var(--nav-height) + var(--space-6));
+    display: grid;
+  }
+
+  .course__facts {
+    /* Held narrower than the column so more of the image stays exposed */
+    max-width: 300px;
+    justify-self: end;
     padding: clamp(var(--space-6), 3vw, var(--space-8));
     background: var(--color-bg-base);
     border-radius: var(--radius-sm);
+    /* Lifts the panel over the image's top edge */
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Bleeds right, past the card's padding, and tucks under the facts panel */
+  .course__image {
+    /* Negative margin escapes the grid track so the image reaches the card edge */
+    width: calc(100% + clamp(var(--space-8), 5vw, var(--space-16)));
+    height: auto;
+    /* Overrides the global img { max-width: 100% }, which would cap the bleed */
+    max-width: none;
+    margin-right: calc(clamp(var(--space-8), 5vw, var(--space-16)) * -1);
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: 40% 45%;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    /* Tucks up under the facts panel so the two overlap */
+    margin-top: calc(var(--space-10) * -1);
   }
 
   .facts {
@@ -466,11 +514,38 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   @media (max-width: 1023px) {
     .course {
       grid-template-columns: 1fr;
+      grid-template-areas:
+        "heading"
+        "aside"
+        "body";
+      gap: var(--space-8);
     }
 
-    .course__facts {
+    .course__aside {
       position: static;
-      max-width: 480px;
+      /* Image first, facts panel under it — heading, photo, then the prose */
+      grid-template-areas:
+        "image"
+        "facts";
+    }
+
+    /* Rides up onto the image instead of sitting in its own band below it */
+    .course__facts {
+      grid-area: facts;
+      max-width: none;
+      justify-self: stretch;
+      margin: calc(var(--space-16) * -1) var(--space-6) 0 var(--space-10);
+    }
+
+    /* Bleeds the full card width; short enough to leave room for the prose */
+    .course__image {
+      grid-area: image;
+      width: calc(100% + clamp(var(--space-8), 5vw, var(--space-16)) * 2);
+      max-width: none;
+      margin: 0 calc(clamp(var(--space-8), 5vw, var(--space-16)) * -1);
+      aspect-ratio: 2 / 1;
+      object-position: 50% 35%;
+      border-radius: 0;
     }
   }
 
@@ -488,6 +563,15 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
     .signup__form {
       grid-template-columns: 1fr;
+    }
+
+    /* Squarer crop and a gentler overlap — a 2:1 strip is too thin on a phone */
+    .course__image {
+      aspect-ratio: 4 / 3;
+    }
+
+    .course__facts {
+      margin: calc(var(--space-10) * -1) var(--space-3) 0 var(--space-5);
     }
   }
 </style>

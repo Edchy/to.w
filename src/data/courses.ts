@@ -1,7 +1,13 @@
+import type { ImageMetadata } from "astro";
+import silverringImg from "../assets/img/kurser/kurser-omslag.JPG";
+
 export type Course = {
   slug: string;
   title: string;
   intro: string;
+  /** Shown alongside the facts panel. */
+  image: ImageMetadata;
+  imageAlt: string;
   date: string;
   /** Split form of `date`, for typographic display on the homepage teaser. */
   day: string;
@@ -23,6 +29,8 @@ export const courses: Course[] = [
     title: "Skapa din egen silverring",
     intro:
       "Välkommen till en kväll där vi skapar tillsammans. Under min guidning får du designa och forma din egen unika ring.",
+    image: silverringImg,
+    imageAlt: "Två händer som bär flera handgjorda silverringar",
     date: "12 september",
     day: "12",
     month: "september",
