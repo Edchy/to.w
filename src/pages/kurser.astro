@@ -1,0 +1,471 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { courses } from "../data/courses";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
+
+const openCourses = courses.filter((course) => course.open);
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout
+  title="Kurser"
+  description="Kurser och workshops med Tove Wätte i Järna — forma din egen ring i vax som sedan gjuts i återvunnet sterling silver."
+>
+  <div class="courses">
+    <header class="courses__intro">
+      <h1 class="courses__title">kurser</h1>
+      <p class="courses__lede">
+        Några kvällar om året öppnar jag verkstaden för den som vill skapa något eget. Anmäl
+        intresse nedan så hör jag av mig med detaljer — platserna är få.
+      </p>
+    </header>
+
+    {courses.map((course) => (
+      <article class="course" aria-labelledby={`course-${course.slug}`}>
+        <div class="course__body">
+          <h2 class="course__heading" id={`course-${course.slug}`}>{course.title}</h2>
+          <p class="course__intro">{course.intro}</p>
+
+          {course.body.map((paragraph) => (
+            <p class="course__paragraph">{paragraph}</p>
+          ))}
+
+          <h3 class="course__subheading">I kursavgiften ingår</h3>
+          <ul class="course__includes" role="list">
+            {course.includes.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <aside class="course__facts">
+          <dl class="facts">
+            <div class="facts__row">
+              <dt>Datum</dt>
+              <dd>{course.date}</dd>
+            </div>
+            <div class="facts__row">
+              <dt>Tid</dt>
+              <dd>{course.time}</dd>
+            </div>
+            <div class="facts__row">
+              <dt>Pris</dt>
+              <dd>{course.price}</dd>
+            </div>
+            <div class="facts__row">
+              <dt>Platser</dt>
+              <dd>{course.spots}</dd>
+            </div>
+            <div class="facts__row">
+              <dt>Plats</dt>
+              <dd>{course.place}</dd>
+            </div>
+          </dl>
+          {!course.open && (
+            <p class="facts__note">Den här kursen är full — anmäl gärna intresse för nästa tillfälle.</p>
+          )}
+        </aside>
+      </article>
+    ))}
+
+    <section class="signup" id="anmalan" aria-labelledby="signup-heading">
+      <div class="signup__text">
+        <h2 class="signup__heading" id="signup-heading">Anmäl intresse</h2>
+        <p class="signup__lede">
+          Fyll i formuläret så hör jag av mig via mejl med bekräftelse och praktiska detaljer.
+          Det här är en intresseanmälan, inte en bokning — platsen är din först när jag har
+          svarat. Har du frågor innan du anmäler dig?
+          <a class="signup__inline-link" href={CONTACT_EMAIL_HREF}>Mejla mig</a>.
+        </p>
+      </div>
+
+      <form
+        class="signup__form"
+        name="intresseanmalan"
+        method="POST"
+        action={withBase("/kurser/tack")}
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+      >
+        {/* Netlify routes the submission by this name. */}
+        <input type="hidden" name="form-name" value="intresseanmalan" />
+
+        {/* Honeypot — hidden from people, tempting to bots. */}
+        <p class="signup__honeypot" aria-hidden="true">
+          <label>
+            Lämna det här fältet tomt
+            <input type="text" name="bot-field" tabindex="-1" autocomplete="off" />
+          </label>
+        </p>
+
+        <div class="field">
+          <label class="field__label" for="name">Namn</label>
+          <input class="field__input" type="text" id="name" name="namn" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="email">E-post</label>
+          <input class="field__input" type="email" id="email" name="epost" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="phone">
+            Telefon <span class="field__optional">(valfritt)</span>
+          </label>
+          <input class="field__input" type="tel" id="phone" name="telefon" autocomplete="tel" />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="course">Kurs</label>
+          <select class="field__input field__input--select" id="course" name="kurs" required>
+            {openCourses.map((course) => (
+              <option value={`${course.title} — ${course.date}`}>
+                {course.date} — {course.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div class="field field--wide">
+          <label class="field__label" for="message">
+            Meddelande <span class="field__optional">(valfritt)</span>
+          </label>
+          <textarea class="field__input field__input--area" id="message" name="meddelande" rows="4"></textarea>
+        </div>
+
+        <div class="signup__actions">
+          <button class="signup__submit" type="submit">Skicka intresseanmälan</button>
+          <p class="signup__privacy">
+            Ditt namn och dina kontaktuppgifter används bara för att svara om den här kursen, och
+            raderas när den är över. De delas aldrig vidare. Vill du att jag tar bort dem tidigare
+            — <a class="signup__inline-link" href={CONTACT_EMAIL_HREF}>mejla mig</a>.
+          </p>
+        </div>
+      </form>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .courses {
+    max-width: var(--layout-statement-width);
+    margin: 0 auto;
+    padding: var(--space-16) var(--layout-gutter) 0;
+    display: grid;
+    gap: clamp(var(--space-16), 9vw, var(--space-32));
+  }
+
+  /* ── Intro ─────────────────────────────────────────────── */
+
+  .courses__intro {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .courses__title {
+    font-size: var(--font-size-display);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-tightest);
+  }
+
+  .courses__lede {
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Course ────────────────────────────────────────────── */
+
+  .course {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(268px, 0.42fr);
+    gap: clamp(var(--space-8), 5vw, var(--space-16));
+    align-items: start;
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
+    background: var(--color-bg-statement);
+    border-radius: var(--radius-sm);
+  }
+
+  .course__body {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 60ch;
+  }
+
+  .course__heading {
+    font-size: var(--font-size-3xl);
+    line-height: var(--font-leading-tight);
+  }
+
+  .course__intro {
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-relaxed);
+  }
+
+  .course__paragraph {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .course__subheading {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-base);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-primary);
+  }
+
+  .course__includes {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-snug);
+    color: var(--color-text-secondary);
+  }
+
+  .course__includes li {
+    padding-left: var(--space-5);
+    position: relative;
+  }
+
+  .course__includes li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: var(--space-2);
+    height: 1px;
+    background: var(--color-brand);
+  }
+
+  /* ── Facts panel ───────────────────────────────────────── */
+
+  .course__facts {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-6));
+    padding: clamp(var(--space-6), 3vw, var(--space-8));
+    background: var(--color-bg-base);
+    border-radius: var(--radius-sm);
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+
+  .facts__row {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .facts__row dt {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .facts__row dd {
+    margin: 0;
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-snug);
+    color: var(--color-text-primary);
+  }
+
+  .facts__note {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-snug);
+    color: var(--color-accent);
+  }
+
+  /* ── Signup ────────────────────────────────────────────── */
+
+  .signup {
+    display: grid;
+    gap: clamp(var(--space-8), 4vw, var(--space-12));
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
+    background: var(--color-bg-muted);
+    border-radius: var(--radius-sm);
+    scroll-margin-top: calc(var(--nav-height) + var(--space-6));
+  }
+
+  .signup__text {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 56ch;
+  }
+
+  .signup__heading {
+    font-size: var(--font-size-2xl);
+  }
+
+  .signup__lede {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .signup__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--space-6);
+    max-width: 720px;
+  }
+
+  .signup__honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .field--wide {
+    grid-column: 1 / -1;
+  }
+
+  .field__label {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
+    color: var(--color-text-secondary);
+  }
+
+  .field__optional {
+    color: var(--color-text-tertiary);
+  }
+
+  .field__input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+    transition:
+      border-color var(--transition-normal),
+      background-color var(--transition-normal);
+  }
+
+  .field__input:hover {
+    border-color: var(--color-text-tertiary);
+  }
+
+  .field__input:focus-visible {
+    border-color: var(--color-brand);
+    background: var(--color-bg-base);
+  }
+
+  .field__input--select {
+    appearance: none;
+    padding-right: var(--space-10);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23615c53' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-4) center;
+    background-size: 12px 8px;
+  }
+
+  .field__input--area {
+    resize: vertical;
+    min-height: 7rem;
+    line-height: var(--font-leading-normal);
+  }
+
+  .signup__actions {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .signup__submit {
+    min-height: 48px;
+    padding: var(--space-3) var(--space-8);
+    font-family: var(--font-heading-text);
+    font-size: var(--font-size-base);
+    letter-spacing: var(--font-tracking-wide);
+    color: var(--color-text-inverse);
+    background: var(--color-text-primary);
+    border: 1px solid var(--color-text-primary);
+    border-radius: var(--radius-sm);
+    transition:
+      background-color var(--transition-normal),
+      color var(--transition-normal),
+      transform var(--transition-fast);
+  }
+
+  .signup__privacy {
+    max-width: 56ch;
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-snug);
+    color: var(--color-text-tertiary);
+  }
+
+  .signup__inline-link {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  @media (hover: hover) {
+    .signup__submit:hover {
+      color: var(--color-text-primary);
+      background: var(--color-brand-subtle);
+      transform: translateY(-1px);
+    }
+
+    .signup__inline-link:hover {
+      color: var(--color-brand);
+    }
+  }
+
+  /* ── Tablet ────────────────────────────────────────────── */
+
+  @media (max-width: 1023px) {
+    .course {
+      grid-template-columns: 1fr;
+    }
+
+    .course__facts {
+      position: static;
+      max-width: 480px;
+    }
+  }
+
+  /* ── Mobile ────────────────────────────────────────────── */
+
+  @media (max-width: 699px) {
+    .courses {
+      padding-top: var(--space-10);
+    }
+
+    .courses__lede,
+    .course__intro {
+      font-size: var(--font-size-base);
+    }
+
+    .signup__form {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

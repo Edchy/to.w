@@ -14,6 +14,9 @@ import toveImg from "../assets/img/tove.avif";
 import iconInstagram from "../assets/img/noun-instagram-6788383.svg?raw";
 import iconEmail from "../assets/img/noun-send-6788398.svg?raw";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF, getProductSlug } from "../config/site";
+import { courses } from "../data/courses";
+
+const nextCourse = courses.find((course) => course.open);
 
 const gazaReelUrl = "https://www.instagram.com/reel/DRMmx_ODFXL/?igsh=MTEwdzV6d3Frc3F5ZQ==";
 
@@ -63,6 +66,27 @@ const frameColors = [
 <BaseLayout description="to.w är Tove Wättes samlade plats för handgjorda smycken i silver, stickade objekt, projekt och bilder från arbetet.">
   <div class="home">
     <h1 class="sr-only">Tove Wätte — handgjorda smycken och stickning</h1>
+
+    {nextCourse && (
+      <a class="course-teaser" href={withBase("/kurser")} aria-label={`Kurs: ${nextCourse.title}, ${nextCourse.date}`}>
+        <span class="course-teaser__label">kurs</span>
+
+        <span class="course-teaser__date" aria-hidden="true">
+          <span class="course-teaser__day">{nextCourse.day}</span>
+          <span class="course-teaser__month">{nextCourse.month}</span>
+        </span>
+
+        <span class="course-teaser__body">
+          <span class="course-teaser__title">{nextCourse.title}</span>
+          <span class="course-teaser__facts">
+            <span class="course-teaser__fact">{nextCourse.time}</span>
+            <span class="course-teaser__fact">{nextCourse.place}</span>
+            <span class="course-teaser__fact">{nextCourse.spots}</span>
+          </span>
+          <span class="course-teaser__cta">anmäl intresse</span>
+        </span>
+      </a>
+    )}
 
     {workRows.map((row, rowIndex) => (
       <>
@@ -192,6 +216,190 @@ const frameColors = [
     margin: 0 auto;
     padding: var(--space-8) var(--layout-gutter) var(--space-24);
     overflow-x: clip;
+  }
+
+  /* ── Course teaser ────────────────────────────────────── */
+
+  .course-teaser {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(var(--space-8), 5vw, var(--space-16));
+    row-gap: var(--space-2);
+    align-items: center;
+    max-width: var(--layout-statement-width);
+    margin: 0 auto clamp(var(--space-16), 9vw, var(--space-32));
+    padding: clamp(var(--space-8), 4vw, var(--space-12));
+    background: var(--color-bg-statement);
+    border-radius: var(--radius-sm);
+    transition:
+      background-color var(--transition-slow),
+      transform var(--transition-normal);
+  }
+
+  /* Small standing label, sits over the date column */
+  .course-teaser__label {
+    grid-column: 1;
+    align-self: end;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-accent);
+  }
+
+  /* Date as the typographic anchor */
+  .course-teaser__date {
+    grid-column: 1;
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: var(--space-1);
+  }
+
+  /* Divider spans the label + date stack, sitting in the column gap */
+
+  .course-teaser__date::after {
+    content: "";
+    position: absolute;
+    top: calc(-1 * (var(--space-2) + 1.4em));
+    bottom: 0;
+    left: calc(100% + clamp(var(--space-4), 2.5vw, var(--space-8)));
+    width: 1px;
+    background: color-mix(in oklch, var(--color-text-primary) 14%, transparent);
+  }
+
+  .course-teaser__day {
+    font-family: var(--font-heading-text);
+    font-size: clamp(3.4rem, 7vw, 5.6rem);
+    font-weight: var(--font-weight-regular);
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-primary);
+    /* Optical alignment: the numeral's sidebearing sits it right of the labels */
+    margin-left: -0.04em;
+  }
+
+  .course-teaser__month {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+    color: var(--color-text-secondary);
+  }
+
+  .course-teaser__body {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .course-teaser__title {
+    font-family: var(--font-heading-text);
+    font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
+    text-wrap: balance;
+    color: var(--color-text-primary);
+  }
+
+  /* Facts as discrete units, not one run-on string */
+  .course-teaser__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .course-teaser__fact {
+    position: relative;
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-snug);
+    color: var(--color-text-secondary);
+  }
+
+  .course-teaser__fact + .course-teaser__fact::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--space-5) / -2);
+    top: 50%;
+    width: 1px;
+    height: 1em;
+    background: color-mix(in oklch, var(--color-text-primary) 22%, transparent);
+    transform: translate(-50%, -50%);
+  }
+
+  .course-teaser__cta {
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    color: var(--color-contact-accent);
+    position: relative;
+  }
+
+  .course-teaser__cta::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.25em;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+    transform: scaleX(1);
+    transform-origin: left;
+    transition:
+      opacity var(--transition-normal),
+      transform var(--transition-slow);
+  }
+
+  @media (hover: hover) {
+    .course-teaser:hover {
+      background: var(--color-brand-subtle);
+      transform: translateY(-2px);
+    }
+
+    .course-teaser:hover .course-teaser__cta::after {
+      opacity: 1;
+      transform: scaleX(1.06);
+    }
+  }
+
+  /* Date stacks above the content once the two columns stop fitting */
+  @media (max-width: 699px) {
+    .course-teaser {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
+      row-gap: var(--space-4);
+      align-items: start;
+    }
+
+    .course-teaser__label {
+      grid-column: 1;
+    }
+
+    /* Day and month go side by side on one baseline */
+    .course-teaser__date {
+      grid-column: 1;
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      padding-bottom: var(--space-5);
+      border-bottom: 1px solid color-mix(in oklch, var(--color-text-primary) 14%, transparent);
+    }
+
+    .course-teaser__date::after {
+      display: none;
+    }
+
+    .course-teaser__day {
+      font-size: clamp(2.8rem, 13vw, 3.6rem);
+    }
+
+    .course-teaser__body {
+      grid-column: 1;
+      grid-row: 3;
+    }
   }
 
   .work {

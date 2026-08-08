@@ -1,0 +1,63 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<BaseLayout title="Tack" description="Tack för din intresseanmälan till kursen.">
+  <div class="thanks">
+    <h1 class="thanks__title">Tack!</h1>
+    <p class="thanks__lede">
+      Din intresseanmälan är skickad. Jag hör av mig via mejl med bekräftelse och praktiska
+      detaljer — hör gärna av dig till <a class="thanks__link" href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+      om du har frågor under tiden.
+    </p>
+    <a class="thanks__back" href={withBase("/kurser")}>tillbaka till kurser</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .thanks {
+    max-width: 52ch;
+    margin: 0 auto;
+    padding: clamp(var(--space-20), 12vw, var(--space-32)) var(--layout-gutter);
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+
+  .thanks__title {
+    font-size: var(--font-size-display);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-tightest);
+  }
+
+  .thanks__lede {
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .thanks__link {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .thanks__back {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
+    color: var(--color-contact-accent);
+  }
+
+  @media (hover: hover) {
+    .thanks__link:hover,
+    .thanks__back:hover {
+      color: var(--color-brand);
+    }
+  }
+</style>
