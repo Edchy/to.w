@@ -14,7 +14,7 @@ import toveImg from "../assets/img/tove.avif";
 import iconInstagram from "../assets/img/noun-instagram-6788383.svg?raw";
 import iconEmail from "../assets/img/noun-send-6788398.svg?raw";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF, getProductSlug } from "../config/site";
-import { courses } from "../data/courses";
+import { courses, spotsLabel } from "../data/courses";
 
 const nextCourse = courses.find((course) => course.open);
 
@@ -81,7 +81,7 @@ const frameColors = [
           <span class="course-teaser__facts">
             <span class="course-teaser__fact">{nextCourse.time}</span>
             <span class="course-teaser__fact">{nextCourse.place}</span>
-            <span class="course-teaser__fact">{nextCourse.spots}</span>
+            <span class="course-teaser__fact">{spotsLabel(nextCourse.spots)}</span>
           </span>
           <span class="course-teaser__cta">anmäl intresse</span>
         </span>

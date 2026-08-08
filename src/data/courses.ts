@@ -8,7 +8,8 @@ export type Course = {
   month: string;
   time: string;
   price: string;
-  spots: string;
+  /** Number of places. Display strings are derived from this — see `spotsLabel` / `spotsWord`. */
+  spots: number;
   place: string;
   body: string[];
   includes: string[];
@@ -27,7 +28,7 @@ export const courses: Course[] = [
     month: "september",
     time: "18.00–20.00",
     price: "1 800 kr per deltagare",
-    spots: "Max 5 deltagare",
+    spots: 5,
     place: "Åsgatan 2, Järna",
     body: [
       "Under kursens två timmar arbetar deltagarna med hårt vax och formar sin egen ring. Under tiden serveras ett gott tilltugg samt dryck, i en avslappnad och personlig miljö.",
@@ -43,3 +44,11 @@ export const courses: Course[] = [
     open: true,
   },
 ];
+
+const SWEDISH_NUMBERS = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio"];
+
+/** Spelled-out count for running prose: "de fem platserna". Falls back to digits above ten. */
+export const spotsWord = (spots: number) => SWEDISH_NUMBERS[spots] ?? String(spots);
+
+/** Label for the facts panel and teaser meta: "Max 5 deltagare". */
+export const spotsLabel = (spots: number) => `Max ${spots} deltagare`;

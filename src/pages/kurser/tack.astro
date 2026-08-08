@@ -1,9 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
+import { courses, spotsWord } from "../../data/courses";
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+
+// This page is shared by every course, so it can only name a count when they agree.
+const spotCounts = new Set(courses.filter((course) => course.open).map((course) => course.spots));
+const sharedSpots = spotCounts.size === 1 ? [...spotCounts][0] : null;
 ---
 
 <BaseLayout title="Tack" description="Tack för din intresseanmälan till kursen.">
@@ -11,8 +15,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     <h1 class="thanks__title">Tack!</h1>
     <p class="thanks__lede">
       Din intresseanmälan är skickad. Jag hör av mig via mejl med bekräftelse och praktiska
-      detaljer — hör gärna av dig till <a class="thanks__link" href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
-      om du har frågor under tiden.
+      detaljer.
+    </p>
+    <p class="thanks__note">
+      {sharedSpots
+        ? `Platserna är begränsade till ${spotsWord(sharedSpots)} och fördelas i den ordning anmälningarna kommer in.`
+        : "Platserna är begränsade och fördelas i den ordning anmälningarna kommer in."} Din
+      plats är bekräftad först när du fått svar från mig — skulle kursen redan vara full hör jag
+      av mig om nästa tillfälle.
     </p>
     <a class="thanks__back" href={withBase("/kurser")}>tillbaka till kurser</a>
   </div>
@@ -40,10 +50,12 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     color: var(--color-text-secondary);
   }
 
-  .thanks__link {
-    color: var(--color-text-primary);
-    text-decoration: underline;
-    text-underline-offset: var(--underline-offset);
+  .thanks__note {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-secondary);
   }
 
   .thanks__back {
@@ -55,7 +67,6 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   @media (hover: hover) {
-    .thanks__link:hover,
     .thanks__back:hover {
       color: var(--color-brand);
     }

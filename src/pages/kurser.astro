@@ -1,9 +1,14 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { courses } from "../data/courses";
+import { courses, spotsLabel, spotsWord } from "../data/courses";
 import { CONTACT_EMAIL_HREF } from "../config/site";
 
 const openCourses = courses.filter((course) => course.open);
+
+// The signup lede names a spot count, which only reads correctly while every open
+// course has the same capacity. With mixed capacities, drop the number instead.
+const spotCounts = new Set(openCourses.map((course) => course.spots));
+const sharedSpots = spotCounts.size === 1 ? [...spotCounts][0] : null;
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
@@ -56,7 +61,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
             </div>
             <div class="facts__row">
               <dt>Platser</dt>
-              <dd>{course.spots}</dd>
+              <dd>{spotsLabel(course.spots)}</dd>
             </div>
             <div class="facts__row">
               <dt>Plats</dt>
@@ -75,7 +80,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
         <h2 class="signup__heading" id="signup-heading">Anmäl intresse</h2>
         <p class="signup__lede">
           Fyll i formuläret så hör jag av mig via mejl med bekräftelse och praktiska detaljer.
-          Det här är en intresseanmälan, inte en bokning — platsen är din först när jag har
+          Det här är en intresseanmälan, inte en bokning — {sharedSpots
+            ? `de ${spotsWord(sharedSpots)} platserna`
+            : "platserna"} fördelas i tur och ordning, och platsen är din först när jag har
           svarat. Undrar du något? Skriv det i meddelandefältet så svarar jag på det med.
         </p>
       </div>
