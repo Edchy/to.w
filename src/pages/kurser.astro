@@ -222,6 +222,12 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     letter-spacing: var(--font-tracking-tightest);
   }
 
+  /* Sets the page title apart from the course headings below it, which
+     otherwise read at nearly the same weight. */
+  .courses__intro {
+    padding-bottom: clamp(var(--space-8), 4vw, var(--space-12));
+  }
+
   .courses__lede {
     font-size: var(--font-size-lg);
     line-height: var(--font-leading-relaxed);
@@ -246,13 +252,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     grid-area: body;
     display: grid;
     gap: var(--space-5);
-    max-width: 60ch;
+    max-width: 58ch;
   }
 
   .course__heading {
     grid-area: heading;
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-2xl);
     line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .course__intro {
@@ -267,12 +274,13 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     color: var(--color-text-secondary);
   }
 
+  /* Marks the shift from prose to list — the only break inside the body. */
   .course__subheading {
-    margin-top: var(--space-2);
-    font-size: var(--font-size-base);
+    margin-top: var(--space-6);
+    font-size: var(--font-size-sm);
     letter-spacing: var(--font-tracking-wider);
     text-transform: lowercase;
-    color: var(--color-text-primary);
+    color: var(--color-text-tertiary);
     font-weight: var(--font-weight-regular);
   }
 
@@ -314,29 +322,35 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     padding: 0;
   }
 
+  /* A 4/5 crop keeps the aside close to the body's height, so the two
+     columns finish together instead of leaving a tall empty band. */
   .course__image {
     width: 100%;
     height: auto;
     margin-top: var(--space-8);
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 40% 45%;
   }
 
+  /* Label/value pairs on one baseline grid, so the panel reads as a single
+     block of course facts rather than five floating values. */
   .facts {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
     margin: 0;
   }
 
   .facts__row {
     display: grid;
-    gap: var(--space-1);
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: baseline;
   }
 
   .facts__row dt {
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--font-tracking-wider);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     color: var(--color-text-tertiary);
   }
@@ -380,14 +394,19 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   /* Zero-size markers; the offset keeps the heading clear of the sticky nav */
   .signup__anchor {
     display: block;
+    position: absolute;
     scroll-margin-top: calc(var(--nav-height) + var(--space-6));
   }
 
+  /* The lede sits beside the form rather than above it, so the section reads
+     as its own block instead of continuing the course's single column. */
   .signup {
+    position: relative;
     display: grid;
-    gap: clamp(var(--space-8), 4vw, var(--space-12));
-    padding: 0;
-    border-radius: var(--radius-sm);
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    gap: clamp(var(--space-8), 5vw, var(--space-16));
+    align-items: start;
+    padding-top: clamp(var(--space-12), 6vw, var(--space-24));
     scroll-margin-top: calc(var(--nav-height) + var(--space-6));
   }
 
@@ -399,6 +418,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .signup__heading {
     font-size: var(--font-size-2xl);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .signup__lede {
@@ -411,7 +432,6 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-5) var(--space-6);
-    max-width: 720px;
   }
 
   .signup__honeypot {
@@ -566,8 +586,18 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       font-size: var(--font-size-base);
     }
 
+    .signup {
+      grid-template-columns: 1fr;
+    }
+
     .signup__form {
       grid-template-columns: 1fr;
+    }
+
+    /* A fixed label column leaves too little room for the values on a phone */
+    .facts__row {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
     }
 
     /* Squarer crop and a gentler overlap — a 2:1 strip is too thin on a phone */
