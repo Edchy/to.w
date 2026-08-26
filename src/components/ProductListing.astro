@@ -78,26 +78,9 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .product-card__media {
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    background: var(--color-bg-muted);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
+    background: var(--color-bg-base);
     position: relative;
-    transition:
-      background-color var(--transition-slow),
-      border-color var(--transition-slow),
-      transform var(--transition-slow);
-  }
-
-  .product-card__media::after {
-    content: "";
-    position: absolute;
-    inset: var(--space-2);
-    border: 1px solid color-mix(in oklch, var(--color-text-primary) 9%, transparent);
-    opacity: 0.55;
-    pointer-events: none;
-    transition:
-      opacity var(--transition-normal),
-      transform var(--transition-slow);
+    transition: transform var(--transition-slow);
   }
 
   .product-card__media img {
@@ -178,14 +161,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   @media (hover: hover) {
     .product-card:hover .product-card__media {
-      background-color: var(--color-bg-statement);
-      border-color: var(--color-border-default);
       transform: translateY(calc(var(--space-1) * -1));
-    }
-
-    .product-card:hover .product-card__media::after {
-      opacity: 0.25;
-      transform: scale(0.96);
     }
 
     .product-card:hover .product-card__media img {

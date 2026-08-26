@@ -9,96 +9,35 @@ const { href, size = "nav" } = Astro.props;
 
 <a href={href} class:list={["wordmark", `wordmark--${size}`]} aria-label="to.w — hem">
   <span class="wordmark__name">to.w</span>
-  <span class="wordmark__sub">Silver & Mönster</span>
 </a>
 
 <style>
   .wordmark {
-    display: inline-grid;
-    gap: 0;
+    display: inline-block;
     width: fit-content;
-    color: var(--color-text-primary);
+    color: var(--color-wordmark-nav);
     text-decoration: none;
-    transition:
-      letter-spacing var(--transition-normal),
-      opacity var(--transition-normal);
+    transition: opacity var(--transition-fast);
   }
 
   @media (hover: hover) {
     .wordmark:hover {
-      letter-spacing: var(--font-tracking-wide);
-      opacity: 0.82;
+      opacity: 0.7;
     }
   }
 
   .wordmark__name {
     font-family: var(--font-brand-text);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: inherit;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--font-tracking-negative);
     line-height: 1;
-  }
-
-  .wordmark__sub {
-    font-family: var(--font-brand-text);
-    font-weight: var(--font-weight-regular);
-    text-transform: lowercase;
-    color: var(--color-text-primary);
-    line-height: 1;
-    width: 100%;
-    overflow: hidden;
-    letter-spacing: inherit;
-  }
-
-  /* Nav size */
-  .wordmark--nav {
-    color: var(--color-wordmark-nav);
   }
 
   .wordmark--nav .wordmark__name {
     font-size: var(--font-size-xl);
   }
 
-  .wordmark--nav .wordmark__sub {
-    display: none;
-  }
-
-  /* Footer size */
-  .wordmark--footer {
-    --wordmark-footer-name-size: clamp(5rem, 10vw, 10rem);
-    --wordmark-footer-sub-size: clamp(0.7rem, 1.1vw, 0.9rem);
-    --wordmark-footer-sub-tracking: 0.6em;
-    --wordmark-footer-sub-offset: calc(var(--space-1) * -1.5);
-    color: var(--color-wordmark-nav);
-  }
-
   .wordmark--footer .wordmark__name {
-    font-size: var(--wordmark-footer-name-size);
-  }
-
-  .wordmark--footer .wordmark__sub {
-    color: var(--color-wordmark-nav);
-    font-size: var(--wordmark-footer-sub-size);
-    letter-spacing: var(--wordmark-footer-sub-tracking);
-    margin-top: var(--wordmark-footer-sub-offset);
-    text-align: center;
-  }
-
-  @media (min-width: 761px) and (max-width: 900px) {
-    .wordmark--footer {
-      --wordmark-footer-sub-tracking: 0.48em;
-    }
-  }
-
-  @media (min-width: 1400px) {
-    .wordmark--footer {
-      --wordmark-footer-sub-size: clamp(0.85rem, 1.2vw, 1rem);
-      --wordmark-footer-sub-offset: calc(var(--space-2) * -1);
-    }
-  }
-
-  @media (max-width: 760px) {
-    .wordmark--footer {
-      --wordmark-footer-sub-tracking: 0.35em;
-    }
+    font-size: var(--font-size-lg);
   }
 </style>

@@ -1,0 +1,85 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import toveImg from "../assets/img/tove.avif";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
+---
+
+<BaseLayout
+  title="Om"
+  description="Om Tove Wätte — handgjorda smycken i återvunnet silver och stickade objekt, från ateljén i Järna."
+>
+  <div class="about">
+    <div class="about__col">
+      <h1 class="about__heading">Om</h1>
+      <p>Jag heter Tove Wätte och arbetar främst med silver, alltid återvunnet. Allt görs för hand med omsorg och kärlek, vilket gör att varje del blir lite unik.</p>
+      <p>Webbshopen byggs om — men du kan fortfarande beställa via mejl och betala med swish.</p>
+      <p>För det senaste, kommande workshops och allt däremellan — se min <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>. För frågor, specialbeställningar eller annat — <a href={CONTACT_EMAIL_HREF}>mejla mig</a>.</p>
+
+      <Image class="about__photo" src={toveImg} alt="Porträtt av Tove Wätte" loading="lazy" width={420} height={520} />
+    </div>
+
+    <div class="about__col">
+      <h2 class="about__heading">Kontakt</h2>
+      <p>Tove Wätte</p>
+      <p><a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a></p>
+      <p><a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">@tovewatte</a></p>
+      <p>Järna, Sverige</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    max-width: var(--layout-site-width);
+    margin: 0 auto;
+    padding: 0 var(--layout-gutter) var(--space-16);
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    column-gap: var(--grid-gutter);
+    align-items: start;
+  }
+
+  .about__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: var(--layout-content-width);
+  }
+
+  .about__heading {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-primary);
+  }
+
+  .about p {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-normal);
+    color: var(--color-text-secondary);
+  }
+
+  .about a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .about a:hover {
+    color: var(--color-text-primary);
+  }
+
+  .about__photo {
+    margin-top: var(--space-6);
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+  }
+
+  @media (max-width: 700px) {
+    .about {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-12);
+    }
+  }
+</style>

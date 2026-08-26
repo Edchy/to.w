@@ -87,9 +87,6 @@ const imageAlt = (filename: string, index: number) =>
     )}
 
     <div class="gallery-intro">
-      <div class="gallery-intro__index">
-        <span>galleri</span>
-      </div>
       <div class="gallery-intro__text">
         <h1>ett urval bilder från arbetet, materialen och mellanrummen</h1>
         <p>Fotografier tagna under åren — i ateljen, i naturen, nära händerna som gör.</p>
@@ -430,22 +427,10 @@ const imageAlt = (filename: string, index: number) =>
 
   .gallery-intro {
     display: grid;
-    grid-template-columns: 1fr 2fr;
     gap: var(--space-8);
     padding: clamp(var(--space-10), 5vw, var(--space-20)) var(--layout-gutter);
     padding-bottom: clamp(var(--space-16), 7vw, var(--space-32));
     align-items: baseline;
-  }
-
-  .gallery-intro__index {
-    padding-top: 0.2em;
-  }
-
-  .gallery-intro__index span {
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--font-tracking-wider);
-    text-transform: lowercase;
-    color: var(--color-text-tertiary);
   }
 
   .gallery-intro__text {
@@ -614,7 +599,7 @@ const imageAlt = (filename: string, index: number) =>
   }
 
   .gallery-back a:hover {
-    color: var(--color-brand);
+    color: var(--color-accent);
   }
 
   /* ── Scroll animations — desktop only ── */
