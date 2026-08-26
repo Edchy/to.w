@@ -1,6 +1,17 @@
 import type { ImageMetadata } from "astro";
 import silverringImg from "../assets/img/kurser/kurser-omslag.JPG";
 
+/** One occasion of a course. The course itself is described once, and runs on these dates. */
+export type CourseDate = {
+  slug: string;
+  date: string;
+  /** Split form of `date`, for typographic display on the homepage teaser. */
+  day: string;
+  month: string;
+  /** Set to false when that occasion is full — drops it from the signup dropdown. */
+  open: boolean;
+};
+
 export type Course = {
   slug: string;
   title: string;
@@ -8,32 +19,29 @@ export type Course = {
   /** Shown alongside the facts panel. */
   image: ImageMetadata;
   imageAlt: string;
-  date: string;
-  /** Split form of `date`, for typographic display on the homepage teaser. */
-  day: string;
-  month: string;
+  /** Listed in the facts panel; each one is its own option in the signup form. */
+  dates: CourseDate[];
   time: string;
   price: string;
-  /** Number of places. Display strings are derived from this — see `spotsLabel` / `spotsWord`. */
+  /** Number of places per occasion. Display strings are derived from this — see `spotsLabel` / `spotsWord`. */
   spots: number;
   place: string;
   body: string[];
   includes: string[];
-  /** Set to false when the course is full — hides the form, shows a note. */
-  open: boolean;
 };
 
 export const courses: Course[] = [
   {
-    slug: "silverring-12-sep",
+    slug: "silverring",
     title: "Skapa din egen silverring",
     intro:
       "Välkommen till en kväll där vi skapar tillsammans. Under min guidning får du designa och forma din egen unika ring.",
     image: silverringImg,
     imageAlt: "Två händer som bär flera handgjorda silverringar",
-    date: "12 september",
-    day: "12",
-    month: "september",
+    dates: [
+      { slug: "12-sep", date: "12 september", day: "12", month: "september", open: true },
+      { slug: "26-sep", date: "26 september", day: "26", month: "september", open: true },
+    ],
     time: "18.00–20.00",
     price: "1 800 kr per deltagare",
     spots: 5,
@@ -49,14 +57,22 @@ export const courses: Course[] = [
       "Tilltugg och dryck",
       "Keramikskål att förvara det färdiga smycket i",
     ],
-    open: true,
   },
 ];
+
+/** Every open occasion across all courses, paired with its course — for the teaser and the form. */
+export const openOccasions = courses.flatMap((course) =>
+  course.dates.filter((date) => date.open).map((date) => ({ course, date })),
+);
 
 const SWEDISH_NUMBERS = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio"];
 
 /** Spelled-out count for running prose: "de fem platserna". Falls back to digits above ten. */
 export const spotsWord = (spots: number) => SWEDISH_NUMBERS[spots] ?? String(spots);
 
-/** Label for the facts panel and teaser meta: "Max 5 deltagare". */
-export const spotsLabel = (spots: number) => `Max ${spots} deltagare`;
+/**
+ * Spot count for display: "Max 5 deltagare".
+ * The facts panel covers every date at once, so it passes `perOccasion` to say so.
+ */
+export const spotsLabel = (spots: number, perOccasion = false) =>
+  `Max ${spots} deltagare${perOccasion ? " per tillfälle" : ""}`;

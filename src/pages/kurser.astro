@@ -1,14 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
-import { courses, spotsLabel, spotsWord } from "../data/courses";
+import { courses, openOccasions, spotsLabel, spotsWord } from "../data/courses";
 import { CONTACT_EMAIL_HREF } from "../config/site";
 
-const openCourses = courses.filter((course) => course.open);
-
 // The signup lede names a spot count, which only reads correctly while every open
-// course has the same capacity. With mixed capacities, drop the number instead.
-const spotCounts = new Set(openCourses.map((course) => course.spots));
+// occasion has the same capacity. With mixed capacities, drop the number instead.
+const spotCounts = new Set(openOccasions.map(({ course }) => course.spots));
 const sharedSpots = spotCounts.size === 1 ? [...spotCounts][0] : null;
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
@@ -52,7 +50,16 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
             <dl class="facts">
             <div class="facts__row">
               <dt>Datum</dt>
-              <dd>{course.date}</dd>
+              <dd>
+                <ul class="facts__dates" role="list">
+                  {course.dates.map((date) => (
+                    <li class:list={["facts__date", !date.open && "facts__date--full"]}>
+                      {date.date}
+                      {!date.open && <span class="facts__date-note">fullbokad</span>}
+                    </li>
+                  ))}
+                </ul>
+              </dd>
             </div>
             <div class="facts__row">
               <dt>Tid</dt>
@@ -64,15 +71,15 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
             </div>
             <div class="facts__row">
               <dt>Platser</dt>
-              <dd>{spotsLabel(course.spots)}</dd>
+              <dd>{spotsLabel(course.spots, course.dates.length > 1)}</dd>
             </div>
             <div class="facts__row">
               <dt>Plats</dt>
               <dd>{course.place}</dd>
             </div>
           </dl>
-          {!course.open && (
-            <p class="facts__note">Den här kursen är full — anmäl gärna intresse för nästa tillfälle.</p>
+          {course.dates.every((date) => !date.open) && (
+            <p class="facts__note">Alla tillfällen är fulla — anmäl gärna intresse för nästa.</p>
           )}
           </div>
 
@@ -89,6 +96,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     ))}
 
     <section class="signup" id="anmalan" aria-labelledby="signup-heading">
+      {/* Native scroll targets for the teaser deep links — one per bookable date */}
+      {openOccasions.map(({ date }) => (
+        <span class="signup__anchor" id={`anmalan-${date.slug}`} aria-hidden="true"></span>
+      ))}
       <div class="signup__text">
         <h2 class="signup__heading" id="signup-heading">Anmäl intresse</h2>
         <p class="signup__lede">
@@ -143,9 +154,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
         <div class="field">
           <label class="field__label" for="course">Kurs</label>
           <select class="field__input field__input--select" id="course" name="kurs" required>
-            {openCourses.map((course) => (
-              <option value={`${course.title} — ${course.date}`}>
-                {course.date} — {course.title}
+            {openOccasions.map(({ course, date }) => (
+              /* value is what Netlify emails; data-slug is what the deep link matches on */
+              <option value={`${course.title} — ${date.date}`} data-slug={date.slug}>
+                {date.date} — {course.title}
               </option>
             ))}
           </select>
@@ -176,6 +188,16 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     </section>
   </div>
 </BaseLayout>
+
+<script is:inline data-astro-rerun>
+  // The browser scrolls to #anmalan-<slug> natively; this only preselects that date.
+  {
+    const slug = location.hash.match(/^#anmalan-(.+)$/)?.[1];
+    const select = document.querySelector("#course");
+    const match = [...(select?.options ?? [])].find((option) => option.dataset.slug === slug);
+    if (match && select) select.value = match.value;
+  }
+</script>
 
 <style>
   .courses {
@@ -348,6 +370,26 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     color: var(--color-text-primary);
   }
 
+  .facts__dates {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A booked-out date stays listed for context, but reads as unavailable */
+  .facts__date--full {
+    color: var(--color-text-tertiary);
+  }
+
+  .facts__date-note {
+    margin-left: var(--space-2);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: lowercase;
+  }
+
   .facts__note {
     margin-top: var(--space-5);
     padding-top: var(--space-5);
@@ -358,6 +400,12 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   /* ── Signup ────────────────────────────────────────────── */
+
+  /* Zero-size markers; the offset keeps the heading clear of the sticky nav */
+  .signup__anchor {
+    display: block;
+    scroll-margin-top: calc(var(--nav-height) + var(--space-6));
+  }
 
   .signup {
     display: grid;

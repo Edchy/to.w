@@ -14,9 +14,7 @@ import toveImg from "../assets/img/tove.avif";
 import iconInstagram from "../assets/img/noun-instagram-6788383.svg?raw";
 import iconEmail from "../assets/img/noun-send-6788398.svg?raw";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF, getProductSlug } from "../config/site";
-import { courses, spotsLabel } from "../data/courses";
-
-const nextCourse = courses.find((course) => course.open);
+import { openOccasions, spotsLabel } from "../data/courses";
 
 const gazaReelUrl = "https://www.instagram.com/reel/DRMmx_ODFXL/?igsh=MTEwdzV6d3Frc3F5ZQ==";
 
@@ -67,25 +65,33 @@ const frameColors = [
   <div class="home">
     <h1 class="sr-only">Tove Wätte — handgjorda smycken och stickning</h1>
 
-    {nextCourse && (
-      <a class="course-teaser" href={withBase("/kurser")} aria-label={`Kurs: ${nextCourse.title}, ${nextCourse.date}`}>
-        <span class="course-teaser__label">kurs</span>
+    {openOccasions.length > 0 && (
+      <div class="course-teasers">
+        {openOccasions.map(({ course, date }) => (
+          <a
+            class="course-teaser"
+            href={withBase(`/kurser#anmalan-${date.slug}`)}
+            aria-label={`Anmäl intresse: ${course.title}, ${date.date}`}
+          >
+            <span class="course-teaser__label">kurs</span>
 
-        <span class="course-teaser__date" aria-hidden="true">
-          <span class="course-teaser__day">{nextCourse.day}</span>
-          <span class="course-teaser__month">{nextCourse.month}</span>
-        </span>
+            <span class="course-teaser__date" aria-hidden="true">
+              <span class="course-teaser__day">{date.day}</span>
+              <span class="course-teaser__month">{date.month}</span>
+            </span>
 
-        <span class="course-teaser__body">
-          <span class="course-teaser__title">{nextCourse.title}</span>
-          <span class="course-teaser__facts">
-            <span class="course-teaser__fact">{nextCourse.time}</span>
-            <span class="course-teaser__fact">{nextCourse.place}</span>
-            <span class="course-teaser__fact">{spotsLabel(nextCourse.spots)}</span>
-          </span>
-          <span class="course-teaser__cta">anmäl intresse</span>
-        </span>
-      </a>
+            <span class="course-teaser__body">
+              <span class="course-teaser__title">{course.title}</span>
+              <span class="course-teaser__facts">
+                <span class="course-teaser__fact">{course.time}</span>
+                <span class="course-teaser__fact">{course.place}</span>
+                <span class="course-teaser__fact">{spotsLabel(course.spots)}</span>
+              </span>
+              <span class="course-teaser__cta">anmäl intresse</span>
+            </span>
+          </a>
+        ))}
+      </div>
     )}
 
     {workRows.map((row, rowIndex) => (
@@ -220,15 +226,21 @@ const frameColors = [
 
   /* ── Course teaser ────────────────────────────────────── */
 
+  .course-teasers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(var(--space-5), 2.5vw, var(--space-8));
+    max-width: var(--layout-statement-width);
+    margin: 0 auto clamp(var(--space-16), 9vw, var(--space-32));
+  }
+
   .course-teaser {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
-    column-gap: clamp(var(--space-8), 5vw, var(--space-16));
+    column-gap: clamp(var(--space-6), 3vw, var(--space-10));
     row-gap: var(--space-2);
     align-items: center;
-    max-width: var(--layout-statement-width);
-    margin: 0 auto clamp(var(--space-16), 9vw, var(--space-32));
     padding: clamp(var(--space-8), 4vw, var(--space-12));
     background: var(--color-bg-statement);
     border-radius: var(--radius-sm);
@@ -250,27 +262,14 @@ const frameColors = [
   /* Date as the typographic anchor */
   .course-teaser__date {
     grid-column: 1;
-    position: relative;
     display: grid;
     justify-items: start;
     gap: var(--space-1);
   }
 
-  /* Divider spans the label + date stack, sitting in the column gap */
-
-  .course-teaser__date::after {
-    content: "";
-    position: absolute;
-    top: calc(-1 * (var(--space-2) + 1.4em));
-    bottom: 0;
-    left: calc(100% + clamp(var(--space-4), 2.5vw, var(--space-8)));
-    width: 1px;
-    background: color-mix(in oklch, var(--color-text-primary) 14%, transparent);
-  }
-
   .course-teaser__day {
     font-family: var(--font-heading-text);
-    font-size: clamp(3.4rem, 7vw, 5.6rem);
+    font-size: clamp(3rem, 4.4vw, 4.4rem);
     font-weight: var(--font-weight-regular);
     line-height: 0.86;
     letter-spacing: -0.03em;
@@ -297,7 +296,7 @@ const frameColors = [
 
   .course-teaser__title {
     font-family: var(--font-heading-text);
-    font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+    font-size: clamp(1.5rem, 2vw, 2rem);
     line-height: var(--font-leading-tight);
     letter-spacing: var(--font-tracking-negative);
     text-wrap: balance;
@@ -308,7 +307,7 @@ const frameColors = [
   .course-teaser__facts {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
+    gap: var(--space-2) var(--space-4);
   }
 
   .course-teaser__fact {
@@ -386,10 +385,6 @@ const frameColors = [
       gap: var(--space-3);
       padding-bottom: var(--space-5);
       border-bottom: 1px solid color-mix(in oklch, var(--color-text-primary) 14%, transparent);
-    }
-
-    .course-teaser__date::after {
-      display: none;
     }
 
     .course-teaser__day {
