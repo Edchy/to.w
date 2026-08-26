@@ -5,21 +5,17 @@ import { getCollection } from "astro:content";
 import { getProductSlug } from "../config/site";
 import { openOccasions } from "../data/courses";
 
-const allJewelry = await getCollection("jewelry");
-const allKnitting = await getCollection("knitting");
-
-const works = [
-  ...allJewelry.map((entry) => ({ kind: "jewelry" as const, entry })),
-  ...allKnitting.map((entry) => ({ kind: "knitting" as const, entry })),
-].sort((a, b) => b.entry.data.date.localeCompare(a.entry.data.date));
+const works = (await getCollection("jewelry")).sort((a, b) =>
+  b.data.date.localeCompare(a.data.date),
+);
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout description="to.w är Tove Wättes samlade plats för handgjorda smycken i silver, stickade objekt, projekt och bilder från arbetet.">
+<BaseLayout description="to.w är Tove Wättes samlade plats för handgjorda smycken i silver och bilder från arbetet.">
   <div class="home">
-    <h1 class="sr-only">Tove Wätte — handgjorda smycken och stickning</h1>
+    <h1 class="sr-only">Tove Wätte — handgjorda smycken</h1>
 
     {openOccasions.length > 0 && (
       <p class="home__notice">
@@ -35,12 +31,11 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     )}
 
     <section class="work-grid" aria-label="Verk">
-      {works.map(({ kind, entry }, i) => {
+      {works.map((entry, i) => {
         const productSlug = getProductSlug(entry.id);
-        const href = withBase(kind === "jewelry" ? `/smycken/${productSlug}` : `/stickning/${productSlug}`);
         return (
-          <a class="work" href={href}>
-            <div class:list={["work__media", `work__media--${kind}`]} transition:name={`product-${productSlug}`}>
+          <a class="work" href={withBase(`/smycken/${productSlug}`)}>
+            <div class="work__media" transition:name={`product-${productSlug}`}>
               <Image
                 src={entry.data.images[0]}
                 alt={entry.data.title}
@@ -116,23 +111,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     transition: transform var(--transition-slow);
   }
 
-  /* Cutout product shots carry wide baked-in margins — scale into that dead
-     space so the piece fills its share of the grid. Photographs already fill
-     their frame, so they stay at native scale. */
-  .work__media--jewelry img {
-    transform: scale(1.45);
-  }
-
   @media (hover: hover) {
-    .work__media--jewelry img {
-      transition: transform var(--transition-slow);
-    }
-
-    .work:hover .work__media--jewelry img {
-      transform: scale(1.5);
-    }
-
-    .work:hover .work__media--knitting img {
+    .work:hover .work__media img {
       transform: scale(1.04);
     }
   }

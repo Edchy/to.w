@@ -9,9 +9,11 @@ type Props = {
   title?: string;
   description?: string;
   noPadding?: boolean;
+  /** Keeps the page out of search results while it is unlinked from the nav. */
+  noindex?: boolean;
 };
 
-const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false } = Astro.props;
+const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false, noindex = false } = Astro.props;
 const pageTitle = title ? `to.w - ${title}` : "to.w";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
@@ -21,10 +23,10 @@ const siteOrigin = Astro.site?.origin ?? "";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
 const ogImageUrl = `${siteOrigin}${withBase("/og.png")}`;
 
+// stickning and projekt are hidden for now — their pages and content remain in
+// the repo, so restoring them is a matter of adding the links back here.
 const footerNavLinks = [
   { href: "/smycken", label: "smycken" },
-  { href: "/stickning", label: "stickning" },
-  { href: "/projekt", label: "projekt" },
   { href: "/gallery", label: "galleri" },
   { href: "/kurser", label: "kurser" },
   { href: "/om", label: "om" },
@@ -43,6 +45,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
 
     <!-- Open Graph -->
@@ -241,7 +244,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   // Console art: handmade message for curious visitors
   console.log(
-    '%c\n  t  o  .  w\n\n%chandgjorda smycken & stickning\nJärna, Sverige\n\nhttps://to.w\n',
+    '%c\n  t  o  .  w\n\n%chandgjorda smycken\nJärna, Sverige\n\nhttps://to.w\n',
     'font-size:18px; letter-spacing:0.3em; color:#7a8c6a; font-family:monospace',
     'font-size:11px; color:#9a9082; font-family:monospace; letter-spacing:0.05em'
   );
