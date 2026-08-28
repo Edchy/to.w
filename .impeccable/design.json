@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "name": "TO.W Editorial",
+  "tokens": {
+    "colors": {
+      "background": "var(--color-bg-base)",
+      "surface": "var(--color-bg-card)",
+      "inverse": "var(--color-bg-inverse)",
+      "text": "var(--color-text-primary)",
+      "secondaryText": "var(--color-text-secondary)",
+      "accent": "var(--color-accent)"
+    },
+    "typography": {
+      "body": "var(--font-body-text)",
+      "heading": "var(--font-heading-text)",
+      "displaySize": "var(--font-size-display)",
+      "bodySize": "var(--font-size-base)"
+    },
+    "radii": {
+      "small": "var(--radius-sm)",
+      "full": "var(--radius-full)"
+    },
+    "spacing": {
+      "base": "4px",
+      "gutter": "var(--layout-gutter)"
+    }
+  },
+  "extensions": {
+    "colorMeta": {
+      "model": "oklch",
+      "accentUsage": "active states and links only"
+    },
+    "typographyMeta": {
+      "wordmark": "uppercase two-line Avenir-led body stack",
+      "headingRole": "selected editorial display"
+    },
+    "shadows": {
+      "card": "var(--shadow-card)"
+    },
+    "motion": {
+      "fast": "var(--transition-fast)",
+      "normal": "var(--transition-normal)",
+      "slow": "var(--transition-slow)"
+    },
+    "breakpoints": {
+      "medium": "700px",
+      "large": "1024px"
+    }
+  },
+  "components": [
+    "architectural-wordmark",
+    "course-notice",
+    "masonry-work-grid",
+    "product-card",
+    "product-detail-panel",
+    "course-card",
+    "editorial-footer"
+  ],
+  "narrative": {
+    "thesis": "An artist's working world led by real photography, not a conventional shop grid.",
+    "tone": "tough, clean, direct, warm",
+    "mobileRule": "image collections retain two columns"
+  }
+}

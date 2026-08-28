@@ -19,7 +19,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 >
   <div class="courses">
     <header class="courses__intro">
-      <h1 class="courses__title">kurser</h1>
+      <h1 class="courses__title sr-only">Kurser</h1>
       <p class="courses__lede">
         Några kvällar om året öppnar jag verkstaden för den som vill skapa något eget. Anmäl
         intresse nedan så hör jag av mig med detaljer — platserna är få.
@@ -29,41 +29,38 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     {courses.map((course) => (
       <article class="course" aria-labelledby={`course-${course.slug}`}>
         <h2 class="course__heading" id={`course-${course.slug}`}>{course.title}</h2>
+        <p class="course__intro">{course.intro}</p>
 
-        <div class="course__body">
-          <p class="course__intro">{course.intro}</p>
-
-          {course.body.map((paragraph) => (
-            <p class="course__paragraph">{paragraph}</p>
-          ))}
-
-          <h3 class="course__subheading">I kursavgiften ingår</h3>
-          <ul class="course__includes" role="list">
-            {course.includes.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
+        <div class="course__media">
+          <Image
+            class="course__image"
+            src={course.image}
+            alt={course.imageAlt}
+            loading="eager"
+            width={1113}
+            height={766}
+          />
         </div>
 
-        <aside class="course__aside">
-          <div class="course__facts">
-            <dl class="facts">
+        <aside class="course__practical" aria-label="Praktisk information">
+          <dl class="facts">
             <div class="facts__row">
-              <dt>Datum</dt>
+              <dt>{course.dates.length > 1 ? "Datum och tider" : "Datum och tid"}</dt>
               <dd>
                 <ul class="facts__dates" role="list">
-                  {course.dates.map((date) => (
+                  {course.dates.map((date, dateIndex) => (
                     <li class:list={["facts__date", !date.open && "facts__date--full"]}>
-                      {date.date}
-                      {!date.open && <span class="facts__date-note">fullbokad</span>}
+                      <span class="facts__date-line">
+                        <span class="facts__day">
+                          {date.date}
+                          {!date.open && <span class="facts__date-note">fullbokad</span>}
+                        </span>
+                        <span class="facts__time">{date.time}</span>
+                      </span>
                     </li>
                   ))}
                 </ul>
               </dd>
-            </div>
-            <div class="facts__row">
-              <dt>Tid</dt>
-              <dd>{course.time}</dd>
             </div>
             <div class="facts__row">
               <dt>Pris</dt>
@@ -78,28 +75,36 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
               <dd>{course.place}</dd>
             </div>
           </dl>
+
           {course.dates.every((date) => !date.open) && (
             <p class="facts__note">Alla tillfällen är fulla — anmäl gärna intresse för nästa.</p>
           )}
+
+          <div class="course__included">
+            <h3 class="course__subheading">I kursavgiften ingår</h3>
+            <ul class="course__includes" role="list">
+              {course.includes.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
           </div>
 
-          <Image
-            class="course__image"
-            src={course.image}
-            alt={course.imageAlt}
-            loading="eager"
-            width={1113}
-            height={766}
-          />
         </aside>
+
+        <div class="course__body">
+          {course.body.map((paragraph) => (
+            <p class="course__paragraph">{paragraph}</p>
+          ))}
+        </div>
       </article>
     ))}
 
     <section class="signup" id="anmalan" aria-labelledby="signup-heading">
-      {/* Native scroll targets for the teaser deep links — one per bookable date */}
+      {/* Scroll targets for the deep links — one per bookable date */}
       {openOccasions.map(({ date }) => (
         <span class="signup__anchor" id={`anmalan-${date.slug}`} aria-hidden="true"></span>
       ))}
+
       <div class="signup__text">
         <h2 class="signup__heading" id="signup-heading">Anmäl intresse</h2>
         <p class="signup__lede">
@@ -189,6 +194,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   </div>
 </BaseLayout>
 
+
 <script is:inline data-astro-rerun>
   // The browser scrolls to #anmalan-<slug> natively; this only preselects that date.
   {
@@ -201,69 +207,77 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
 <style>
   .courses {
-    max-width: var(--layout-statement-width);
+    max-width: var(--layout-site-width);
     margin: 0 auto;
     padding: var(--space-16) var(--layout-gutter) 0;
     display: grid;
-    gap: clamp(var(--space-16), 9vw, var(--space-32));
+    gap: clamp(var(--space-16), 7vw, var(--space-24));
   }
 
   /* ── Intro ─────────────────────────────────────────────── */
 
   .courses__intro {
     display: grid;
-    gap: var(--space-5);
-    max-width: 52ch;
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    gap: var(--grid-gutter);
+    align-items: start;
   }
 
   .courses__title {
     font-size: var(--font-size-display);
     line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-tightest);
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .courses__lede {
+    grid-column: 2;
     font-size: var(--font-size-lg);
     line-height: var(--font-leading-relaxed);
     color: var(--color-text-secondary);
+    max-width: 48ch;
   }
 
   /* ── Course ────────────────────────────────────────────── */
 
   .course {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.58fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
     grid-template-areas:
-      "heading aside"
-      "body    aside";
-    /* Row gap only under the heading — the aside spans both rows */
-    gap: var(--space-5) clamp(var(--space-8), 5vw, var(--space-16));
+      "heading   heading"
+      "intro     intro"
+      "image     practical"
+      "body      practical";
+    gap: var(--space-6) var(--grid-gutter);
     align-items: start;
     padding: clamp(var(--space-8), 5vw, var(--space-16));
-    background: var(--color-bg-statement);
+    background: var(--color-bg-card);
     border-radius: var(--radius-sm);
-    /* Clips the image where it bleeds past the card's right padding */
-    overflow: hidden;
+    box-shadow: var(--shadow-card);
   }
 
   .course__body {
     grid-area: body;
     display: grid;
     gap: var(--space-5);
-    max-width: 60ch;
+    max-width: var(--layout-content-width);
+    margin-top: var(--space-6);
   }
 
   .course__heading {
     grid-area: heading;
-    font-size: var(--font-size-3xl);
+    max-width: 14ch;
+    font-size: var(--font-size-display);
     line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .course__intro {
+    grid-area: intro;
+    max-width: 56ch;
     font-size: var(--font-size-lg);
     line-height: var(--font-leading-relaxed);
-    color: var(--color-contact-accent);
-    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-6);
   }
 
   .course__paragraph {
@@ -273,11 +287,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .course__subheading {
-    margin-top: var(--space-2);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     letter-spacing: var(--font-tracking-wider);
     text-transform: lowercase;
-    color: var(--color-text-primary);
+    color: var(--color-text-tertiary);
     font-weight: var(--font-weight-regular);
   }
 
@@ -290,7 +303,6 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     font-size: var(--font-size-base);
     line-height: var(--font-leading-snug);
     color: var(--color-text-secondary);
-    font-weight: var(--font-weight-bold);
   }
 
   .course__includes li {
@@ -305,60 +317,54 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     top: 0.6em;
     width: var(--space-2);
     height: 1px;
-    background: var(--color-brand);
+    background: var(--color-text-tertiary);
   }
 
-  /* ── Facts panel ───────────────────────────────────────── */
+  /* ── Course image and practical details ───────────────── */
 
-  .course__aside {
-    grid-area: aside;
-    position: sticky;
-    top: calc(var(--nav-height) + var(--space-6));
+  .course__practical {
+    grid-area: practical;
     display: grid;
+    gap: var(--space-10);
   }
 
-  .course__facts {
-    /* Held narrower than the column so more of the image stays exposed */
-    max-width: 300px;
-    justify-self: end;
-    padding: clamp(var(--space-6), 3vw, var(--space-8));
-    background: var(--color-bg-base);
-    border-radius: var(--radius-sm);
-    /* Lifts the panel over the image's top edge */
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Bleeds right, past the card's padding, and tucks under the facts panel */
-  .course__image {
-    /* Negative margin escapes the grid track so the image reaches the card edge */
-    width: calc(100% + clamp(var(--space-8), 5vw, var(--space-16)));
-    height: auto;
-    /* Overrides the global img { max-width: 100% }, which would cap the bleed */
-    max-width: none;
-    margin-right: calc(clamp(var(--space-8), 5vw, var(--space-16)) * -1);
-    aspect-ratio: 3 / 4;
-    object-fit: cover;
-    object-position: 40% 45%;
-    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-    /* Tucks up under the facts panel so the two overlap */
-    margin-top: calc(var(--space-10) * -1);
-  }
-
-  .facts {
+  .course__included {
     display: grid;
     gap: var(--space-4);
+  }
+
+  .course__media {
+    grid-area: image;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+  }
+
+  .course__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 42%;
+  }
+
+  /* Label/value pairs on one baseline grid, so the panel reads as a single
+     block of course facts rather than five floating values. */
+  .facts {
+    display: grid;
+    gap: var(--space-3);
     margin: 0;
   }
 
   .facts__row {
     display: grid;
-    gap: var(--space-1);
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: baseline;
   }
 
   .facts__row dt {
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--font-tracking-wider);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     color: var(--color-text-tertiary);
   }
@@ -372,10 +378,32 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .facts__dates {
     display: grid;
-    gap: var(--space-1);
+    gap: var(--space-2);
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  /* Ett tillfälle per rad, i samma spalter — samma rytm som övriga fakta.
+     Flex i stället för grid: spalterna krymper aldrig ihop över mellanrummet. */
+  .facts__date-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+    align-items: baseline;
+  }
+
+
+  .facts__day {
+    flex: 0 0 auto;
+    min-width: 7.5rem;
+    white-space: nowrap;
+  }
+
+  .facts__time {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
   }
 
   /* A booked-out date stays listed for context, but reads as unavailable */
@@ -392,8 +420,6 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .facts__note {
     margin-top: var(--space-5);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--color-border-subtle);
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-snug);
     color: var(--color-accent);
@@ -404,15 +430,23 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   /* Zero-size markers; the offset keeps the heading clear of the sticky nav */
   .signup__anchor {
     display: block;
+    position: absolute;
     scroll-margin-top: calc(var(--nav-height) + var(--space-6));
   }
 
+  /* The lede sits beside the form rather than above it, so the section reads
+     as its own block instead of continuing the course's single column. */
   .signup {
+    position: relative;
     display: grid;
-    gap: clamp(var(--space-8), 4vw, var(--space-12));
-    padding: clamp(var(--space-8), 5vw, var(--space-16));
-    background: var(--color-bg-muted);
-    border-radius: var(--radius-sm);
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+    gap: clamp(var(--space-8), 5vw, var(--space-16));
+    align-items: start;
+    margin-inline: calc(var(--layout-gutter) * -1);
+    padding: clamp(var(--space-12), 6vw, var(--space-20)) var(--layout-gutter)
+      clamp(var(--space-24), 14vw, var(--space-5xl));
+    color: var(--color-text-inverse);
+    background: var(--color-bg-inverse);
     scroll-margin-top: calc(var(--nav-height) + var(--space-6));
   }
 
@@ -424,19 +458,20 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .signup__heading {
     font-size: var(--font-size-2xl);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .signup__lede {
     font-size: var(--font-size-base);
     line-height: var(--font-leading-relaxed);
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .signup__form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-5) var(--space-6);
-    max-width: 720px;
   }
 
   .signup__honeypot {
@@ -463,11 +498,11 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .field__label {
     font-size: var(--font-size-sm);
     letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .field__optional {
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .field__input {
@@ -488,7 +523,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .field__input:focus-visible {
-    border-color: var(--color-brand);
+    border-color: var(--color-text-primary);
     background: var(--color-bg-base);
   }
 
@@ -521,14 +556,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .signup__submit {
-    min-height: 48px;
+    min-height: var(--space-12);
     padding: var(--space-3) var(--space-8);
     font-family: var(--font-heading-text);
     font-size: var(--font-size-base);
     letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-inverse);
-    background: var(--color-text-primary);
-    border: 1px solid var(--color-text-primary);
+    color: var(--color-bg-inverse);
+    background: var(--color-accent);
+    border: 1px solid var(--color-accent);
     border-radius: var(--radius-sm);
     transition:
       background-color var(--transition-normal),
@@ -540,64 +575,57 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     max-width: 56ch;
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-snug);
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .signup__inline-link {
-    color: var(--color-text-primary);
+    color: var(--color-text-inverse);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
 
+  .signup :focus-visible {
+    outline-color: var(--color-text-inverse);
+  }
+
   @media (hover: hover) {
     .signup__submit:hover {
-      color: var(--color-text-primary);
-      background: var(--color-brand-subtle);
-      transform: translateY(-1px);
+      color: var(--color-accent);
+      background: var(--color-bg-surface);
+      border-color: var(--color-bg-surface);
     }
 
     .signup__inline-link:hover {
-      color: var(--color-brand);
+      color: var(--color-accent);
     }
   }
 
   /* ── Tablet ────────────────────────────────────────────── */
 
   @media (max-width: 1023px) {
+    .courses__intro {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .courses__lede {
+      grid-column: 1;
+    }
+
     .course {
       grid-template-columns: 1fr;
       grid-template-areas:
         "heading"
-        "aside"
-        "body";
-      gap: var(--space-8);
-    }
-
-    .course__aside {
-      position: static;
-      /* Image first, facts panel under it — heading, photo, then the prose */
-      grid-template-areas:
+        "intro"
         "image"
-        "facts";
+        "practical"
+        "body";
+      gap: var(--space-6);
     }
 
-    /* Rides up onto the image instead of sitting in its own band below it */
-    .course__facts {
-      grid-area: facts;
-      max-width: none;
-      justify-self: stretch;
-      margin: calc(var(--space-16) * -1) var(--space-6) 0 var(--space-10);
-    }
-
-    /* Bleeds the full card width; short enough to leave room for the prose */
-    .course__image {
-      grid-area: image;
-      width: calc(100% + clamp(var(--space-8), 5vw, var(--space-16)) * 2);
-      max-width: none;
-      margin: 0 calc(clamp(var(--space-8), 5vw, var(--space-16)) * -1);
-      aspect-ratio: 2 / 1;
-      object-position: 50% 35%;
-      border-radius: 0;
+    .course__practical {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-8) var(--grid-gutter);
     }
   }
 
@@ -606,24 +634,46 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   @media (max-width: 699px) {
     .courses {
       padding-top: var(--space-10);
+      gap: var(--space-16);
     }
 
-    .courses__lede,
-    .course__intro {
+    .courses__lede {
       font-size: var(--font-size-base);
+    }
+
+    .course__intro {
+      margin-bottom: var(--space-2);
+    }
+
+    .course {
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .course__practical {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    .signup {
+      grid-template-columns: 1fr;
     }
 
     .signup__form {
       grid-template-columns: 1fr;
     }
 
-    /* Squarer crop and a gentler overlap — a 2:1 strip is too thin on a phone */
-    .course__image {
-      aspect-ratio: 4 / 3;
+    /* A fixed label column leaves too little room for the values on a phone */
+    .facts__row {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
     }
 
-    .course__facts {
-      margin: calc(var(--space-10) * -1) var(--space-3) 0 var(--space-5);
+    /* Squarer crop and a gentler overlap — a 2:1 strip is too thin on a phone */
+    .course__media {
+      aspect-ratio: 4 / 3;
     }
   }
 </style>

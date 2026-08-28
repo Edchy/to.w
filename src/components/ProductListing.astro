@@ -53,14 +53,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .listing {
     max-width: var(--layout-wide-width);
     margin: 0 auto;
-    padding: var(--space-8) var(--layout-gutter) var(--space-24);
+    padding: 0 var(--layout-gutter) var(--space-24);
     box-sizing: border-box;
   }
 
   .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(50% - var(--space-4), 260px), 1fr));
-    gap: clamp(var(--space-8), 5vw, var(--space-16)) clamp(var(--space-4), 2.2vw, var(--space-8));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(var(--space-12), 7vw, var(--space-24)) var(--grid-gutter);
     align-items: start;
   }
 
@@ -76,34 +76,17 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .product-card__media {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
-    background: var(--color-bg-muted);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
+    background: var(--color-bg-card);
     position: relative;
-    transition:
-      background-color var(--transition-slow),
-      border-color var(--transition-slow),
-      transform var(--transition-slow);
-  }
-
-  .product-card__media::after {
-    content: "";
-    position: absolute;
-    inset: var(--space-2);
-    border: 1px solid color-mix(in oklch, var(--color-text-primary) 9%, transparent);
-    opacity: 0.55;
-    pointer-events: none;
-    transition:
-      opacity var(--transition-normal),
-      transform var(--transition-slow);
+    transition: transform var(--transition-slow);
   }
 
   .product-card__media img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     display: block;
     transition:
       filter var(--transition-slow),
@@ -112,7 +95,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .product-card__caption {
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-3);
     padding-right: var(--space-2);
     transition: transform var(--transition-slow);
   }
@@ -125,9 +108,12 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .product-card__title {
-    font-size: var(--font-size-lg);
+    font-family: var(--font-body-text);
+    font-size: var(--font-size-base);
     font-weight: var(--font-weight-regular);
     line-height: var(--font-leading-snug);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: lowercase;
     position: relative;
   }
 
@@ -149,7 +135,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .product-card__price {
     flex: 0 0 auto;
-    font-family: var(--font-heading-text);
+    font-family: var(--font-body-text);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
@@ -168,7 +154,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     color: var(--color-text-secondary);
     text-wrap: pretty;
     display: -webkit-box;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     transition:
@@ -178,14 +164,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   @media (hover: hover) {
     .product-card:hover .product-card__media {
-      background-color: var(--color-bg-statement);
-      border-color: var(--color-border-default);
       transform: translateY(calc(var(--space-1) * -1));
-    }
-
-    .product-card:hover .product-card__media::after {
-      opacity: 0.25;
-      transform: scale(0.96);
     }
 
     .product-card:hover .product-card__media img {
@@ -204,28 +183,21 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     }
   }
 
-  @media (min-width: 1320px) {
+  @media (max-width: 980px) {
     .product-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 860px) and (max-width: 1319px) {
-    .product-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 560px) {
     .listing {
-      padding-top: var(--space-6);
       padding-bottom: var(--space-16);
     }
 
     .product-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: var(--space-3);
-      row-gap: var(--space-12);
+      row-gap: var(--space-16);
     }
 
     .product-card__figure {
