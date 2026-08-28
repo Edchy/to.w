@@ -14,7 +14,7 @@ type Props = {
 };
 
 const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false, noindex = false } = Astro.props;
-const pageTitle = title ? `TO.W - ${title}` : "TO.W";
+const pageTitle = title ? `TO.W | ${title}` : "TO.W | Smycken i återvunnet silver.";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 const currentYear = new Date().getFullYear();
