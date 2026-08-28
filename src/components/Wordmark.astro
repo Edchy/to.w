@@ -7,8 +7,8 @@ type Props = {
 const { href, size = "nav" } = Astro.props;
 ---
 
-<a href={href} class:list={["wordmark", `wordmark--${size}`]} aria-label="to.w — hem">
-  <span class="wordmark__name">to.w</span>
+<a href={href} class:list={["wordmark", `wordmark--${size}`]} aria-label="Tove Wätte — hem">
+  <span class="wordmark__name">To.W</span>
 </a>
 
 <style>
@@ -27,17 +27,23 @@ const { href, size = "nav" } = Astro.props;
   }
 
   .wordmark__name {
-    font-family: var(--font-brand-text);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--font-tracking-negative);
-    line-height: 1;
+    display: block;
+    font-family: var(--font-body-text);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-tightest);
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
-  .wordmark--nav .wordmark__name {
-    font-size: var(--font-size-xl);
-  }
-
+  .wordmark--nav .wordmark__name,
   .wordmark--footer .wordmark__name {
     font-size: var(--font-size-lg);
+  }
+
+  @media (max-width: 700px) {
+    .wordmark--nav .wordmark__name,
+    .wordmark--footer .wordmark__name {
+      font-size: var(--font-size-base);
+    }
   }
 </style>

@@ -5,19 +5,6 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.local(),
-      name: "Cutive Mono",
-      cssVariable: "--font-body",
-      formats: ["ttf"],
-      options: {
-        variants: [
-          {
-            src: ["./src/assets/fonts/CutiveMono-Regular.ttf"],
-          },
-        ],
-      },
-    },
-    {
-      provider: fontProviders.local(),
       name: "Chillax",
       cssVariable: "--font-chillax",
       formats: ["woff2"],

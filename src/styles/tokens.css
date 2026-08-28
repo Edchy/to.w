@@ -28,8 +28,16 @@
   /* Paper ground */
   --off-white: oklch(96% 0.011 88);
 
-  /* Accent — the single colour in the interface */
-  --signal-red-700: oklch(50% 0.24 29);
+  /* Burnt orange — decisive dark fields */
+  --ember-950: oklch(24% 0.070 45);
+  --ember-700: oklch(46% 0.075 45);
+  --ember-200: oklch(80% 0.045 55);
+
+  /* Accent — reserved for actions and active states */
+  --brand-orange: oklch(63% 0.18 48);
+
+  /* Depth */
+  --ink-shadow-soft: 0 var(--space-2) var(--space-8) oklch(20% 0.020 75 / 0.10);
 
   /* Spacing scale — 4pt base */
   --space-1: 4px;
@@ -92,7 +100,7 @@
   ───────────────────────────────────────────────────────── */
 
   /* Typography — families */
-  --font-body-text: var(--font-body);
+  --font-body-text: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
   --font-heading-text: var(--font-chillax);
   --font-brand-text: var(--font-chillax);
   --font-heading: var(--font-chillax);
@@ -131,23 +139,29 @@
   /* Color — backgrounds */
   --color-bg-base: var(--off-white);
   --color-bg-surface: var(--off-white);
-  --color-bg-inverse: var(--neutral-950);
+  --color-bg-card: var(--neutral-100);
+  --color-bg-inverse: var(--ember-950);
 
   /* Color — text */
   --color-text-primary: var(--neutral-950);
   --color-text-secondary: var(--neutral-700);
   --color-text-tertiary: var(--neutral-600);
   --color-text-inverse: var(--neutral-50);
+  --color-text-inverse-muted: var(--ember-200);
 
-  /* Color — accent (the only colour; active nav + inline links) */
-  --color-accent: var(--signal-red-700);
-  --color-contact-accent: var(--signal-red-700);
+  /* Color — accent (active nav + inline links) */
+  --color-accent: var(--brand-orange);
+  --color-contact-accent: var(--brand-orange);
   --color-wordmark-nav: var(--color-text-primary);
   --color-contact-icon: var(--color-text-primary);
 
   /* Color — borders (form controls only) */
   --color-border-default: oklch(80% 0.016 86);
   --color-border-subtle: oklch(88% 0.014 88);
+  --color-border-inverse: var(--ember-700);
+
+  /* Depth */
+  --shadow-card: var(--ink-shadow-soft);
 
   /* Spacing — semantic */
   --space-xs: var(--space-1);
@@ -187,7 +201,6 @@
   --grid-columns: 4;
   --grid-gutter: clamp(var(--space-8), 4vw, var(--space-16));
   --grid-row-gap: clamp(var(--space-20), 9vw, var(--space-48));
-
   /* Lightbox */
   --lightbox-scrim: oklch(28% 0.025 75 / 0.72);
 }

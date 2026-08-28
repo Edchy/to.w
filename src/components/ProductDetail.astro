@@ -16,7 +16,7 @@ type Props = {
 };
 
 const { title, price, sizes, description, material, technique, design, images, imagesHd, transitionName } = Astro.props;
-const stageImages = imagesHd ?? images;
+const image = (imagesHd ?? images)[0];
 
 const fmt = new Intl.NumberFormat("sv-SE").format;
 const formattedPrice = fmt(price);
@@ -26,10 +26,6 @@ const orderSizeLine =
   sizes.length === 1
     ? `Storlek / variant: ${sizes[0]}`
     : `Storlek / variant${hasSizes ? ` (välj: ${sizes.join(", ")})` : ""}:`;
-const detailText = [material, technique, design]
-  .map((value) => value?.trim())
-  .filter(Boolean)
-  .join(" ");
 const orderSubject = encodeURIComponent(`Beställning: ${title}`);
 const orderBody = encodeURIComponent(`Hej Tove,
 
@@ -44,47 +40,24 @@ Telefon:
 
 Vänliga hälsningar,`);
 const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBody}`;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 ---
 
-<div class="pd">
+<article class="pd">
+  <figure class="pd__visual" transition:name={transitionName}>
+    <Image
+      src={image}
+      alt={title}
+      loading="eager"
+      fetchpriority="high"
+    />
+  </figure>
 
-  <!-- ── Left: image stage ── -->
-  <div
-    class="pd__stage"
-    data-gallery
-    transition:name={transitionName}
-    aria-label={`${title} bilder`}
-    aria-roledescription="bildgalleri"
-    tabindex="0"
-  >
-    {stageImages.map((img, i) => (
-      <div class="pd__slide" data-slide aria-hidden={i !== 0}>
-        <Image
-          src={img}
-          alt={stageImages.length > 1 ? `${title} — bild ${i + 1}` : title}
-          width={1600}
-          height={1200}
-          loading={i === 0 ? "eager" : "lazy"}
-          fetchpriority={i === 0 ? "high" : "auto"}
-        />
-      </div>
-    ))}
-
-    {stageImages.length > 1 && (
-      <div class="pd__thumbs" role="group" aria-label="Välj bild">
-        {images.map((img, i) => (
-          <button class="pd__thumb" type="button" data-thumb={i} aria-label={`Visa bild ${i + 1} av ${stageImages.length}`} aria-pressed={i === 0}>
-            <Image src={img} alt="" width={120} height={120} loading="lazy" />
-          </button>
-        ))}
-      </div>
-    )}
-  </div>
-
-  <!-- ── Right: info panel ── -->
   <div class="pd__info">
+    <a class="pd__back" href={withBase("/smycken")}>alla smycken</a>
 
-    <div class="pd__summary">
+    <header class="pd__summary">
       <h1
         class="pd__title"
         transition:name={transitionName ? `${transitionName.replace("product-", "product-title-")}` : undefined}
@@ -92,488 +65,223 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${orderSubject}&body=${orderBod
       >
         {title}
       </h1>
-      <span class="pd__price">{formattedPrice} kr</span>
-      {detailText && <p class="pd__details pd__details-meta">{detailText}</p>}
-      {hasSizes && <p class="pd__details">{sizeLabel}: {sizes.join(", ")}</p>}
-    </div>
+      <p class="pd__price">{formattedPrice} kr</p>
+    </header>
 
-    <div class="pd__support">
-      <div class="pd__body">
-        {description && <p class="pd__description">{description}</p>}
-        <a class="pd__buy" href={orderHref}>
-          <span class="pd__buy-text">Beställ</span>
-        </a>
-        <p class="pd__order-note">
-          Varje smycke tillverkas individuellt efter beställning. Jag återkommer så snart jag kan med bekräftelse, betalningsinfo (Swish, överföring, kontant) och ungefärlig leveranstid. Om du har frågor eller särskilda önskemål, tveka inte att <a href={CONTACT_EMAIL_HREF}>kontakta mig</a>!
-        </p>
-      </div>
-    </div>
+    {description && <p class="pd__description">{description}</p>}
 
+    {(material || technique || design || hasSizes) && (
+      <dl class="pd__facts">
+        {material && (
+          <div><dt>material</dt><dd>{material}</dd></div>
+        )}
+        {technique && (
+          <div><dt>teknik</dt><dd>{technique}</dd></div>
+        )}
+        {design && (
+          <div><dt>form</dt><dd>{design}</dd></div>
+        )}
+        {hasSizes && (
+          <div><dt>{sizeLabel}</dt><dd>{sizes.join(", ")}</dd></div>
+        )}
+      </dl>
+    )}
+
+    <div class="pd__order">
+      <a class="pd__buy" href={orderHref}>Beställ via mejl</a>
+      <p>
+        Varje smycke tillverkas individuellt efter beställning. Jag återkommer med bekräftelse,
+        betalningsinfo och ungefärlig leveranstid. Har du frågor eller särskilda önskemål kan du
+        <a href={CONTACT_EMAIL_HREF}> kontakta mig</a>.
+      </p>
+    </div>
   </div>
-
-</div>
-
+</article>
 
 <style>
-  /* ── Split screen wrapper ── */
-
   .pd {
+    width: 100%;
+    max-width: var(--layout-site-width);
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
     display: grid;
-    grid-template-columns: 55fr 45fr;
-    flex: 1;
-    min-height: 0;
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.65fr);
+    align-items: stretch;
   }
 
-  /* ── Left: image stage ── */
-
-  .pd__stage {
-    position: relative;
+  .pd__visual {
+    min-width: 0;
+    margin: 0;
     overflow: hidden;
-    background: var(--color-bg-base);
-    cursor: e-resize;
-    user-select: none;
+    background: var(--color-bg-card);
   }
 
-  .pd__stage.is-left { cursor: w-resize; }
-
-  .pd__stage:focus-visible {
-    outline: 1px solid var(--color-text-primary);
-    outline-offset: -2px;
-  }
-
-  .pd__slide {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity var(--duration-slow) var(--ease-out-quart);
-  }
-
-  .pd__slide:first-child { opacity: 1; }
-  .pd__slide[aria-hidden="false"] { opacity: 1; }
-  .pd__slide[aria-hidden="true"] { opacity: 0; }
-
-  .pd__slide img {
+  .pd__visual :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
-    -webkit-user-drag: none;
-    pointer-events: none;
-    outline: 1px solid color-mix(in oklch, var(--color-bg-inverse) 6%, transparent);
-    outline-offset: -1px;
-    transition: transform 600ms var(--ease-out-expo);
-    will-change: transform;
+    transition: transform var(--transition-slow), filter var(--transition-slow);
   }
-
-  @media (hover: hover) {
-    .pd__stage:hover .pd__slide[aria-hidden="false"] img {
-      transform: scale(1.03) translate(var(--parallax-x, 0px), var(--parallax-y, 0px));
-    }
-  }
-
-  /* ── Thumbnails ── */
-
-  .pd__thumbs {
-    position: absolute;
-    right: var(--space-3);
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    z-index: 10;
-  }
-
-  .pd__thumb {
-    width: var(--space-12);
-    height: var(--space-12);
-    padding: 0;
-    border: 1.5px solid transparent;
-    border-radius: var(--radius-sm);
-    background: none;
-    cursor: pointer;
-    overflow: hidden;
-    opacity: 0.5;
-    transition: opacity var(--transition-fast), border-color var(--transition-fast);
-  }
-
-  .pd__thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-  }
-
-  @media (hover: hover) {
-    .pd__thumb:hover { opacity: 0.8; }
-  }
-
-  .pd__thumb[aria-pressed="true"] {
-    opacity: 1;
-    border-color: var(--color-text-primary);
-  }
-
-  /* ── Right: info panel ── */
 
   .pd__info {
     display: flex;
+    min-width: 0;
     flex-direction: column;
-    justify-content: flex-start;
-    padding: var(--space-10) var(--layout-gutter);
-    gap: var(--space-5);
-    min-height: 0;
+    padding: var(--space-10);
+    color: var(--color-text-inverse);
+    background: var(--color-bg-inverse);
   }
 
-  .pd__summary,
-  .pd__support {
-    display: contents;
+  .pd__back {
+    align-self: flex-start;
+    min-height: var(--space-10);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-inverse-muted);
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
   }
 
-  @keyframes title-settle {
-    from { opacity: 0.84; }
-    to   { opacity: 1; }
+  .pd__summary {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: auto;
+    padding-top: var(--space-16);
   }
 
   .pd__title {
-    font-family: var(--font-heading-text);
-    font-size: clamp(var(--font-size-3xl), 6vw, var(--font-size-display));
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-normal);
-    color: var(--color-text-primary);
-    margin: 0;
-    animation: title-settle 900ms var(--ease-out-expo) both;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pd__title { animation: none; }
+    max-width: 12ch;
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-inverse);
   }
 
   .pd__price {
-    font-family: var(--font-heading-text);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-inverse-muted);
     font-variant-numeric: tabular-nums;
   }
 
-  .pd__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
   .pd__description {
-    font-size: var(--font-size-base);
+    max-width: 46ch;
+    margin-top: var(--space-8);
     line-height: var(--font-leading-relaxed);
-    color: var(--color-text-primary);
-    margin: 0;
+    color: var(--color-text-inverse);
   }
 
-  .pd__details {
+  .pd__facts {
+    display: grid;
+    gap: 0;
+    margin: var(--space-8) 0 0;
+  }
+
+  .pd__facts > div {
+    display: grid;
+    grid-template-columns: minmax(6rem, 0.45fr) minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--color-border-inverse);
+  }
+
+  .pd__facts > div:last-child {
+    border-bottom: 1px solid var(--color-border-inverse);
+  }
+
+  .pd__facts dt,
+  .pd__facts dd {
+    margin: 0;
     font-size: var(--font-size-sm);
-    line-height: var(--font-leading-relaxed);
-    color: var(--color-text-secondary);
-    margin: 0;
+    line-height: var(--font-leading-snug);
   }
 
-  .pd__order-note {
-    margin: var(--space-6) 0 0;
-    font-size: var(--font-size-xs);
-    line-height: var(--font-leading-relaxed);
-    color: var(--color-text-tertiary);
+  .pd__facts dt {
+    color: var(--color-text-inverse-muted);
   }
 
-  .pd__order-note a {
-    position: relative;
-    display: inline-block;
-    color: var(--color-text-secondary);
+  .pd__facts dd {
+    color: var(--color-text-inverse);
   }
 
-
-  .pd__order-note a:hover {
-    color: var(--color-accent);
+  .pd__order {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-10);
   }
-
-  /* ── CTA ── */
 
   .pd__buy {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-2);
     width: 100%;
-    max-width: 280px;
     min-height: var(--space-12);
-    padding: 0 var(--space-8);
-    background-color: transparent;
-    border: 1px solid var(--color-border-default);
-    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-6);
     color: var(--color-text-primary);
-    font-family: var(--font-body-text);
-    font-size: var(--font-size-base);
-    letter-spacing: var(--font-tracking-wider);
-    text-transform: lowercase;
-    text-decoration: none;
-    transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-bg-surface);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+  }
+
+  .pd__order p {
+    max-width: 48ch;
+    font-size: var(--font-size-xs);
+    line-height: var(--font-leading-relaxed);
+    color: var(--color-text-inverse-muted);
+  }
+
+  .pd__order p a {
+    color: var(--color-text-inverse);
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .pd__info :focus-visible {
+    outline-color: var(--color-text-inverse);
   }
 
   @media (hover: hover) {
-    .pd__buy:hover {
-      border-color: var(--color-text-primary);
-      background-color: var(--color-text-primary);
-      color: var(--color-text-inverse);
+    .pd__visual:hover :global(img) {
+      filter: contrast(1.03);
+      transform: scale(1.02);
     }
 
+    .pd__buy:hover {
+      color: var(--color-text-inverse);
+      background: transparent;
+    }
   }
-
-  /* ── Tablet ── */
 
   @media (max-width: 1000px) {
     .pd {
       grid-template-columns: 1fr;
-      height: auto;
+      padding-inline: 0;
     }
 
-    .pd__stage {
-      height: min(48svh, 460px);
-      min-height: 320px;
-    }
-
-    .pd__info {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.85fr);
-      align-items: start;
-      column-gap: var(--layout-gutter);
-      row-gap: var(--space-5);
-      max-width: var(--layout-site-width);
-      width: 100%;
-      margin-inline: auto;
-      padding-block: var(--space-8) var(--space-12);
-    }
-
-    .pd__summary,
-    .pd__support,
-    .pd__body {
-      display: contents;
-    }
-
-    .pd__summary {
-      grid-column: 2;
-      grid-row: 1;
-      display: grid;
-      align-items: start;
-      row-gap: var(--space-3);
-    }
-
-    .pd__title {
-      grid-column: 1;
-      order: 1;
-      font-size: var(--font-size-display);
-    }
-
-    .pd__price {
-      grid-column: 1;
-      order: 2;
-      white-space: nowrap;
-    }
-
-    .pd__details {
-      grid-column: 1;
-      order: 3;
-    }
-
-    .pd__description {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .pd__buy {
-      grid-column: 2;
-      order: 4;
-      align-self: start;
-      width: 100%;
-    }
-
-    .pd__order-note {
-      grid-column: 1 / -1;
-      grid-row: 3;
-      margin-top: var(--space-5);
-    }
-
-  }
-
-  /* ── Mobile ── */
-
-  @media (max-width: 760px) {
-    .pd {
-      grid-template-columns: 1fr;
-      height: auto;
-    }
-
-    .pd__stage {
-      height: min(50svh, 420px);
-      min-height: 260px;
-    }
-
-    .pd__slide img {
-      object-fit: contain;
-      background: var(--color-bg-base);
-    }
-
-    .pd__thumbs {
-      right: var(--space-3);
-      top: auto;
-      bottom: var(--space-3);
-      transform: none;
-      flex-direction: row;
+    .pd__visual {
+      aspect-ratio: 16 / 10;
     }
 
     .pd__info {
-      display: flex;
-      padding: var(--space-8) var(--layout-gutter) var(--space-16);
-      gap: var(--space-6);
-    }
-
-    .pd__summary,
-    .pd__support {
-      display: flex;
-      flex-direction: column;
+      padding: var(--space-8) var(--layout-gutter) var(--space-12);
     }
 
     .pd__summary {
-      gap: var(--space-4);
-    }
-
-    .pd__support {
-      gap: var(--space-5);
-    }
-
-    .pd__title {
-      grid-column: auto;
-      order: initial;
-      font-size: var(--font-size-display);
       margin-top: 0;
-    }
-
-    .pd__price {
-      grid-column: auto;
-      order: initial;
-      font-size: var(--font-size-lg);
-    }
-
-    .pd__details,
-    .pd__description,
-    .pd__order-note {
-      grid-column: auto;
-      grid-row: auto;
-      order: initial;
-    }
-
-    .pd__buy {
-      grid-column: auto;
-      grid-row: auto;
-      order: initial;
-      align-self: auto;
-      width: 100%;
-      max-width: none;
-    }
-
-    .pd__details-meta {
-      display: none;
+      padding-top: var(--space-10);
     }
   }
 
-  @media (max-width: 560px) {
-    .pd__stage {
-      height: min(44svh, 340px);
-      min-height: 220px;
-    }
-
-    .pd__thumb {
-      width: var(--space-10);
-      height: var(--space-10);
-      border-radius: var(--radius-sm);
+  @media (max-width: 600px) {
+    .pd__visual {
+      aspect-ratio: 4 / 3;
     }
 
     .pd__info {
       padding-top: var(--space-6);
     }
+
+    .pd__facts > div {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
   }
 </style>
-
-<script>
-  document.addEventListener("astro:page-load", () => {
-    document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((gallery) => {
-      const slides = Array.from(gallery.querySelectorAll<HTMLElement>("[data-slide]"));
-      if (slides.length < 2) return;
-
-      const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>("[data-thumb]"));
-      let current = 0;
-      let bounds = gallery.getBoundingClientRect();
-
-      const show = (next: number) => {
-        slides[current].setAttribute("aria-hidden", "true");
-        thumbs[current]?.setAttribute("aria-pressed", "false");
-        current = ((next % slides.length) + slides.length) % slides.length;
-        slides[current].setAttribute("aria-hidden", "false");
-        thumbs[current]?.setAttribute("aria-pressed", "true");
-      };
-
-      const isLeftSide = (clientX: number) => (clientX - bounds.left) < bounds.width / 2;
-      const hasHover = window.matchMedia("(hover: hover)").matches;
-
-      gallery.addEventListener("mouseenter", () => {
-        bounds = gallery.getBoundingClientRect();
-      });
-
-      window.addEventListener("resize", () => {
-        bounds = gallery.getBoundingClientRect();
-      });
-
-      gallery.addEventListener("click", (e) => {
-        if ((e.target as HTMLElement).closest("[data-thumb]")) return;
-        show(isLeftSide(e.clientX) ? current - 1 : current + 1);
-      });
-
-      thumbs.forEach((btn) => {
-        btn.addEventListener("click", () => show(Number(btn.dataset.thumb)));
-      });
-
-      if (hasHover) {
-        gallery.addEventListener("mousemove", (e) => {
-          if ((e.target as HTMLElement).closest("[data-thumb]")) return;
-          gallery.classList.toggle("is-left", isLeftSide(e.clientX));
-
-          const rx = (e.clientX - bounds.left) / bounds.width - 0.5;
-          const ry = (e.clientY - bounds.top) / bounds.height - 0.5;
-          gallery.style.setProperty("--parallax-x", `${rx * -6}px`);
-          gallery.style.setProperty("--parallax-y", `${ry * -4}px`);
-        });
-
-        gallery.addEventListener("mouseleave", () => {
-          gallery.style.removeProperty("--parallax-x");
-          gallery.style.removeProperty("--parallax-y");
-        });
-      }
-
-      gallery.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          show(current - 1);
-        } else if (e.key === "ArrowRight") {
-          e.preventDefault();
-          show(current + 1);
-        } else if (e.key === "Home") {
-          e.preventDefault();
-          show(0);
-        } else if (e.key === "End") {
-          e.preventDefault();
-          show(slides.length - 1);
-        }
-      });
-    });
-  });
-</script>

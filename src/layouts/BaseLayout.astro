@@ -27,7 +27,6 @@ const ogImageUrl = `${siteOrigin}${withBase("/og.png")}`;
 // the repo, so restoring them is a matter of adding the links back here.
 const footerNavLinks = [
   { href: "/smycken", label: "smycken" },
-  { href: "/gallery", label: "galleri" },
   { href: "/kurser", label: "kurser" },
   { href: "/om", label: "om" },
 ];
@@ -46,7 +45,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/t-fav.svg")} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -64,11 +63,18 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-<Font cssVariable="--font-body" />
     <Font cssVariable="--font-chillax" />
     <ClientRouter />
   </head>
   <body>
+    <!--
+      THESIS: TO.W is an artist's working world, not a duplicated shop grid; real photographs and distinct route jobs lead.
+      OWN-WORLD: warm paper, near-black fields, signal red, square-edged surfaces, Chillax display type, and a direct Gothic body stack.
+      STORY: encounter the practice, notice the active courses, explore a photographic mix, then choose the full collection, course, or direct order path.
+      FIRST VIEWPORT: compact navigation above a prominent dark course invitation and the beginning of a photographic grid, with the action visible before scrolling.
+      FORM: curated editorial index, approved direction 1, seed tow-editorial-mix-v1.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+    -->
     <header class="site-header">
       <div class="site-wrap site-header__inner">
         <Wordmark href={baseUrl} size="nav" />
@@ -106,14 +112,26 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
           </li>
         ))}
       </ul>
+
+      <a
+        class="mobile-nav__social"
+        href="https://instagram.com/tovewatte"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        instagram
+      </a>
     </div>
 
     <main class:list={[{ "main--no-padding": noPadding }]}>
       <slot />
     </main>
 
-    <footer class:list={["site-footer", { "site-footer--hidden": noPadding }]}>
+    <footer class="site-footer">
       <div class="site-wrap site-footer__inner">
+        <div class="footer-brand">
+          <Wordmark href={baseUrl} size="footer" />
+        </div>
         <div class="footer-directory">
           <nav class="footer-group" aria-label="Sidfotsnavigering">
             <ul class="footer-links" role="list">
@@ -135,7 +153,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
                 <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
               </li>
               <li>
-                <a href={CONTACT_EMAIL_HREF}>email</a>
+                <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
               </li>
             </ul>
           </div>
@@ -320,6 +338,13 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     flex: 1;
   }
 
+  @media (max-width: 700px) {
+    main,
+    main.main--no-padding {
+      padding-top: 0;
+    }
+  }
+
   main.main--no-padding {
     padding-top: var(--space-6);
     display: flex;
@@ -347,29 +372,51 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   }
 
   /* ── Footer ── */
-  /* Flat: same paper ground as the page, no slab, no border. */
-
-  .site-footer--hidden {
-    display: none;
+  /* Slutar sidan i ett mörkt block (t.ex. anmälan på /kurser) ska luften bort —
+     annars syns marginalen som ett ljust streck mellan två mörka ytor. */
+  main:has(> :last-child .signup:last-child) + .site-footer,
+  main:has(> .signup:last-child) + .site-footer {
+    margin-top: 0;
   }
 
   .site-footer {
     margin-top: var(--space-32);
-    padding-block: var(--space-12);
+    padding-block: var(--space-16) var(--space-8);
+    color: var(--color-text-primary);
     background-color: var(--color-bg-base);
+    --color-wordmark-nav: var(--color-text-primary);
+  }
+
+  main.main--no-padding + .site-footer {
+    margin-top: 0;
+    padding-top: calc(var(--space-16) + var(--space-32));
   }
 
   .site-footer__inner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-8);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-16) var(--grid-gutter);
+    align-items: start;
+  }
+
+  .footer-brand {
+    grid-column: 1 / span 6;
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .footer-brand p {
+    max-width: 24ch;
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-snug);
+    color: var(--color-text-secondary);
   }
 
   .footer-directory {
+    grid-column: 8 / -1;
     display: flex;
-    gap: var(--space-16);
+    justify-content: space-between;
+    gap: var(--space-12);
   }
 
   .footer-links,
@@ -386,7 +433,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   .footer-socials a {
     display: inline-flex;
     align-items: center;
-    min-height: 32px;
+    min-height: var(--space-10);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
@@ -408,16 +455,18 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   }
 
   .footer-colophon {
+    grid-column: 1 / -1;
     display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    text-align: right;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-default);
   }
 
   .footer-colophon p {
     margin: 0;
     font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
+    color: var(--color-text-secondary);
     letter-spacing: var(--font-tracking-wide);
     line-height: var(--font-leading-snug);
     text-transform: lowercase;
@@ -436,20 +485,33 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
   @media (max-width: 760px) {
     .site-footer {
       margin-top: var(--space-20);
-      padding-block: var(--space-10);
+      padding-block: var(--space-12) var(--space-8);
+    }
+
+    main.main--no-padding + .site-footer {
+      margin-top: 0;
+      padding-top: calc(var(--space-12) + var(--space-20));
     }
 
     .site-footer__inner {
-      flex-direction: column;
-      gap: var(--space-8);
-    }
-
-    .footer-directory {
+      grid-template-columns: 1fr;
       gap: var(--space-12);
     }
 
+    .footer-brand,
+    .footer-directory,
     .footer-colophon {
-      text-align: left;
+      grid-column: 1;
+    }
+
+    .footer-directory {
+      justify-content: flex-start;
+      gap: var(--space-16);
+    }
+
+    .footer-colophon {
+      flex-direction: column;
+      gap: var(--space-1);
     }
   }
 
@@ -501,10 +563,11 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     background-color: var(--color-bg-base);
     z-index: var(--z-overlay);
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
     overflow-y: auto;
-    padding: var(--space-8) var(--layout-gutter);
+    padding: var(--space-10) var(--layout-gutter) var(--space-12);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-normal);
@@ -522,30 +585,49 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   .mobile-nav__list {
     list-style: none;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(var(--space-2), 2vh, var(--space-6));
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-1);
   }
 
   .mobile-nav__link {
     display: block;
-    padding-block: var(--space-3);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-negative);
+    font-family: var(--font-heading-text);
+    font-size: clamp(var(--font-size-3xl), 19vw, 8rem);
+    font-weight: var(--font-weight-bold);
+    line-height: 0.92;
+    letter-spacing: var(--font-tracking-tight);
+    text-transform: lowercase;
+    color: var(--color-text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .mobile-nav__link:hover {
+    color: var(--color-accent);
+  }
+
+  .mobile-nav__link--active {
+    color: var(--color-accent);
+  }
+
+  .mobile-nav__social {
+    flex: 0 0 auto;
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border-subtle);
+    font-family: var(--font-body-text);
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--font-tracking-wide);
     text-transform: lowercase;
     color: var(--color-text-secondary);
     transition: color var(--transition-fast);
   }
 
-  .mobile-nav__link:hover {
-    color: var(--color-text-primary);
-  }
-
-  .mobile-nav__link--active {
+  .mobile-nav__social:hover {
     color: var(--color-accent);
   }
 </style>

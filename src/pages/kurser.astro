@@ -19,7 +19,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 >
   <div class="courses">
     <header class="courses__intro">
-      <h1 class="courses__title">kurser</h1>
+      <h1 class="courses__title sr-only">Kurser</h1>
       <p class="courses__lede">
         Några kvällar om året öppnar jag verkstaden för den som vill skapa något eget. Anmäl
         intresse nedan så hör jag av mig med detaljer — platserna är få.
@@ -29,41 +29,38 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     {courses.map((course) => (
       <article class="course" aria-labelledby={`course-${course.slug}`}>
         <h2 class="course__heading" id={`course-${course.slug}`}>{course.title}</h2>
+        <p class="course__intro">{course.intro}</p>
 
-        <div class="course__body">
-          <p class="course__intro">{course.intro}</p>
-
-          {course.body.map((paragraph) => (
-            <p class="course__paragraph">{paragraph}</p>
-          ))}
-
-          <h3 class="course__subheading">I kursavgiften ingår</h3>
-          <ul class="course__includes" role="list">
-            {course.includes.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
+        <div class="course__media">
+          <Image
+            class="course__image"
+            src={course.image}
+            alt={course.imageAlt}
+            loading="eager"
+            width={1113}
+            height={766}
+          />
         </div>
 
-        <aside class="course__aside">
-          <div class="course__facts">
-            <dl class="facts">
+        <aside class="course__practical" aria-label="Praktisk information">
+          <dl class="facts">
             <div class="facts__row">
-              <dt>Datum</dt>
+              <dt>{course.dates.length > 1 ? "Datum och tider" : "Datum och tid"}</dt>
               <dd>
                 <ul class="facts__dates" role="list">
-                  {course.dates.map((date) => (
+                  {course.dates.map((date, dateIndex) => (
                     <li class:list={["facts__date", !date.open && "facts__date--full"]}>
-                      {date.date}
-                      {!date.open && <span class="facts__date-note">fullbokad</span>}
+                      <span class="facts__date-line">
+                        <span class="facts__day">
+                          {date.date}
+                          {!date.open && <span class="facts__date-note">fullbokad</span>}
+                        </span>
+                        <span class="facts__time">{date.time}</span>
+                      </span>
                     </li>
                   ))}
                 </ul>
               </dd>
-            </div>
-            <div class="facts__row">
-              <dt>Tid</dt>
-              <dd>{course.time}</dd>
             </div>
             <div class="facts__row">
               <dt>Pris</dt>
@@ -78,28 +75,36 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
               <dd>{course.place}</dd>
             </div>
           </dl>
+
           {course.dates.every((date) => !date.open) && (
             <p class="facts__note">Alla tillfällen är fulla — anmäl gärna intresse för nästa.</p>
           )}
+
+          <div class="course__included">
+            <h3 class="course__subheading">I kursavgiften ingår</h3>
+            <ul class="course__includes" role="list">
+              {course.includes.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
           </div>
 
-          <Image
-            class="course__image"
-            src={course.image}
-            alt={course.imageAlt}
-            loading="eager"
-            width={1113}
-            height={766}
-          />
         </aside>
+
+        <div class="course__body">
+          {course.body.map((paragraph) => (
+            <p class="course__paragraph">{paragraph}</p>
+          ))}
+        </div>
       </article>
     ))}
 
     <section class="signup" id="anmalan" aria-labelledby="signup-heading">
-      {/* Native scroll targets for the teaser deep links — one per bookable date */}
+      {/* Scroll targets for the deep links — one per bookable date */}
       {openOccasions.map(({ date }) => (
         <span class="signup__anchor" id={`anmalan-${date.slug}`} aria-hidden="true"></span>
       ))}
+
       <div class="signup__text">
         <h2 class="signup__heading" id="signup-heading">Anmäl intresse</h2>
         <p class="signup__lede">
@@ -189,6 +194,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   </div>
 </BaseLayout>
 
+
 <script is:inline data-astro-rerun>
   // The browser scrolls to #anmalan-<slug> natively; this only preselects that date.
   {
@@ -205,67 +211,73 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     margin: 0 auto;
     padding: var(--space-16) var(--layout-gutter) 0;
     display: grid;
-    gap: clamp(var(--space-16), 9vw, var(--space-32));
+    gap: clamp(var(--space-16), 7vw, var(--space-24));
   }
 
   /* ── Intro ─────────────────────────────────────────────── */
 
   .courses__intro {
     display: grid;
-    gap: var(--space-5);
-    max-width: 52ch;
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    gap: var(--grid-gutter);
+    align-items: start;
   }
 
   .courses__title {
     font-size: var(--font-size-display);
     line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-tightest);
-  }
-
-  /* Sets the page title apart from the course headings below it, which
-     otherwise read at nearly the same weight. */
-  .courses__intro {
-    padding-bottom: clamp(var(--space-8), 4vw, var(--space-12));
+    letter-spacing: var(--font-tracking-negative);
   }
 
   .courses__lede {
+    grid-column: 2;
     font-size: var(--font-size-lg);
     line-height: var(--font-leading-relaxed);
     color: var(--color-text-secondary);
+    max-width: 48ch;
   }
 
   /* ── Course ────────────────────────────────────────────── */
 
   .course {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.58fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
     grid-template-areas:
-      "heading aside"
-      "body    aside";
-    grid-template-rows: auto 1fr;
-    /* Row gap only under the heading — the aside spans both rows */
-    gap: var(--space-5) clamp(var(--space-8), 5vw, var(--space-16));
+      "heading   heading"
+      "intro     intro"
+      "image     practical"
+      "body      practical";
+    gap: var(--space-6) var(--grid-gutter);
     align-items: start;
+    padding: clamp(var(--space-8), 5vw, var(--space-16));
+    background: var(--color-bg-card);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
   }
 
   .course__body {
     grid-area: body;
     display: grid;
     gap: var(--space-5);
-    max-width: 58ch;
+    max-width: var(--layout-content-width);
+    margin-top: var(--space-6);
   }
 
   .course__heading {
     grid-area: heading;
-    font-size: var(--font-size-2xl);
+    max-width: 14ch;
+    font-size: var(--font-size-display);
     line-height: var(--font-leading-tight);
     letter-spacing: var(--font-tracking-negative);
   }
 
   .course__intro {
+    grid-area: intro;
+    max-width: 56ch;
     font-size: var(--font-size-lg);
     line-height: var(--font-leading-relaxed);
     color: var(--color-text-primary);
+    margin-bottom: var(--space-6);
   }
 
   .course__paragraph {
@@ -274,9 +286,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     color: var(--color-text-secondary);
   }
 
-  /* Marks the shift from prose to list — the only break inside the body. */
   .course__subheading {
-    margin-top: var(--space-6);
     font-size: var(--font-size-sm);
     letter-spacing: var(--font-tracking-wider);
     text-transform: lowercase;
@@ -310,27 +320,31 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     background: var(--color-text-tertiary);
   }
 
-  /* ── Facts panel ───────────────────────────────────────── */
+  /* ── Course image and practical details ───────────────── */
 
-  .course__aside {
-    grid-area: aside;
+  .course__practical {
+    grid-area: practical;
     display: grid;
+    gap: var(--space-10);
   }
 
-  /* Facts and image stack plainly — no overlap, no panel. */
-  .course__facts {
-    padding: 0;
+  .course__included {
+    display: grid;
+    gap: var(--space-4);
   }
 
-  /* A 4/5 crop keeps the aside close to the body's height, so the two
-     columns finish together instead of leaving a tall empty band. */
+  .course__media {
+    grid-area: image;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+  }
+
   .course__image {
     width: 100%;
-    height: auto;
-    margin-top: var(--space-8);
-    aspect-ratio: 4 / 5;
+    height: 100%;
     object-fit: cover;
-    object-position: 40% 45%;
+    object-position: 50% 42%;
   }
 
   /* Label/value pairs on one baseline grid, so the panel reads as a single
@@ -364,10 +378,32 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   .facts__dates {
     display: grid;
-    gap: var(--space-1);
+    gap: var(--space-2);
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  /* Ett tillfälle per rad, i samma spalter — samma rytm som övriga fakta.
+     Flex i stället för grid: spalterna krymper aldrig ihop över mellanrummet. */
+  .facts__date-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+    align-items: baseline;
+  }
+
+
+  .facts__day {
+    flex: 0 0 auto;
+    min-width: 7.5rem;
+    white-space: nowrap;
+  }
+
+  .facts__time {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
   }
 
   /* A booked-out date stays listed for context, but reads as unavailable */
@@ -403,10 +439,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .signup {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
     gap: clamp(var(--space-8), 5vw, var(--space-16));
     align-items: start;
-    padding-top: clamp(var(--space-12), 6vw, var(--space-24));
+    margin-inline: calc(var(--layout-gutter) * -1);
+    padding: clamp(var(--space-12), 6vw, var(--space-20)) var(--layout-gutter)
+      clamp(var(--space-24), 14vw, var(--space-5xl));
+    color: var(--color-text-inverse);
+    background: var(--color-bg-inverse);
     scroll-margin-top: calc(var(--nav-height) + var(--space-6));
   }
 
@@ -425,7 +465,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .signup__lede {
     font-size: var(--font-size-base);
     line-height: var(--font-leading-relaxed);
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .signup__form {
@@ -458,11 +498,11 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .field__label {
     font-size: var(--font-size-sm);
     letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .field__optional {
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .field__input {
@@ -516,14 +556,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   }
 
   .signup__submit {
-    min-height: 48px;
+    min-height: var(--space-12);
     padding: var(--space-3) var(--space-8);
     font-family: var(--font-heading-text);
     font-size: var(--font-size-base);
     letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-inverse);
-    background: var(--color-text-primary);
-    border: 1px solid var(--color-text-primary);
+    color: var(--color-bg-inverse);
+    background: var(--color-accent);
+    border: 1px solid var(--color-accent);
     border-radius: var(--radius-sm);
     transition:
       background-color var(--transition-normal),
@@ -535,20 +575,24 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     max-width: 56ch;
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-snug);
-    color: var(--color-text-secondary);
+    color: var(--color-text-inverse);
   }
 
   .signup__inline-link {
-    color: var(--color-text-primary);
+    color: var(--color-text-inverse);
     text-decoration: underline;
     text-underline-offset: var(--underline-offset);
   }
 
+  .signup :focus-visible {
+    outline-color: var(--color-text-inverse);
+  }
+
   @media (hover: hover) {
     .signup__submit:hover {
-      color: var(--color-text-inverse);
-      background: var(--color-text-primary);
-      border-color: var(--color-text-primary);
+      color: var(--color-accent);
+      background: var(--color-bg-surface);
+      border-color: var(--color-bg-surface);
     }
 
     .signup__inline-link:hover {
@@ -559,18 +603,29 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   /* ── Tablet ────────────────────────────────────────────── */
 
   @media (max-width: 1023px) {
+    .courses__intro {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .courses__lede {
+      grid-column: 1;
+    }
+
     .course {
       grid-template-columns: 1fr;
       grid-template-areas:
         "heading"
-        "aside"
+        "intro"
+        "image"
+        "practical"
         "body";
-      gap: var(--space-8);
+      gap: var(--space-6);
     }
 
-    .course__image {
-      aspect-ratio: 2 / 1;
-      object-position: 50% 35%;
+    .course__practical {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-8) var(--grid-gutter);
     }
   }
 
@@ -579,11 +634,27 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   @media (max-width: 699px) {
     .courses {
       padding-top: var(--space-10);
+      gap: var(--space-16);
     }
 
-    .courses__lede,
-    .course__intro {
+    .courses__lede {
       font-size: var(--font-size-base);
+    }
+
+    .course__intro {
+      margin-bottom: var(--space-2);
+    }
+
+    .course {
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .course__practical {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
     }
 
     .signup {
@@ -601,12 +672,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     }
 
     /* Squarer crop and a gentler overlap — a 2:1 strip is too thin on a phone */
-    .course__image {
+    .course__media {
       aspect-ratio: 4 / 3;
-    }
-
-    .course__facts {
-      margin: calc(var(--space-10) * -1) var(--space-3) 0 var(--space-5);
     }
   }
 </style>
