@@ -50,7 +50,7 @@ export const courses: Course[] = [
       {
         slug: "26-sep",
         date: "26 september",
-        time: "16.00–18.00",
+        time: "18.00–20.00",
         day: "26",
         month: "september",
         open: true,
