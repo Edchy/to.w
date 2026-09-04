@@ -19,22 +19,22 @@ const BRODER_JOHN_SPOTIFY =
 
 const captions: Record<string, Caption> = {
   "bj-lol.avif": {
-    before: "En ring formad för musikern ",
+    before: "Ring formad för musikern ",
     label: "Broder John",
     href: BRODER_JOHN_SPOTIFY,
-    after: " — buren på scen, och sliten precis så mycket som ett smycke ska bli av att följa med någon.",
+    after: ".",
   },
   "gaza.jpeg": {
-    before: "Ett samarbete med konstnären ",
+    before: "Samarbete med ",
     label: "Victor Telegin",
     href: "https://www.instagram.com/vtelegin/",
-    after: ", där hela intäkten gick oavkortat till Gaza. Två par händer, ett litet bidrag till något mycket större.",
+    after: " — hela intäkten gick till Gaza.",
   },
   "d1hand.avif": {
-    before: "Fick äran att göra smycken åt ",
+    before: "Smycken åt ",
     label: "Barndiabetesfonden",
     href: "https://www.barndiabetesfonden.se",
-    after: " — silver som bärs varje dag av barn som lever med typ 1-diabetes, och av dem som står bredvid.",
+    after: ".",
   },
 };
 
@@ -188,14 +188,21 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     padding: 0 var(--layout-gutter) var(--space-16);
   }
 
+  /* Egen yta, inte lös sidtext: --color-bg-surface är samma papper som
+     bakgrunden, så kortet behöver kant och inramning för att läsas som ett
+     avgränsat block. */
   .course-notice {
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: var(--grid-gutter);
     align-items: start;
-    padding-block: var(--space-10);
+    margin-bottom: var(--space-16);
+    padding: var(--space-10);
     color: var(--color-text-primary);
-    background: var(--color-bg-surface);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
   }
 
   .course-notice__text {
@@ -323,6 +330,14 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
   .work-card--product .work-card__media :global(img) {
     position: relative;
     z-index: 0;
+    /* Outline istället för border: ramen läggs utanpå utan att ändra
+       bildens mått, så rutnätets linjer håller. */
+    outline: var(--border-width-product) solid var(--color-border-product);
+    outline-offset: calc(var(--border-width-product) * -1);
+    transition:
+      transform var(--transition-slow),
+      filter var(--transition-slow),
+      outline-color var(--transition-normal);
   }
 
   .work-card__reveal {
@@ -412,6 +427,25 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     align-items: baseline;
   }
 
+  /* Titeln bär en prick i accentfärgen. Ramen ensam kan läsas som en
+     bildkant — pricken vid texten säger "det här är en vara". */
+  .work-card--product .work-card__product-line h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--color-text-primary);
+  }
+
+  .work-card--product .work-card__product-line h2::before {
+    content: "";
+    flex: 0 0 auto;
+    width: var(--product-marker-size);
+    height: var(--product-marker-size);
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    translate: 0 calc(var(--product-marker-size) * -0.15);
+  }
+
   .work-card h2,
   .work-card__product-line span {
     font-family: var(--font-body-text);
@@ -469,6 +503,11 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       filter: grayscale(0) contrast(1.03);
     }
 
+    .course-notice:hover {
+      border-color: var(--color-border-default);
+      box-shadow: var(--shadow-card);
+    }
+
     .course-notice:hover .course-notice__link {
       color: var(--color-accent);
     }
@@ -487,7 +526,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   @media (max-width: 700px) {
     .course-notice {
-      padding-block: var(--space-8);
+      margin-bottom: var(--space-10);
+      padding: var(--space-6);
     }
 
     .course-notice__row {
@@ -503,10 +543,39 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
     .work-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-8) var(--space-3);
+      /* Raderna sätts av innehållet men toppas av — annars driver de två
+         kolumnerna isär och bildkanterna tappar den gemensamma linjen. */
+      align-items: start;
+    }
+
+    /* Den redaktionella höjdförskjutningen är gjord för 3–4 kolumner. Vid två
+       kolumner blir den bara ojämn — bilderna ska ligga i linje istället. */
+    .work-card--align-center,
+    .work-card--align-end,
+    .work-card--align-start {
+      align-content: start;
+    }
+
+    /* Enhetlig bildhöjd ger rutnätet en läsbar takt på liten skärm. */
+    .work-card--image .work-card__media :global(img),
+    .work-card--product .work-card__media :global(img) {
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
     }
 
     .work-card--featured {
       grid-column: 1 / -1;
+    }
+
+    .work-card--featured .work-card__media :global(img) {
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    /* Bildtexten hör ihop med sin bild — håll den tät och kort. */
+    .work-card figcaption.work-card__note {
+      font-size: var(--font-size-xs);
+      line-height: var(--font-leading-snug);
     }
   }
 

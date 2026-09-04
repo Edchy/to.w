@@ -9,11 +9,13 @@ type Props = {
   title?: string;
   description?: string;
   noPadding?: boolean;
+  /** Låter innehållet gå upp under headern, som blir transparent. Endast mobil. */
+  overlayHeader?: boolean;
   /** Keeps the page out of search results while it is unlinked from the nav. */
   noindex?: boolean;
 };
 
-const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false, noindex = false } = Astro.props;
+const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false, overlayHeader = false, noindex = false } = Astro.props;
 const pageTitle = title ? `TO.W | ${title}` : "TO.W | Smycken i återvunnet silver.";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
@@ -75,7 +77,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       FORM: curated editorial index, approved direction 1, seed tow-editorial-mix-v1.
       FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
     -->
-    <header class="site-header">
+    <header class:list={["site-header", { "site-header--overlay": overlayHeader }]}>
       <div class="site-wrap site-header__inner">
         <Wordmark href={baseUrl} size="nav" />
         <nav aria-label="Huvudnavigering">
@@ -196,7 +198,9 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       document.body.style.width = '100%';
     }
 
-    function unlockPageScroll() {
+    // restoreScroll=false vid sidbyte: då äger routern scrollpositionen, och
+    // ett hopp tillbaka till förra sidans offset slåss med den.
+    function unlockPageScroll(restoreScroll = true) {
       if (!isScrollLocked) return;
       isScrollLocked = false;
       document.documentElement.classList.remove('has-mobile-nav-open');
@@ -205,7 +209,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
       document.body.style.left = '';
       document.body.style.right = '';
       document.body.style.width = '';
-      window.scrollTo(0, lockedScrollY);
+      if (restoreScroll) window.scrollTo(0, lockedScrollY);
     }
 
     function openMenu() {
@@ -239,7 +243,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
     document.addEventListener('astro:after-swap', () => {
       nav.classList.remove('is-open');
-      unlockPageScroll();
+      unlockPageScroll(false);
       btn.setAttribute('aria-expanded', 'false');
       btn.setAttribute('aria-label', 'Öppna meny');
       main?.removeAttribute('inert');
@@ -291,6 +295,33 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: center;
     justify-content: space-between;
     height: 100%;
+  }
+
+  /* Bilden får gå upp under headern på mobil; headern lägger sig ovanpå utan
+     egen bakgrund. Wordmark och hamburgare vänds till ljust mot bilden. */
+  @media (max-width: 1000px) {
+    .site-header--overlay {
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      background-color: transparent;
+      --color-wordmark-nav: var(--color-text-inverse);
+    }
+
+    .site-header--overlay .nav-link {
+      color: var(--color-text-inverse);
+    }
+
+    /* Menyn har egen full bakgrund — där ska ikonen tillbaka till mörkt, och
+       headern fästas över panelen så logga och kryss följer med. */
+    .site-header--overlay:has(.hamburger[aria-expanded="true"]) {
+      position: fixed;
+      --color-wordmark-nav: var(--color-text-primary);
+    }
+
+    .site-header--overlay:has(.hamburger[aria-expanded="true"]) .nav-link {
+      color: var(--color-text-secondary);
+    }
   }
 
   .nav-list {
@@ -556,10 +587,12 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 
   /* ── Mobile nav panel ── */
 
+  /* Täcker hela skärman, inte bara ytan under headern. Med transparent header
+     (produktsidan) lyste annars bilden igenom den översta remsan. Innehållet
+     hålls nedanför headern med padding istället för med offset. */
   .mobile-nav {
     position: fixed;
     inset: 0;
-    top: var(--nav-height);
     background-color: var(--color-bg-base);
     z-index: var(--z-overlay);
     display: flex;
@@ -567,7 +600,7 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     align-items: stretch;
     justify-content: space-between;
     overflow-y: auto;
-    padding: var(--space-10) var(--layout-gutter) var(--space-12);
+    padding: calc(var(--nav-height) + var(--space-10)) var(--layout-gutter) var(--space-12);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-normal);

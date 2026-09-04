@@ -15,3 +15,15 @@ _Log mistakes and hard-won lessons here so they don't repeat._
 ## Replace a file in two patch operations
 
 `apply_patch` does not accept deleting and adding the same path in one patch. Delete the file first, then add the replacement in a second operation.
+
+## `scroll-behavior: smooth` on `html` breaks back-navigation with ClientRouter
+
+Astro's `<ClientRouter />` restores scroll position on `popstate` with `scrollTo()`.
+With `scroll-behavior: smooth` on `html` that restore becomes an animated scroll —
+on mobile it reads as "the back button did nothing", and any touch during the
+animation cancels it, leaving the page at the wrong offset. Scope smooth scrolling
+to anchor jumps (`:has(:target)`) instead of putting it on `html`.
+
+Related: a scroll-lock helper that calls `window.scrollTo(0, savedY)` on unlock must
+NOT do so during `astro:after-swap` — the router owns scroll position on a page
+change, and restoring the previous page's offset fights it.

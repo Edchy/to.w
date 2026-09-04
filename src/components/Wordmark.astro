@@ -8,7 +8,7 @@ const { href, size = "nav" } = Astro.props;
 ---
 
 <a href={href} class:list={["wordmark", `wordmark--${size}`]} aria-label="Tove Wätte — hem">
-  <span class="wordmark__name">To.W</span>
+  <span class="wordmark__name">tove wätte</span>
 </a>
 
 <style>
@@ -29,21 +29,21 @@ const { href, size = "nav" } = Astro.props;
   .wordmark__name {
     display: block;
     font-family: var(--font-body-text);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-tightest);
+    font-weight: var(--font-weight-light);
+    letter-spacing: var(--font-tracking-wide);
     text-transform: uppercase;
     white-space: nowrap;
   }
 
   .wordmark--nav .wordmark__name,
   .wordmark--footer .wordmark__name {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
   }
 
   @media (max-width: 700px) {
     .wordmark--nav .wordmark__name,
     .wordmark--footer .wordmark__name {
-      font-size: var(--font-size-base);
+      font-size: var(--font-size-sm);
     }
   }
 </style>

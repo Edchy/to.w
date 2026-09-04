@@ -160,6 +160,11 @@
   --color-border-subtle: oklch(88% 0.014 88);
   --color-border-inverse: var(--ember-700);
 
+  /* Köpbara kort — markeras i accentfärgen så de skiljs från galleribilder */
+  --color-border-product: var(--color-accent);
+  --border-width-product: 2px;
+  --product-marker-size: var(--space-2);
+
   /* Depth */
   --shadow-card: var(--ink-shadow-soft);
 

@@ -256,11 +256,25 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
       padding-inline: 0;
     }
 
+    /* Bilden börjar högst upp och löper under den transparenta headern.
+       Höjden räknas från toppen så motivet inte kapas av navigeringen. */
     .pd__visual {
-      aspect-ratio: 16 / 10;
+      aspect-ratio: auto;
+      height: calc(var(--nav-height) + 46svh);
+      /* Bakgrunden matchar info-blocket: rundas bildens höjd till en
+         delpixel syns kanten som ett streck, inte som ljus papperskant. */
+      background: var(--color-bg-inverse);
+    }
+
+    .pd__visual :global(img) {
+      /* Halv delpixel extra sluter fogen mot det röda fältet. */
+      height: calc(100% + 1px);
+      object-position: center;
     }
 
     .pd__info {
+      /* Dras upp en pixel så ingen ljus rad kan uppstå i fogen. */
+      margin-top: -1px;
       padding: var(--space-8) var(--layout-gutter) var(--space-12);
     }
 
@@ -272,7 +286,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 
   @media (max-width: 600px) {
     .pd__visual {
-      aspect-ratio: 4 / 3;
+      height: calc(var(--nav-height) + 42svh);
     }
 
     .pd__info {

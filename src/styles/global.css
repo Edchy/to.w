@@ -9,7 +9,15 @@
 html {
   -webkit-text-size-adjust: 100%;
   font-kerning: normal;
-  scroll-behavior: smooth;
+}
+
+/* Smooth scroll bara för avsiktliga ankarhopp. Ligger den på html äter den
+   ClientRouterns scroll-återställning vid bakåtnavigering — sidan ser då ut
+   att hänga sig kvar på fel position. */
+@media (prefers-reduced-motion: no-preference) {
+  :has(:target) {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
