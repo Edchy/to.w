@@ -78,7 +78,10 @@ const revealDrift = [16, 14, 8, 18, 14, 10, 12, 16];
 const revealLift = [-26, 18, 30, -32, 12, -20, -10, 28];
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+const withBase = (path: string) => {
+  const url = `${baseUrl}${path.replace(/^\//, "")}`;
+  return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
+};
 ---
 
 <BaseLayout description="to.w är Tove Wättes samlade plats för handgjorda smycken i silver och bilder från arbetet.">

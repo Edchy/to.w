@@ -5,7 +5,10 @@ import heroImg from "../assets/img/hero.avif";
 import { CONTACT_EMAIL_HREF } from "../config/site";
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+const withBase = (path: string) => {
+  const url = `${baseUrl}${path.replace(/^\//, "")}`;
+  return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
+};
 ---
 
 <BaseLayout

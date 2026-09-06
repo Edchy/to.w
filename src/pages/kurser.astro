@@ -10,7 +10,10 @@ const spotCounts = new Set(openOccasions.map(({ course }) => course.spots));
 const sharedSpots = spotCounts.size === 1 ? [...spotCounts][0] : null;
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+const withBase = (path: string) => {
+  const url = `${baseUrl}${path.replace(/^\//, "")}`;
+  return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
+};
 ---
 
 <BaseLayout

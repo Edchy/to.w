@@ -3,7 +3,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { openOccasions, spotsWord } from "../../data/courses";
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+const withBase = (path: string) => {
+  const url = `${baseUrl}${path.replace(/^\//, "")}`;
+  return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
+};
 
 // This page is shared by every course, so it can only name a count when they agree.
 const spotCounts = new Set(openOccasions.map(({ course }) => course.spots));
