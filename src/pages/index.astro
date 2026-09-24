@@ -1,596 +1,184 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import type { ImageMetadata } from "astro";
-import BaseLayout from "../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import { getProductSlug } from "../config/site";
-import { openOccasions } from "../data/courses";
-import bestHero from "../content/gallery/besthero.jpg";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DirectionSwitcher from "../components/home-studies/DirectionSwitcher.astro";
+import FieldNotebook from "../components/home-studies/FieldNotebook.astro";
+import PrintedPoster from "../components/home-studies/PrintedPoster.astro";
+import WorkingCatalogue from "../components/home-studies/WorkingCatalogue.astro";
+import handsCutout from "../assets/img/studies/besthero-hands-cutout-study-v1.png";
 
-type JewelryEntry = CollectionEntry<"jewelry">;
-type Caption = { before: string; label: string; href: string; after: string };
-type FeedItem =
-  | { kind: "image"; id: string; image: ImageMetadata; alt: string; caption?: Caption }
-  | { kind: "product"; id: string; entry: JewelryEntry };
-
-const BRODER_JOHN_SPOTIFY =
-  "https://open.spotify.com/artist/66iUd3sGrtkATTS7FHWPe4";
-
-const captions: Record<string, Caption> = {
-  "bj-lol.avif": {
-    before: "Ring formad för musikern ",
-    label: "Broder John",
-    href: BRODER_JOHN_SPOTIFY,
-    after: ".",
-  },
-  "gaza.jpeg": {
-    before: "Samarbete med ",
-    label: "Victor Telegin",
-    href: "https://www.instagram.com/vtelegin/",
-    after: " — hela intäkten gick till Gaza.",
-  },
-  "d1hand.avif": {
-    before: "Smycken åt ",
-    label: "Barndiabetesfonden",
-    href: "https://www.barndiabetesfonden.se",
-    after: ".",
-  },
-};
-
-const works = (await getCollection("jewelry")).sort((a, b) =>
+const jewelry = (await getCollection("jewelry")).sort((a, b) =>
   b.data.date.localeCompare(a.data.date),
 );
-const fmt = new Intl.NumberFormat("sv-SE").format;
-
-const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
-  "../content/gallery/*.{jpg,jpeg,png,webp,avif}",
-  { eager: true },
-);
-
-const galleryItems: FeedItem[] = Object.entries(galleryModules)
-  .filter(([path]) => path !== "../content/gallery/besthero.jpg")
-  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB, "sv"))
-  .map(([path, module], index) => ({
-    kind: "image",
-    id: path,
-    image: module.default,
-    alt: `Fotografi från Tove Wättes arbete, bild ${index + 1}.`,
-    caption: captions[path.split("/").pop() ?? ""],
-  }));
-
-const feedItems: FeedItem[] = [...galleryItems];
-// Jämnt spridda så smyckena inte hamnar i samma kolumn vid 4, 3 eller 2 kolumner.
-const productSlots = [4, 6, 8, 11, 13, 18, 21, 23];
-const imageAlignments = ["start", "end", "center"] as const;
-works.forEach((entry, index) => {
-  feedItems.splice(productSlots[index], 0, {
-    kind: "product",
-    id: entry.id,
-    entry,
-  });
-});
-
-// Fasta "slumpmässiga" förskjutningar så titeln inte alltid sitter centrerad.
-// Magnitud för hur långt titeln får glida; riktningen sätts av kolumnen så att
-// den alltid dras inåt och aldrig hamnar utanför skärmen.
-const revealDrift = [16, 14, 8, 18, 14, 10, 12, 16];
-const revealLift = [-26, 18, 30, -32, 12, -20, -10, 28];
-
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const withBase = (path: string) => {
-  const url = `${baseUrl}${path.replace(/^\//, "")}`;
-  return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
-};
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
 ---
 
-<BaseLayout description="to.w är Tove Wättes samlade plats för handgjorda smycken i silver och bilder från arbetet.">
-  <div class="home">
-    <h1 class="sr-only">Tove Wätte — handgjorda smycken</h1>
+<BaseLayout
+  bare
+  description="Designstudier för Tove Wättes nya webbplats."
+>
+  <DirectionSwitcher />
+  <FieldNotebook items={jewelry} />
+  <PrintedPoster items={jewelry} />
+  <WorkingCatalogue items={jewelry} />
+  <article class="assembly" data-direction-panel="assembly" hidden>
+    <header class="assembly__header">
+      <a class="assembly__wordmark" href={baseUrl}>towtow</a>
+      <nav aria-label="Huvudnavigering">
+        <a href={withBase("/smycken")}>smycken</a>
+        <a href={withBase("/kurser")}>kurser</a>
+        <a href={withBase("/om")}>om</a>
+      </nav>
+    </header>
 
-    {openOccasions.length > 0 && (
-      <a class="course-notice" href={withBase("/kurser")} aria-labelledby="course-notice-title">
-        <div class="course-notice__text">
-          <h2 id="course-notice-title">Händer snart</h2>
-          <p>Tillfällen för dig som vill skapa något eget i silver.</p>
-          <span class="course-notice__link">läs mer</span>
-        </div>
-        <div class="course-notice__dates">
-          {openOccasions.map(({ course, date }) => (
-            <span class="course-notice__row">
-              <span class="course-notice__date">{date.date}</span>
-              <span class="course-notice__time">{date.time}</span>
-              <span class="course-notice__course">{course.title}</span>
-            </span>
-          ))}
-        </div>
-      </a>
-    )}
-
-    <section class="work-grid" aria-label="Smycken och bilder från arbetet">
-      <figure class="work-card work-card--featured">
-        <div class="work-card__media">
-          <Image
-            src={bestHero}
-            alt="Händer som bär flera handgjorda silverringar."
-            loading="eager"
-            fetchpriority="high"
-          />
-        </div>
-      </figure>
-
-      {feedItems.map((item, index) => {
-        if (item.kind === "product") {
-          const slug = getProductSlug(item.entry.id);
-          const productIndex = works.findIndex((w) => w.id === item.entry.id);
-          // Kolumnen i rutnätet (hjältebilden upptar två celler).
-          const column = (index + 2) % 3;
-          const inward = column === 0 ? 1 : column === 2 ? -1 : 0;
-          const drift = revealDrift[productIndex % revealDrift.length];
-          const offset = {
-            x: inward === 0 ? (productIndex % 2 === 0 ? drift : -drift) : drift * inward,
-            y: revealLift[productIndex % revealLift.length],
-          };
-          return (
-            <a class="work-card work-card--product" href={withBase(`/smycken/${slug}`)}>
-              <figure>
-                <div class="work-card__media" transition:name={`product-${slug}`}>
-                  <Image src={item.entry.data.images[0]} alt={item.entry.data.title} loading={index < 3 ? "eager" : "lazy"} />
-                  <div
-                    class="work-card__reveal"
-                    aria-hidden="true"
-                    style={`--reveal-x: ${offset.x}%; --reveal-y: ${offset.y}%; --reveal-chars: ${item.entry.data.title.length};`}
-                  >
-                    <span class="work-card__reveal-title">{item.entry.data.title}</span>
-                    <span class="work-card__reveal-price">{fmt(item.entry.data.price)} kr</span>
-                  </div>
-                </div>
-                <figcaption>
-                  <div class="work-card__product-line">
-                    <h2 transition:name={`product-title-${slug}`} transition:animate="none">{item.entry.data.title}</h2>
-                    <span>{fmt(item.entry.data.price)} kr</span>
-                  </div>
-                  {item.entry.data.description && <p>{item.entry.data.description}</p>}
-                </figcaption>
-              </figure>
-            </a>
-          );
-        }
-
-        const alignment = imageAlignments[index % imageAlignments.length];
-        return (
-          <figure class:list={["work-card", "work-card--image", `work-card--align-${alignment}`]}>
-            <div class="work-card__media">
-              <Image
-                src={item.image}
-                alt={item.alt}
-                width={item.image.width}
-                height={item.image.height}
-                loading={index < 3 ? "eager" : "lazy"}
-              />
-            </div>
-            {item.caption && (
-              <figcaption class="work-card__note">
-                {item.caption.before}<a href={item.caption.href} target="_blank" rel="noopener noreferrer">{item.caption.label}</a>{item.caption.after}
-              </figcaption>
-            )}
-          </figure>
-        );
-      })}
+    <section class="assembly__hero">
+      <Image
+        class="assembly__hands"
+        src={handsCutout}
+        alt="Händer med flera handgjorda silverringar."
+        loading="eager"
+        fetchpriority="high"
+      />
     </section>
-  </div>
+  </article>
 </BaseLayout>
 
 <style>
-  .home {
+  .assembly {
+    min-height: 100svh;
     overflow-x: clip;
-    width: 100%;
-    min-width: 0;
-    max-width: var(--layout-site-width);
-    margin: 0 auto;
-    padding: 0 var(--layout-gutter) var(--space-16);
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
   }
 
-  /* Egen yta, inte lös sidtext: --color-bg-surface är samma papper som
-     bakgrunden, så kortet behöver kant och inramning för att läsas som ett
-     avgränsat block. */
-  .course-notice {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: var(--grid-gutter);
-    align-items: start;
-    margin-bottom: var(--space-16);
-    padding: var(--space-10);
-    color: var(--color-text-primary);
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
-    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
-  }
-
-  .course-notice__text {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .course-notice h2 {
-    font-size: var(--font-size-3xl);
-  }
-
-  .course-notice p {
-    max-width: 42ch;
-    color: var(--color-text-secondary);
-  }
-
-  .course-notice__dates {
-    display: grid;
-  }
-
-  .course-notice__row {
-    display: grid;
-    grid-template-columns: minmax(7rem, 0.55fr) minmax(7rem, 0.45fr) minmax(0, 1fr) auto;
-    gap: var(--space-5);
-    align-items: baseline;
-    min-height: var(--space-12);
-    padding-block: var(--space-3);
-    border-top: 1px solid var(--color-border-default);
-    color: var(--color-text-primary);
-  }
-
-  .course-notice__row:last-of-type {
-    border-bottom: 1px solid var(--color-border-default);
-  }
-
-  .course-notice__date {
-    font-family: var(--font-heading-text);
-    font-size: var(--font-size-lg);
-  }
-
-  .course-notice__time {
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .course-notice__course {
-    color: var(--color-text-secondary);
-  }
-
-  .course-notice__link {
-    justify-self: start;
-    margin-top: var(--space-2);
-    text-decoration: underline;
-    text-underline-offset: var(--underline-offset);
-  }
-
-  .work-grid {
-    container-type: inline-size;
-    display: grid;
-    width: 100%;
-    min-width: 0;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--grid-gutter);
-    align-items: stretch;
-  }
-
-  .work-card--featured {
-    grid-column: 1 / span 2;
-  }
-
-  .work-card {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    margin: 0;
-  }
-
-  .work-card--image {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .work-card--align-start,
-  .work-card--product,
-  .work-card--featured {
-    align-content: start;
-  }
-
-  .work-card--align-center {
-    align-content: center;
-  }
-
-  .work-card--align-end {
-    align-content: end;
-  }
-
-  .work-card figure {
-    min-width: 0;
-    margin: 0;
-  }
-
-  .work-card figure,
-  .work-card--product {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .work-card--product {
-    cursor: pointer;
-    transition: color var(--transition-normal);
-  }
-
-  .work-card__media {
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .work-card--product .work-card__media {
+  .assembly__header {
     position: relative;
-    overflow: visible;
-    container-type: inline-size;
-  }
-
-  .work-card--product .work-card__media :global(img) {
-    position: relative;
-    z-index: 0;
-    /* Outline istället för border: ramen läggs utanpå utan att ändra
-       bildens mått, så rutnätets linjer håller. */
-    outline: var(--border-width-product) solid var(--color-border-product);
-    outline-offset: calc(var(--border-width-product) * -1);
-    transition:
-      transform var(--transition-slow),
-      filter var(--transition-slow),
-      outline-color var(--transition-normal);
-  }
-
-  .work-card__reveal {
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    left: 50%;
-    display: grid;
-    justify-items: center;
-    gap: var(--space-2);
-    width: max-content;
-    max-width: 104cqw;
-    padding-inline: var(--space-4);
-    opacity: 0;
-    transform: translate(
-      calc(-50% + var(--reveal-x, 0%)),
-      calc(-50% + var(--reveal-y, 0%))
-    );
-    pointer-events: none;
-    transition: opacity var(--transition-normal);
-  }
-
-  .work-card__reveal-title {
-    font-family: var(--font-heading-text);
-    font-size: min(34cqw, calc(200cqw / var(--reveal-chars, 6)));
-    font-weight: var(--font-weight-bold);
-    line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-tight);
-    color: var(--color-accent);
-    text-transform: lowercase;
-    white-space: nowrap;
-  }
-
-  .work-card__reveal-price {
-    font-family: var(--font-heading-text);
-    font-size: min(10cqw, calc(58cqw / var(--reveal-chars, 6)));
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wide);
-    color: var(--color-accent);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .work-card__media :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform var(--transition-slow), filter var(--transition-slow);
-  }
-
-  .work-card--product .work-card__media :global(img) {
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    filter: grayscale(1);
-  }
-
-  .work-card figcaption {
-    display: grid;
-    min-width: 0;
-    gap: var(--space-2);
-  }
-
-  .work-card figcaption.work-card__note {
-    display: block;
-    max-width: 48ch;
-    font-family: var(--font-body-text);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-regular);
-    line-height: var(--font-leading-snug);
-    color: var(--color-text-secondary);
-    text-wrap: pretty;
-  }
-
-  .work-card figcaption.work-card__note a {
-    color: var(--color-text-primary);
-    text-decoration: underline;
-    text-decoration-color: var(--color-border-default);
-    text-underline-offset: var(--underline-offset);
-    transition: text-decoration-color var(--transition-normal);
-  }
-
-  .work-card__product-line {
+    z-index: var(--z-raised);
     display: flex;
-    min-width: 0;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: var(--space-4);
-    align-items: baseline;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
   }
 
-  /* Titeln bär en prick i accentfärgen. Ramen ensam kan läsas som en
-     bildkant — pricken vid texten säger "det här är en vara". */
-  .work-card--product .work-card__product-line h2 {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    color: var(--color-text-primary);
+  .assembly__header a {
+    color: inherit;
+    text-decoration: none;
   }
 
-  .work-card--product .work-card__product-line h2::before {
-    content: "";
-    flex: 0 0 auto;
-    width: var(--product-marker-size);
-    height: var(--product-marker-size);
-    border-radius: var(--radius-full);
-    background: var(--color-accent);
-    translate: 0 calc(var(--product-marker-size) * -0.15);
-  }
-
-  .work-card h2,
-  .work-card__product-line span {
-    font-family: var(--font-body-text);
-    font-size: var(--font-size-sm);
+  .assembly__wordmark {
+    font-family: var(--font-study-labrada);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wide);
-    color: var(--color-text-secondary);
+    letter-spacing: var(--font-tracking-negative);
   }
 
-  .work-card__product-line span {
-    flex: 0 0 auto;
-    font-variant-numeric: tabular-nums;
+  .assembly__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
   }
 
-  .work-card figcaption p {
-    display: -webkit-box;
-    max-width: 48ch;
-    overflow: hidden;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-    line-height: var(--font-leading-snug);
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+  .assembly__hero {
+    position: relative;
+    min-height: calc(100svh - var(--space-24));
+    overflow: visible;
   }
 
-  .work-card--product:focus-visible figcaption p {
-    color: var(--color-text-primary);
+  .assembly__hero :global(img.assembly__hands) {
+    position: absolute;
+    top: calc(0px - var(--space-24) - var(--space-12));
+    right: var(--layout-gutter);
+    width: min(64vw, 70rem);
+    height: auto;
+    object-fit: contain;
+    filter: sepia(0.18) saturate(1.25) hue-rotate(165deg);
   }
 
-  .work-card--product:focus-visible .work-card__media :global(img) {
-    transform: scale(1.035);
-    filter: grayscale(0) contrast(1.03);
-  }
-
-  @media (hover: hover) {
-    .work-card--product .work-card__product-line {
-      display: none;
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .assembly__header nav {
+      padding-right: 0;
     }
 
-    .work-card--product:hover .work-card__reveal,
-    .work-card--product:focus-visible .work-card__reveal {
-      opacity: 1;
-    }
-
-    .work-card figcaption.work-card__note a:hover {
-      text-decoration-color: currentColor;
-    }
-
-    .work-card--product:hover figcaption p {
-      color: var(--color-text-primary);
-    }
-
-    .work-card--product:hover .work-card__media :global(img) {
-      transform: scale(1.035);
-      filter: grayscale(0) contrast(1.03);
-    }
-
-    .course-notice:hover {
-      border-color: var(--color-border-default);
-      box-shadow: var(--shadow-card);
-    }
-
-    .course-notice:hover .course-notice__link {
-      color: var(--color-accent);
-    }
-  }
-
-  @media (max-width: 1024px) {
-    .course-notice {
-      grid-template-columns: 1fr;
-      gap: var(--space-8);
-    }
-
-    .work-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .assembly__hero :global(img.assembly__hands) {
+      right: calc(0px - var(--space-6));
+      width: 78vw;
+      max-width: none;
     }
   }
 
   @media (max-width: 700px) {
-    .course-notice {
-      margin-bottom: var(--space-10);
-      padding: var(--space-6);
+    .assembly__header {
+      align-items: center;
+      padding-block: var(--space-md);
     }
 
-    .course-notice__row {
-      grid-template-columns: 1fr auto;
-      gap: var(--space-2) var(--space-5);
+    .assembly__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
     }
 
-    .course-notice__course {
-      grid-column: 1;
-      grid-row: 2;
+    .assembly__hero :global(img.assembly__hands) {
+      top: calc(0px - var(--space-32));
+      right: calc(0px - var(--space-8));
+      width: clamp(34rem, 112vw, 44rem);
+      max-width: none;
+      transform: none;
     }
+  }
 
-    .work-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-8) var(--space-3);
-      /* Raderna sätts av innehållet men toppas av — annars driver de två
-         kolumnerna isär och bildkanterna tappar den gemensamma linjen. */
+  @media (max-width: 380px) {
+    .assembly__header {
       align-items: start;
     }
 
-    /* Den redaktionella höjdförskjutningen är gjord för 3–4 kolumner. Vid två
-       kolumner blir den bara ojämn — bilderna ska ligga i linje istället. */
-    .work-card--align-center,
-    .work-card--align-end,
-    .work-card--align-start {
-      align-content: start;
-    }
-
-    /* Enhetlig bildhöjd ger rutnätet en läsbar takt på liten skärm. */
-    .work-card--image .work-card__media :global(img),
-    .work-card--product .work-card__media :global(img) {
-      aspect-ratio: 4 / 5;
-      object-fit: cover;
-    }
-
-    .work-card--featured {
-      grid-column: 1 / -1;
-    }
-
-    .work-card--featured .work-card__media :global(img) {
-      aspect-ratio: 4 / 3;
-      object-fit: cover;
-    }
-
-    /* Bildtexten hör ihop med sin bild — håll den tät och kort. */
-    .work-card figcaption.work-card__note {
-      font-size: var(--font-size-xs);
-      line-height: var(--font-leading-snug);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .work-card__reveal,
-    .work-card--product .work-card__product-line,
-    .work-card--product,
-    .work-card--product h2,
-    .work-card--product .work-card__product-line span,
-    .work-card--product figcaption p,
-    .work-card__media :global(img) {
-      transition: none;
+    .assembly__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
     }
   }
 </style>
+
+<script is:inline>
+  const buttons = [...document.querySelectorAll("[data-direction-button]")];
+  const panels = [...document.querySelectorAll("[data-direction-panel]")];
+  const validDirections = panels.map((panel) => panel.dataset.directionPanel);
+
+  function activateDirection(direction, updateUrl = true) {
+    const selected = validDirections.includes(direction) ? direction : "field";
+
+    buttons.forEach((button) => {
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.directionButton === selected),
+      );
+    });
+
+    panels.forEach((panel) => {
+      panel.hidden = panel.dataset.directionPanel !== selected;
+    });
+
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("direction", selected);
+      history.replaceState({}, "", url);
+    }
+
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activateDirection(button.dataset.directionButton);
+    });
+  });
+
+  const initialDirection = new URL(window.location.href).searchParams.get("direction");
+  activateDirection(initialDirection, false);
+</script>

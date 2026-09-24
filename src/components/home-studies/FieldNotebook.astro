@@ -1,0 +1,417 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import bestHero from "../../content/gallery/besthero.jpg";
+import chairStudy from "../../assets/img/studies/cobalt-chair-study-v1.png";
+import birdStudy from "../../assets/img/studies/footer-bird-pencil-study-v2.png";
+import { getProductSlug } from "../../config/site";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+const featured = items.slice(0, 3);
+const fmt = new Intl.NumberFormat("sv-SE").format;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<article class="field" data-direction-panel="field">
+  <header class="field__header">
+    <a class="field__wordmark" href={baseUrl}>TO.W</a>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="field__hero">
+      <div class="field__intro">
+        <p class="field__eyebrow">Tove Wätte · Järna</p>
+        <h1>Saker gjorda med händerna.</h1>
+        <p class="field__lead">Smycken i återvunnet silver, små upplagor och kvällar där vi skapar tillsammans.</p>
+        <a class="field__text-link" href={withBase("/smycken")}>se alla smycken →</a>
+      </div>
+
+      <figure class="field__hero-image">
+        <Image src={bestHero} alt="Händer med flera handgjorda silverringar." loading="eager" fetchpriority="high" />
+        <figcaption>ringar, händer, spår av verktyg</figcaption>
+      </figure>
+
+      <Image class="field__chair" src={chairStudy} alt="" aria-hidden="true" />
+    </section>
+
+    <section class="field__works" aria-labelledby="field-works-title">
+      <div class="field__section-heading">
+        <p>ur samlingen</p>
+        <h2 id="field-works-title">Tre ringar,<br />alla lite olika.</h2>
+      </div>
+
+      <div class="field__product-grid">
+        {featured.map((entry, index) => (
+          <a class:list={["field__product", `field__product--${index + 1}`]} href={withBase(`/smycken/${getProductSlug(entry.id)}`)}>
+            <figure>
+              <Image src={entry.data.images[0]} alt={entry.data.title} loading={index === 0 ? "eager" : "lazy"} />
+              <figcaption>
+                <span>{entry.data.title}</span>
+                <span>{fmt(entry.data.price)} kr</span>
+              </figcaption>
+            </figure>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <a class="field__course" href={withBase("/kurser")}>
+      <span class="field__course-number">02</span>
+      <span class="field__course-copy"><strong>Forma din egen ring.</strong> En kväll i verkstaden i Järna.</span>
+      <span class="field__course-action">se kurser →</span>
+    </a>
+  </main>
+
+  <footer class="field__footer">
+    <p>Handgjort av Tove Wätte.</p>
+    <Image src={birdStudy} alt="" aria-hidden="true" />
+    <a href="mailto:tove.watte@gmail.com">tove.watte@gmail.com</a>
+  </footer>
+</article>
+
+<style>
+  .field {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
+  }
+
+  .field__header,
+  .field__hero,
+  .field__works,
+  .field__course,
+  .field__footer {
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+  }
+
+  .field__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding-block: var(--space-lg);
+  }
+
+  .field__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .field__wordmark {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .field__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .field__hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--grid-gutter);
+    align-items: center;
+    min-height: calc(100vh - var(--space-24));
+    padding-block: var(--space-16) var(--space-24);
+  }
+
+  .field__intro {
+    position: relative;
+    z-index: var(--z-raised);
+    display: grid;
+    gap: var(--space-lg);
+    align-content: center;
+  }
+
+  .field__eyebrow,
+  .field__hero-image figcaption,
+  .field__section-heading > p {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .field h1,
+  .field h2 {
+    margin: 0;
+    font-family: var(--font-study-serif);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .field h1 {
+    max-width: 9ch;
+    font-size: var(--study-type-field-hero);
+    line-height: var(--font-leading-display);
+  }
+
+  .field__lead {
+    max-width: 40ch;
+    margin: 0;
+    font-size: var(--font-size-lg);
+  }
+
+  .field__text-link {
+    width: fit-content;
+    color: inherit;
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .field__hero-image {
+    margin: 0;
+    transform: rotate(1.2deg);
+  }
+
+  .field__hero-image :global(img) {
+    width: 100%;
+    height: min(70vh, 820px);
+    object-fit: cover;
+  }
+
+  .field__hero-image figcaption {
+    margin-top: var(--space-sm);
+    color: var(--study-ink-soft);
+  }
+
+  .field__chair {
+    position: absolute;
+    z-index: var(--z-raised);
+    left: 38%;
+    bottom: var(--space-lg);
+    width: clamp(7rem, 13vw, 13rem);
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
+    transform: rotate(-8deg);
+    pointer-events: none;
+  }
+
+  .field__works {
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.45fr) minmax(0, 1.55fr);
+    gap: var(--grid-gutter);
+    padding-block: var(--space-32);
+  }
+
+  .field__section-heading {
+    display: grid;
+    align-content: start;
+    gap: var(--space-lg);
+    position: sticky;
+    top: var(--space-xl);
+    height: fit-content;
+  }
+
+  .field h2 {
+    font-size: var(--font-size-3xl);
+    line-height: var(--font-leading-tight);
+  }
+
+  .field__product-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-16) var(--space-lg);
+    align-items: start;
+  }
+
+  .field__product {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .field__product--1 {
+    grid-column: 1 / span 7;
+  }
+
+  .field__product--2 {
+    grid-column: 8 / span 5;
+    margin-top: var(--space-24);
+  }
+
+  .field__product--3 {
+    grid-column: 3 / span 6;
+  }
+
+  .field__product figure {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+  }
+
+  .field__product :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .field__product figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .field__course {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-xl);
+    align-items: center;
+    padding-block: var(--space-12);
+    color: var(--study-paper-bright);
+    background: var(--study-cobalt);
+    text-decoration: none;
+  }
+
+  .field__course::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: 0;
+    left: 0;
+    height: 100%;
+    background: var(--study-cobalt);
+  }
+
+  .field__course-number {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-3xl);
+  }
+
+  .field__course-copy {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .field__course-copy strong {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .field__footer {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-lg);
+    align-items: end;
+    padding-block: var(--space-24) var(--space-12);
+  }
+
+  .field__footer p {
+    margin: 0;
+  }
+
+  .field__footer :global(img) {
+    width: clamp(7rem, 13vw, 12rem);
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
+    filter: brightness(0.3);
+  }
+
+  .field__footer a {
+    justify-self: end;
+    color: inherit;
+  }
+
+  @media (max-width: 800px) {
+    .field__header {
+      align-items: flex-start;
+    }
+
+    .field__header nav {
+      flex-direction: column;
+      gap: var(--space-sm);
+      padding-right: var(--space-16);
+    }
+
+    .field__hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding-top: var(--space-12);
+    }
+
+    .field h1 {
+      font-size: var(--study-type-field-hero-mobile);
+    }
+
+    .field__hero-image :global(img) {
+      height: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .field__chair {
+      left: auto;
+      right: var(--space-xl);
+      bottom: var(--space-12);
+    }
+
+    .field__works {
+      grid-template-columns: 1fr;
+      padding-block: var(--space-20);
+    }
+
+    .field__section-heading {
+      position: static;
+    }
+
+    .field__product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-12) var(--space-md);
+    }
+
+    .field__product--1,
+    .field__product--2,
+    .field__product--3 {
+      grid-column: auto;
+      margin-top: 0;
+    }
+
+    .field__product--3 {
+      grid-column: 2;
+    }
+
+    .field__product figcaption {
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .field__course {
+      grid-template-columns: auto 1fr;
+    }
+
+    .field__course-action {
+      grid-column: 2;
+    }
+
+    .field__footer {
+      grid-template-columns: 1fr auto;
+    }
+
+    .field__footer :global(img) {
+      grid-row: 1 / span 2;
+      grid-column: 2;
+    }
+
+    .field__footer a {
+      justify-self: start;
+    }
+  }
+</style>

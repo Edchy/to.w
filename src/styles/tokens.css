@@ -36,6 +36,19 @@
   /* Accent — reserved for actions and active states */
   --brand-orange: oklch(63% 0.18 48);
 
+  /* Homepage studies — provisional palette for direction finding */
+  --study-paper: oklch(94% 0.018 86);
+  --study-paper-bright: oklch(97% 0.010 88);
+  --study-ink: oklch(20% 0.012 70);
+  --study-ink-soft: oklch(42% 0.012 75);
+  --study-cobalt: oklch(55% 0.25 264);
+  --study-pink: oklch(78% 0.15 350);
+  --study-yellow: oklch(89% 0.19 103);
+  --study-wine: oklch(30% 0.10 24);
+
+  /* A monochrome turbulence layer gives flat color a subtle paper tooth. */
+  --study-paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E");
+
   /* Depth */
   --ink-shadow-soft: 0 var(--space-2) var(--space-8) oklch(20% 0.020 75 / 0.10);
 
@@ -67,6 +80,17 @@
   --step-4: clamp(1.9rem,  calc(1.55rem + 1.55vw),  2.56rem);
   --step-5: clamp(2.4rem,  calc(1.65rem + 3.20vw),  4.4rem);
 
+  /* Homepage studies — display scales */
+  --study-type-field-hero: clamp(4rem, 8vw, 9rem);
+  --study-type-field-hero-mobile: clamp(3.6rem, 18vw, 6rem);
+  --study-type-poster-hero: clamp(4.8rem, 12vw, 13rem);
+  --study-type-poster-hero-mobile: clamp(4.2rem, 22vw, 7rem);
+  --study-type-poster-statement: clamp(3rem, 7vw, 8rem);
+  --study-type-poster-course: clamp(2.8rem, 6vw, 6rem);
+  --study-type-catalogue-hero: clamp(3.7rem, 7vw, 8rem);
+  --study-type-catalogue-hero-mobile: clamp(3.2rem, 15vw, 5.5rem);
+  --study-type-catalogue-note: clamp(2rem, 4vw, 4.5rem);
+
   /* Font weights */
   --weight-light: 300;
   --weight-regular: 400;
@@ -77,6 +101,7 @@
   /* Border radius — interface only; imagery is square */
   --radius-sm: 2px;
   --radius-full: 9999px;
+  --radius-none: 0;
 
   /* Underline offset */
   --underline-offset: 3px;
@@ -104,6 +129,11 @@
   --font-heading-text: var(--font-chillax);
   --font-brand-text: var(--font-chillax);
   --font-heading: var(--font-chillax);
+  --font-study-serif: "Besley", Georgia, serif;
+  --font-study-fashion: "Bodoni Moda", Didot, serif;
+  --font-study-sans: "Familjen Grotesk", Helvetica, sans-serif;
+  --font-study-labrada: "Labrada", Georgia, serif;
+  --font-study-isenheim: "Isenheim", Georgia, serif;
 
   /* Typography — sizes */
   --font-size-xs: 0.7rem;
@@ -127,6 +157,10 @@
   --font-leading-snug: 1.35;
   --font-leading-normal: 1.5;
   --font-leading-relaxed: 1.5;
+  --font-leading-poster: 0.78;
+  --font-leading-display: 0.9;
+  --font-leading-statement: 0.92;
+  --font-leading-note: 1.02;
 
   /* Typography — tracking */
   --font-tracking-tightest: 0em;
@@ -135,6 +169,7 @@
   --font-tracking-wide: 0.04em;
   --font-tracking-wider: 0.09em;
   --font-tracking-negative: -0.01em;
+  --font-tracking-poster: -0.055em;
 
   /* Color — backgrounds */
   --color-bg-base: var(--off-white);

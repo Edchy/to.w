@@ -8,7 +8,7 @@ _Log mistakes and hard-won lessons here so they don't repeat._
 - Keep imported image extensions lowercase. Astro can render an uppercase `.JPG` import, but `astro check` does not provide a matching module declaration for it.
 - This repo has no `check` npm script; run `npm run astro -- check`.
 - Astro's CLI entry point is `node_modules/astro/bin/astro.mjs`; use that path when invoking it directly with a specific Node binary.
-- `sips` can crash when a single metadata query mixes JPEG and AVIF inputs; inspect those formats separately or use `ffprobe`.
+- `sips` can crash on some AVIF metadata queries (including archived product assets), as well as when a query mixes JPEG and AVIF inputs; use `ffprobe` for AVIF dimensions and pixel format.
 - Do not combine nested lead grids with CSS multi-column flow to fake a spanning homepage card; it breaks reflow and can create horizontal overflow. Use one responsive CSS Grid with explicit spans.
 - When a grid card is itself a `<figure>`, reset margin on the card (`.work-card { margin: 0; }`); a descendant selector such as `.work-card figure` does not remove the browser's default figure margins from that outer element.
 
@@ -27,3 +27,7 @@ to anchor jumps (`:has(:target)`) instead of putting it on `html`.
 Related: a scroll-lock helper that calls `window.scrollTo(0, savedY)` on unlock must
 NOT do so during `astro:after-swap` — the router owns scroll position on a page
 change, and restoring the previous page's offset fights it.
+# 2026-09-23
+
+- In zsh, `status` is a reserved read-only parameter. Use a task-specific name such as `http_code` in route-check scripts.
+- In zsh, an unmatched file glob aborts the command. Use `find` or enable an explicit null-glob behavior when a file type may be absent.

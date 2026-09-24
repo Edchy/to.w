@@ -1,4 +1,44 @@
-@import './tokens.css';
+@import "./tokens.css";
+
+@font-face {
+  font-family: "Besley";
+  src: url("../assets/fonts/Besley-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bodoni Moda";
+  src: url("../assets/fonts/BodoniModa-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Familjen Grotesk";
+  src: url("../assets/fonts/FamiljenGrotesk-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Labrada";
+  src: url("../assets/fonts/Labrada-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Isenheim";
+  src: url("../assets/fonts/Isenheim-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 
 *,
 *::before,
@@ -7,132 +47,150 @@
 }
 
 html {
+  min-width: 320px;
+  min-height: 100%;
   -webkit-text-size-adjust: 100%;
-  font-kerning: normal;
-}
-
-/* Smooth scroll bara för avsiktliga ankarhopp. Ligger den på html äter den
-   ClientRouterns scroll-återställning vid bakåtnavigering — sidan ser då ut
-   att hänga sig kvar på fel position. */
-@media (prefers-reduced-motion: no-preference) {
-  :has(:target) {
-    scroll-behavior: smooth;
-  }
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
-  min-width: 320px;
-  background-color: var(--color-bg-base);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-base);
   color: var(--color-text-primary);
   font-family: var(--font-body-text);
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-regular);
   line-height: var(--font-leading-normal);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  display: flex;
-  flex-direction: column;
-  min-height: 100svh;
 }
 
-html {
-  height: 100%;
+body.prototype-body {
+  background: var(--study-paper);
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  color: inherit;
 }
 
 img,
-picture,
-svg,
-video,
-canvas {
+video {
   display: block;
   max-width: 100%;
 }
 
 button,
 input,
-textarea,
-select {
+select,
+textarea {
   font: inherit;
 }
 
-button {
-  cursor: pointer;
-}
-
 :focus-visible {
-  outline: 1.5px solid var(--color-text-primary);
-  outline-offset: 3px;
+  outline: 2px solid currentColor;
+  outline-offset: var(--space-1);
 }
 
-a {
-  color: inherit;
-  cursor: pointer;
+.reset-header,
+.reset-footer,
+.reset-shell {
+  width: 100%;
+  max-width: var(--layout-site-width);
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter);
+}
+
+.reset-header,
+.reset-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding-block: var(--space-lg);
+}
+
+.reset-wordmark {
+  font-weight: var(--font-weight-semibold);
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 
-a:hover {
-  color: var(--color-accent);
-}
-
-h1, h2, h3, h4, h5, h6 {
+.reset-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
   margin: 0;
-  font-family: var(--font-heading-text);
-  font-weight: var(--font-weight-regular);
+  padding: 0;
+}
+
+.reset-nav a[aria-current="page"] {
+  text-decoration-thickness: 2px;
+}
+
+.reset-shell {
+  display: grid;
+  align-content: start;
+  gap: var(--space-lg);
+  min-height: 60vh;
+  padding-block: var(--space-4xl);
+}
+
+.reset-shell > * {
+  max-width: var(--layout-content-width);
+  margin-block: 0;
+}
+
+.reset-shell h1 {
+  font-size: var(--font-size-display);
   line-height: var(--font-leading-tight);
-  letter-spacing: var(--font-tracking-normal);
-  text-wrap: balance;
 }
 
-p {
-  margin: 0;
-  text-wrap: pretty;
+.reset-form {
+  display: grid;
+  gap: var(--space-lg);
+  width: min(100%, var(--layout-content-width));
 }
 
-/* Scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-text-tertiary) transparent;
+.reset-form label {
+  display: grid;
+  gap: var(--space-sm);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
+.reset-form input,
+.reset-form select,
+.reset-form textarea,
+.reset-form button {
+  width: 100%;
+  padding: var(--space-md);
+  color: inherit;
   background: transparent;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-none);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-text-tertiary);
-  border-radius: var(--radius-full);
+.reset-form button {
+  width: fit-content;
+  cursor: pointer;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
-
-.sr-only {
+.reset-honeypot {
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
-  margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip: rect(0 0 0 0);
   white-space: nowrap;
-  border: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+@media (max-width: 700px) {
+  .reset-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  *, *::before, *::after {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
+  .reset-shell {
+    padding-block: var(--space-3xl);
   }
 }

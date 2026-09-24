@@ -1,54 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ProductListing from "../components/ProductListing.astro";
-import { getCollection } from "astro:content";
-
-const allJewelry = await getCollection("jewelry");
-const jewelry = allJewelry.sort((a, b) => b.data.date.localeCompare(a.data.date));
 ---
 
-<BaseLayout title="Smycken" description="Handgjorda smycken i silver av Tove Wätte, formade i små upplagor och beställda direkt via mejl.">
-  <header class="collection-intro">
-    <h1 class="sr-only">Smycken</h1>
-    <p>Handgjorda smycken i återvunnet silver, formade i små upplagor.</p>
-  </header>
-  <ProductListing items={jewelry} section="smycken" ariaLabel="Smycken" />
+<BaseLayout title="Smycken">
+  <section class="reset-shell">
+    <h1>Smycken</h1>
+    <p>Sidan är tömd inför omarbetning.</p>
+  </section>
 </BaseLayout>
-
-<style>
-  .collection-intro {
-    max-width: var(--layout-site-width);
-    margin: 0 auto;
-    padding: var(--space-8) var(--layout-gutter) var(--space-16);
-    display: grid;
-    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-    gap: var(--grid-gutter);
-    align-items: end;
-  }
-
-  .collection-intro h1 {
-    font-size: var(--font-size-display);
-  }
-
-  .collection-intro p {
-    grid-column: 2;
-    max-width: 48ch;
-    font-size: var(--font-size-lg);
-    line-height: var(--font-leading-relaxed);
-    color: var(--color-text-secondary);
-  }
-
-  @media (max-width: 700px) {
-    .collection-intro {
-      grid-template-columns: 1fr;
-      gap: var(--space-4);
-      padding-top: var(--space-6);
-      padding-bottom: var(--space-10);
-    }
-
-    .collection-intro p {
-      grid-column: 1;
-      font-size: var(--font-size-base);
-    }
-  }
-</style>

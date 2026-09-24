@@ -1,75 +1,14 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { openOccasions, spotsWord } from "../../data/courses";
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const withBase = (path: string) => {
-  const url = `${baseUrl}${path.replace(/^\//, "")}`;
-  return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
-};
-
-// This page is shared by every course, so it can only name a count when they agree.
-const spotCounts = new Set(openOccasions.map(({ course }) => course.spots));
-const sharedSpots = spotCounts.size === 1 ? [...spotCounts][0] : null;
+const coursesUrl = `${baseUrl}kurser/`;
 ---
 
 <BaseLayout title="Tack" description="Tack för din intresseanmälan till kursen.">
-  <div class="thanks">
-    <h1 class="thanks__title">Tack!</h1>
-    <p class="thanks__lede">
-      Din intresseanmälan är skickad. Jag hör av mig via mejl med bekräftelse och praktiska
-      detaljer.
-    </p>
-    <p class="thanks__note">
-      {sharedSpots
-        ? `Platserna är begränsade till ${spotsWord(sharedSpots)} och fördelas i den ordning anmälningarna kommer in.`
-        : "Platserna är begränsade och fördelas i den ordning anmälningarna kommer in."} Din
-      plats är bekräftad först när du fått svar från mig — skulle kursen redan vara full hör jag
-      av mig om nästa tillfälle.
-    </p>
-    <a class="thanks__back" href={withBase("/kurser")}>tillbaka till kurser</a>
-  </div>
+  <section class="reset-shell">
+    <h1>Tack</h1>
+    <p>Din intresseanmälan är skickad. Jag hör av mig via mejl.</p>
+    <a href={coursesUrl}>Tillbaka till kurser</a>
+  </section>
 </BaseLayout>
-
-<style>
-  .thanks {
-    max-width: 52ch;
-    margin: 0 auto;
-    padding: clamp(var(--space-20), 12vw, var(--space-32)) var(--layout-gutter);
-    display: grid;
-    gap: var(--space-6);
-    justify-items: start;
-  }
-
-  .thanks__title {
-    font-size: var(--font-size-display);
-    line-height: var(--font-leading-tight);
-    letter-spacing: var(--font-tracking-tightest);
-  }
-
-  .thanks__lede {
-    font-size: var(--font-size-lg);
-    line-height: var(--font-leading-relaxed);
-    color: var(--color-text-secondary);
-  }
-
-  .thanks__note {
-    font-size: var(--font-size-base);
-    line-height: var(--font-leading-relaxed);
-    color: var(--color-text-secondary);
-  }
-
-  .thanks__back {
-    margin-top: var(--space-2);
-    font-size: var(--font-size-sm);
-    letter-spacing: var(--font-tracking-wide);
-    text-transform: lowercase;
-    color: var(--color-contact-accent);
-  }
-
-  @media (hover: hover) {
-    .thanks__back:hover {
-      color: var(--color-accent);
-    }
-  }
-</style>

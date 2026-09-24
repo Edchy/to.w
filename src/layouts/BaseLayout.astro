@@ -1,44 +1,42 @@
 ---
 import "../styles/global.css";
-import { Font } from "astro:assets";
-import { ClientRouter } from "astro:transitions";
-import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../config/site";
-import Wordmark from "../components/Wordmark.astro";
+import { CONTACT_EMAIL_HREF } from "../config/site";
 
 type Props = {
   title?: string;
   description?: string;
   noPadding?: boolean;
-  /** Låter innehållet gå upp under headern, som blir transparent. Endast mobil. */
   overlayHeader?: boolean;
-  /** Keeps the page out of search results while it is unlinked from the nav. */
   noindex?: boolean;
+  bare?: boolean;
 };
 
-const { title, description = "Handgjorda smycken i silver och stickmönster — av Tove Wätte, Järna.", noPadding = false, overlayHeader = false, noindex = false } = Astro.props;
-const pageTitle = title ? `TO.W | ${title}` : "TO.W | Smycken i återvunnet silver.";
+const {
+  title,
+  description = "Tove Wättes webbplats.",
+  noindex = false,
+  bare = false,
+} = Astro.props;
+
+const pageTitle = title ? `TO.W | ${title}` : "TO.W";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => {
   const url = `${baseUrl}${path.replace(/^\//, "")}`;
   return /\.[a-z0-9]+$/i.test(url) || url.endsWith("/") ? url : `${url}/`;
 };
-const currentYear = new Date().getFullYear();
 
 const siteOrigin = Astro.site?.origin ?? "";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
-const ogImageUrl = `${siteOrigin}${withBase("/og.png")}`;
+const currentPath = Astro.url.pathname.replace(
+  new URL(baseUrl, "https://example.com").pathname.replace(/\/$/, ""),
+  "",
+) || "/";
 
-// stickning and projekt are hidden for now — their pages and content remain in
-// the repo, so restoring them is a matter of adding the links back here.
-const footerNavLinks = [
-  { href: "/smycken", label: "smycken" },
-  { href: "/kurser", label: "kurser" },
-  { href: "/om", label: "om" },
+const navLinks = [
+  { href: "/smycken", label: "Smycken" },
+  { href: "/kurser", label: "Kurser" },
+  { href: "/om", label: "Om" },
 ];
-const headerNavLinks = footerNavLinks;
-
-const basePath = new URL(baseUrl, "https://example.com").pathname.replace(/\/$/, "");
-const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
 ---
 
 <!doctype html>
@@ -51,619 +49,29 @@ const currentPath = Astro.url.pathname.replace(basePath, "") || "/";
     <link rel="canonical" href={canonicalUrl} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href={withBase("/t-fav.svg")} />
-
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="TO.W" />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:locale" content="sv_SE" />
-
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImageUrl} />
-    <Font cssVariable="--font-chillax" />
-    <ClientRouter />
   </head>
-  <body>
-    <!--
-      THESIS: TO.W is an artist's working world, not a duplicated shop grid; real photographs and distinct route jobs lead.
-      OWN-WORLD: warm paper, near-black fields, signal red, square-edged surfaces, Chillax display type, and a direct Gothic body stack.
-      STORY: encounter the practice, notice the active courses, explore a photographic mix, then choose the full collection, course, or direct order path.
-      FIRST VIEWPORT: compact navigation above a prominent dark course invitation and the beginning of a photographic grid, with the action visible before scrolling.
-      FORM: curated editorial index, approved direction 1, seed tow-editorial-mix-v1.
-      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
-    -->
-    <header class:list={["site-header", { "site-header--overlay": overlayHeader }]}>
-      <div class="site-wrap site-header__inner">
-        <Wordmark href={baseUrl} size="nav" />
-        <nav aria-label="Huvudnavigering">
-          <ul class="nav-list" role="list">
-            {headerNavLinks.map(({ href, label }) => (
-              <li>
-                <a
-                  href={withBase(href)}
-                  class:list={["nav-link", { "nav-link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <button class="hamburger" aria-label="Öppna meny" aria-expanded="false" aria-controls="mobile-nav">
-          <span class="hamburger__bar"></span>
-          <span class="hamburger__bar"></span>
-        </button>
-      </div>
-    </header>
+  <body class:list={{ "prototype-body": bare }}>
+    {!bare && <header class="reset-header">
+      <a class="reset-wordmark" href={baseUrl}>TO.W</a>
+      <nav aria-label="Huvudnavigering">
+        <ul class="reset-nav" role="list">
+          {navLinks.map(({ href, label }) => (
+            <li>
+              <a href={withBase(href)} aria-current={currentPath.startsWith(href) ? "page" : undefined}>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>}
 
-    <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Meny" aria-modal="true">
-      <ul class="mobile-nav__list" role="list">
-        {headerNavLinks.map(({ href, label }) => (
-          <li>
-            <a
-              href={withBase(href)}
-              class:list={["mobile-nav__link", { "mobile-nav__link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
-            >
-              {label}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <a
-        class="mobile-nav__social"
-        href="https://instagram.com/tovewatte"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        instagram
-      </a>
-    </div>
-
-    <main class:list={[{ "main--no-padding": noPadding }]}>
+    <main>
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <div class="site-wrap site-footer__inner">
-        <div class="footer-brand">
-          <Wordmark href={baseUrl} size="footer" />
-        </div>
-        <div class="footer-directory">
-          <nav class="footer-group" aria-label="Sidfotsnavigering">
-            <ul class="footer-links" role="list">
-              {footerNavLinks.map(({ href, label }) => (
-                <li>
-                  <a
-                    href={withBase(href)}
-                    class:list={["footer-link", { "footer-link--active": currentPath === href || (href !== "/" && currentPath.startsWith(href)) }]}
-                  >
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div class="footer-group">
-            <ul class="footer-socials" role="list">
-              <li>
-                <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
-              </li>
-              <li>
-                <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer-colophon">
-          <p>&copy; {currentYear} tove wätte</p>
-          <p>
-            website by
-            <a href="https://nope.digital" target="_blank" rel="noopener noreferrer">nope</a>
-          </p>
-        </div>
-      </div>
-    </footer>
+    {!bare && <footer class="reset-footer">
+      <a href={CONTACT_EMAIL_HREF}>Kontakt</a>
+    </footer>}
   </body>
 </html>
-
-<script is:inline>
-  function initHamburger() {
-    const btn = document.querySelector('.hamburger');
-    const nav = document.getElementById('mobile-nav');
-    if (!btn || !nav) return;
-
-    if (btn.dataset.hamburgerInit) return;
-    btn.dataset.hamburgerInit = '1';
-
-    const main = document.querySelector('main');
-    const footer = document.querySelector('.site-footer');
-    let lockedScrollY = 0;
-    let isScrollLocked = false;
-
-    function lockPageScroll() {
-      if (isScrollLocked) return;
-      lockedScrollY = window.scrollY;
-      isScrollLocked = true;
-      document.documentElement.classList.add('has-mobile-nav-open');
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${lockedScrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.width = '100%';
-    }
-
-    // restoreScroll=false vid sidbyte: då äger routern scrollpositionen, och
-    // ett hopp tillbaka till förra sidans offset slåss med den.
-    function unlockPageScroll(restoreScroll = true) {
-      if (!isScrollLocked) return;
-      isScrollLocked = false;
-      document.documentElement.classList.remove('has-mobile-nav-open');
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.width = '';
-      if (restoreScroll) window.scrollTo(0, lockedScrollY);
-    }
-
-    function openMenu() {
-      nav.classList.add('is-open');
-      lockPageScroll();
-      btn.setAttribute('aria-expanded', 'true');
-      btn.setAttribute('aria-label', 'Stäng meny');
-      main?.setAttribute('inert', '');
-      footer?.setAttribute('inert', '');
-      const firstLink = nav.querySelector('a, button');
-      firstLink?.focus();
-    }
-
-    function closeMenu() {
-      nav.classList.remove('is-open');
-      unlockPageScroll();
-      btn.setAttribute('aria-expanded', 'false');
-      btn.setAttribute('aria-label', 'Öppna meny');
-      main?.removeAttribute('inert');
-      footer?.removeAttribute('inert');
-      btn.focus();
-    }
-
-    btn.addEventListener('click', () => {
-      btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
-    });
-
-    nav.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeMenu();
-    });
-
-    document.addEventListener('astro:after-swap', () => {
-      nav.classList.remove('is-open');
-      unlockPageScroll(false);
-      btn.setAttribute('aria-expanded', 'false');
-      btn.setAttribute('aria-label', 'Öppna meny');
-      main?.removeAttribute('inert');
-      footer?.removeAttribute('inert');
-    });
-  }
-
-  document.addEventListener('astro:page-load', initHamburger);
-  initHamburger();
-</script>
-
-<script is:inline>
-  // Tab title: soften presence when focus leaves
-  (function () {
-    const original = document.title;
-    document.addEventListener('visibilitychange', () => {
-      document.title = document.hidden ? '— TO.W' : original;
-    });
-  })();
-
-  // Console art: handmade message for curious visitors
-  console.log(
-    '%c\n  t  o  .  w\n\n%chandgjorda smycken\nJärna, Sverige\n\nhttps://to.w\n',
-    'font-size:18px; letter-spacing:0.3em; color:#7a8c6a; font-family:monospace',
-    'font-size:11px; color:#9a9082; font-family:monospace; letter-spacing:0.05em'
-  );
-</script>
-
-
-<style>
-  .site-wrap {
-    width: 100%;
-    max-width: var(--layout-site-width);
-    margin-inline: auto;
-    padding-inline: var(--layout-gutter);
-  }
-
-  /* ── Header ── */
-
-  .site-header {
-    position: relative;
-    z-index: var(--z-modal);
-    height: var(--nav-height);
-    background-color: var(--color-bg-base);
-  }
-
-  .site-header__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%;
-  }
-
-  /* Bilden får gå upp under headern på mobil; headern lägger sig ovanpå utan
-     egen bakgrund. Wordmark och hamburgare vänds till ljust mot bilden. */
-  @media (max-width: 1000px) {
-    .site-header--overlay {
-      position: absolute;
-      inset-inline: 0;
-      top: 0;
-      background-color: transparent;
-      --color-wordmark-nav: var(--color-text-inverse);
-    }
-
-    .site-header--overlay .nav-link {
-      color: var(--color-text-inverse);
-    }
-
-    /* Menyn har egen full bakgrund — där ska ikonen tillbaka till mörkt, och
-       headern fästas över panelen så logga och kryss följer med. */
-    .site-header--overlay:has(.hamburger[aria-expanded="true"]) {
-      position: fixed;
-      --color-wordmark-nav: var(--color-text-primary);
-    }
-
-    .site-header--overlay:has(.hamburger[aria-expanded="true"]) .nav-link {
-      color: var(--color-text-secondary);
-    }
-  }
-
-  .nav-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: var(--space-6);
-  }
-
-  .nav-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding-block: var(--space-2);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--font-tracking-wide);
-    text-transform: lowercase;
-    color: var(--color-text-secondary);
-    transition: color var(--transition-fast);
-  }
-
-  .nav-link:hover {
-    color: var(--color-text-primary);
-  }
-
-  /* Active state is carried by colour alone — no rule, no underline. */
-  .nav-link--active {
-    color: var(--color-accent);
-  }
-
-  .nav-link--active:hover {
-    color: var(--color-accent);
-  }
-
-  @media (max-width: 760px) {
-    .nav-list {
-      display: none;
-    }
-  }
-
-  main {
-    padding-top: var(--space-8);
-    flex: 1;
-  }
-
-  @media (max-width: 700px) {
-    main,
-    main.main--no-padding {
-      padding-top: 0;
-    }
-  }
-
-  main.main--no-padding {
-    padding-top: var(--space-6);
-    display: flex;
-    flex-direction: column;
-  }
-
-  @media (max-width: 1000px) {
-    main.main--no-padding {
-      padding-top: 0;
-    }
-  }
-
-  :global(::view-transition-old(root)),
-  :global(::view-transition-new(root)) {
-    animation-duration: var(--duration-slow);
-    animation-timing-function: var(--ease-out-quart);
-    mix-blend-mode: normal;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    :global(::view-transition-old(root)),
-    :global(::view-transition-new(root)) {
-      animation: none;
-    }
-  }
-
-  /* ── Footer ── */
-  /* Slutar sidan i ett mörkt block (t.ex. anmälan på /kurser) ska luften bort —
-     annars syns marginalen som ett ljust streck mellan två mörka ytor. */
-  main:has(> :last-child .signup:last-child) + .site-footer,
-  main:has(> .signup:last-child) + .site-footer {
-    margin-top: 0;
-  }
-
-  .site-footer {
-    margin-top: var(--space-32);
-    padding-block: var(--space-16) var(--space-8);
-    color: var(--color-text-primary);
-    background-color: var(--color-bg-card);
-    --color-wordmark-nav: var(--color-text-primary);
-  }
-
-  main.main--no-padding + .site-footer {
-    margin-top: 0;
-    padding-top: calc(var(--space-16) + var(--space-32));
-  }
-
-  .site-footer__inner {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: var(--space-16) var(--grid-gutter);
-    align-items: start;
-  }
-
-  .footer-brand {
-    grid-column: 1 / span 6;
-    display: grid;
-    gap: var(--space-5);
-  }
-
-  .footer-brand p {
-    max-width: 24ch;
-    font-size: var(--font-size-sm);
-    line-height: var(--font-leading-snug);
-    color: var(--color-text-secondary);
-  }
-
-  .footer-directory {
-    grid-column: 8 / -1;
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-12);
-  }
-
-  .footer-links,
-  .footer-socials {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .footer-links a,
-  .footer-socials a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--space-10);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    letter-spacing: var(--font-tracking-wide);
-    text-transform: lowercase;
-    transition: color var(--transition-fast);
-  }
-
-  .footer-links a:hover,
-  .footer-socials a:hover {
-    color: var(--color-text-primary);
-  }
-
-  .footer-link--active {
-    color: var(--color-accent);
-  }
-
-  .footer-link--active:hover {
-    color: var(--color-accent);
-  }
-
-  .footer-colophon {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding-top: var(--space-6);
-    border-top: 1px solid var(--color-border-default);
-  }
-
-  .footer-colophon p {
-    margin: 0;
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    letter-spacing: var(--font-tracking-wide);
-    line-height: var(--font-leading-snug);
-    text-transform: lowercase;
-  }
-
-  .footer-colophon a {
-    color: inherit;
-    text-decoration: none;
-    transition: color var(--transition-fast);
-  }
-
-  .footer-colophon a:hover {
-    color: var(--color-text-primary);
-  }
-
-  @media (max-width: 760px) {
-    .site-footer {
-      margin-top: var(--space-20);
-      padding-block: var(--space-12) var(--space-8);
-    }
-
-    main.main--no-padding + .site-footer {
-      margin-top: 0;
-      padding-top: calc(var(--space-12) + var(--space-20));
-    }
-
-    .site-footer__inner {
-      grid-template-columns: 1fr;
-      gap: var(--space-12);
-    }
-
-    .footer-brand,
-    .footer-directory,
-    .footer-colophon {
-      grid-column: 1;
-    }
-
-    .footer-directory {
-      justify-content: flex-start;
-      gap: var(--space-16);
-    }
-
-    .footer-colophon {
-      flex-direction: column;
-      gap: var(--space-1);
-    }
-  }
-
-  /* ── Hamburger button ── */
-
-  .hamburger {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: var(--space-1);
-    width: 44px;
-    height: 44px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    flex-shrink: 0;
-  }
-
-  .hamburger__bar {
-    display: block;
-    width: 22px;
-    height: 1px;
-    background-color: var(--color-wordmark-nav);
-    transform-origin: center;
-    transition: transform var(--transition-normal);
-  }
-
-  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
-    transform: translateY(2.5px) rotate(45deg);
-  }
-  .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
-    transform: translateY(-2.5px) rotate(-45deg);
-  }
-
-  @media (max-width: 760px) {
-    .hamburger {
-      display: flex;
-    }
-  }
-
-  /* ── Mobile nav panel ── */
-
-  /* Täcker hela skärman, inte bara ytan under headern. Med transparent header
-     (produktsidan) lyste annars bilden igenom den översta remsan. Innehållet
-     hålls nedanför headern med padding istället för med offset. */
-  .mobile-nav {
-    position: fixed;
-    inset: 0;
-    background-color: var(--color-bg-base);
-    z-index: var(--z-overlay);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: space-between;
-    overflow-y: auto;
-    padding: calc(var(--nav-height) + var(--space-10)) var(--layout-gutter) var(--space-12);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--transition-normal);
-  }
-
-  .mobile-nav.is-open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  :global(html.has-mobile-nav-open),
-  :global(html.has-mobile-nav-open body) {
-    overflow: hidden;
-  }
-
-  .mobile-nav__list {
-    list-style: none;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-    gap: clamp(var(--space-2), 2vh, var(--space-6));
-    margin: 0;
-    padding: 0;
-  }
-
-  .mobile-nav__link {
-    display: block;
-    font-family: var(--font-heading-text);
-    font-size: clamp(var(--font-size-3xl), 19vw, 8rem);
-    font-weight: var(--font-weight-bold);
-    line-height: 0.92;
-    letter-spacing: var(--font-tracking-tight);
-    text-transform: lowercase;
-    color: var(--color-text-primary);
-    transition: color var(--transition-fast);
-  }
-
-  .mobile-nav__link:hover {
-    color: var(--color-accent);
-  }
-
-  .mobile-nav__link--active {
-    color: var(--color-accent);
-  }
-
-  .mobile-nav__social {
-    flex: 0 0 auto;
-    padding-top: var(--space-8);
-    border-top: 1px solid var(--color-border-subtle);
-    font-family: var(--font-body-text);
-    font-size: var(--font-size-lg);
-    letter-spacing: var(--font-tracking-wide);
-    text-transform: lowercase;
-    color: var(--color-text-secondary);
-    transition: color var(--transition-fast);
-  }
-
-  .mobile-nav__social:hover {
-    color: var(--color-accent);
-  }
-</style>

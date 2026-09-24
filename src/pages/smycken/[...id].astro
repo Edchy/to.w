@@ -1,25 +1,22 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProductDetail from "../../components/ProductDetail.astro";
 import { getCollection } from "astro:content";
 import { getProductSlug } from "../../config/site";
 
 export async function getStaticPaths() {
   const items = await getCollection("jewelry");
-  return items.map((item) => ({ params: { id: getProductSlug(item.id) }, props: { entry: item } }));
+  return items.map((item) => ({
+    params: { id: getProductSlug(item.id) },
+    props: { entry: item },
+  }));
 }
 
 const { entry } = Astro.props;
-
-const { title, description, material, technique, design } = entry.data;
-const productSlug = getProductSlug(entry.id);
-const metaDescription =
-  description ??
-  [title, material, technique, design, "Handgjort smycke i silver av Tove Wätte."]
-    .filter(Boolean)
-    .join(" ");
 ---
 
-<BaseLayout title={title} description={metaDescription} noPadding overlayHeader>
-  <ProductDetail {...entry.data} transitionName={`product-${productSlug}`} />
+<BaseLayout title={entry.data.title}>
+  <article class="reset-shell">
+    <h1>{entry.data.title}</h1>
+    <p>Sidan är tömd inför omarbetning.</p>
+  </article>
 </BaseLayout>
