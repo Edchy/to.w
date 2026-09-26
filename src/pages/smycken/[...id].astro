@@ -1,4 +1,5 @@
 ---
+import { existsSync } from "node:fs";
 import { Image, getImage } from "astro:assets";
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -21,6 +22,10 @@ const { title, kind, price, sizes, description, body, material, technique, desig
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const formattedPrice = new Intl.NumberFormat("sv-SE").format(price);
+
+// A loose 3D model of the piece (scripts/make-rings.mjs), named by slug without diacritics.
+const modelName = getProductSlug(entry.id).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const hasModel = existsSync(`public/models/${modelName}.glb`);
 
 // Facts with a real value (the data has some blanks and "tba"s).
 const clean = (value?: string) => (value?.trim() && value.trim() !== "tba" ? value.trim() : undefined);
@@ -53,7 +58,7 @@ const jsonLd = {
   description: clean(description),
   image: photo ? new URL(photo.src, Astro.site).href : undefined,
   material: clean(material),
-  brand: { "@type": "Brand", name: "to.w" },
+  brand: { "@type": "Brand", name: "To.W" },
   offers: {
     "@type": "Offer",
     url: productUrl,
@@ -85,14 +90,33 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   <SiteFrame>
     <div class="pg pd">
       <div class="pd__stage">
-        <Image
-          src={ring}
-          alt={`Silverring som platshållare för ${title}`}
-          widths={[480, 960]}
-          sizes="(max-width: 900px) 70vw, 30vw"
-          loading="eager"
-          fetchpriority="high"
-        />
+        {hasModel ? (
+        <!-- The piece in 3D: drag to turn it any way. -->
+        <model-viewer
+          class="pd__model"
+          src={`${baseUrl}models/${modelName}.glb`}
+          alt={`3D-modell av ${title}, ${kind ?? "smycke"} i återvunnet silver. Dra för att vrida.`}
+          camera-controls
+          disable-zoom
+          touch-action="pan-y"
+          min-camera-orbit="auto 0deg 130%"
+          max-camera-orbit="auto 180deg 130%"
+          camera-orbit="30deg 70deg 130%"
+          environment-image="neutral"
+          auto-rotate
+          auto-rotate-delay="0"
+          rotation-per-second="20deg"
+        ></model-viewer>
+        ) : (
+          <Image
+            src={ring}
+            alt={`Silverring som platshållare för ${title}`}
+            widths={[480, 960]}
+            sizes="(max-width: 900px) 70vw, 30vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        )}
       </div>
 
       <div class="pd__info">
@@ -130,6 +154,15 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   </SiteFrame>
 </BaseLayout>
 
+<script>
+  import "@google/model-viewer";
+
+  // No turning on its own for visitors who ask for less motion; dragging still works.
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const model of document.querySelectorAll("model-viewer[auto-rotate]")) model.removeAttribute("auto-rotate");
+  }
+</script>
+
 <style>
   .pd {
     display: grid;
@@ -153,6 +186,19 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     width: 72%;
     height: auto;
     filter: drop-shadow(var(--shadow-object-soft));
+  }
+
+  /* The model fills the stage. */
+  .pd__model {
+    --poster-color: transparent;
+
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+
+  .pd__model:active {
+    cursor: grabbing;
   }
 
   .pd__info {
