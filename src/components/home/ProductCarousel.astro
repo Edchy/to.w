@@ -112,9 +112,9 @@ const products = items
 
     color: var(--t-products-fg, inherit);
     background: var(--t-products-bg, transparent);
-    --pc-pad: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+    --pc-pad: var(--layout-edge);
 
-    padding-block: var(--space-md) var(--space-24);
+    padding-block: var(--space-4) var(--space-section);
   }
 
   /* Controls sit under the strip, so nothing but the photos peeks into the hero. */
@@ -122,27 +122,27 @@ const products = items
     display: flex;
     align-items: baseline;
     justify-content: flex-end;
-    gap: var(--space-lg);
-    margin-top: var(--space-lg);
+    gap: var(--space-6);
+    margin-top: var(--space-6);
     padding-inline: var(--pc-pad);
   }
 
   .pc__controls {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: var(--space-2);
   }
 
   .pc__controls button {
     display: grid;
     place-items: center;
-    width: var(--space-10);
-    height: var(--space-10);
+    width: var(--size-control);
+    height: var(--size-control);
     padding: 0;
     color: inherit;
     background: transparent;
-    border: 1px solid currentColor;
-    border-radius: var(--radius-md);
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius);
     font: inherit;
     cursor: pointer;
     transition: background-color var(--transition-fast), color var(--transition-fast), opacity var(--transition-fast);
@@ -154,23 +154,23 @@ const products = items
   }
 
   .pc__controls button:disabled {
-    opacity: 0.35;
+    opacity: var(--opacity-disabled);
     cursor: default;
   }
 
   .pc__controls a {
-    margin-left: var(--space-md);
+    margin-left: var(--space-4);
     color: inherit;
   }
 
   /* The strip: one row that scrolls sideways and snaps to each card; the next card peeks in at the edge. */
   .pc__track {
     display: flex;
-    gap: var(--space-lg);
+    gap: var(--space-6);
     /* A sideways scroller clips vertically too, so leave headroom for the hover frame's flowers
        and pull the row back up by the same amount. */
     margin: calc(0px - var(--space-16)) 0 0;
-    padding: var(--space-16) var(--pc-pad) var(--space-sm);
+    padding: var(--space-16) var(--pc-pad) var(--space-2);
     overflow-x: auto;
     list-style: none;
     scroll-snap-type: x mandatory;
@@ -206,9 +206,9 @@ const products = items
   .pc__stage {
     position: relative;
     display: block;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: var(--ratio-product);
     overflow: hidden;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius);
     background: var(--pc-surface);
     transition: box-shadow var(--transition-normal);
   }
@@ -240,7 +240,7 @@ const products = items
     width: 68%;
     height: auto;
     translate: -50% -50%;
-    filter: drop-shadow(0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 40%, transparent));
+    filter: drop-shadow(var(--shadow-object));
     transition: scale var(--transition-slow), rotate var(--transition-slow);
   }
 
@@ -248,8 +248,8 @@ const products = items
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: var(--space-md);
-    padding-top: var(--space-md);
+    gap: var(--space-4);
+    padding-top: var(--space-4);
   }
 
   /*
@@ -299,14 +299,14 @@ const products = items
     .pc__card a:is(:hover, :focus-visible) .pc__title {
       color: var(--t-accent, var(--study-pink));
       transform:
-        translate(calc(var(--card-w) * 0.2), calc(var(--card-w) * -1.25 * 0.88 - var(--space-md)))
+        translate(calc(var(--card-w) * 0.2), calc(var(--card-w) * -1.25 * 0.88 - var(--space-4)))
         scale(4);
     }
 
     .pc__card a:is(:hover, :focus-visible) .pc__price {
       color: var(--t-accent, var(--study-pink));
       transform:
-        translate(calc(0px - var(--space-lg)), calc(0px - var(--space-lg) - var(--space-md) - 1lh))
+        translate(calc(0px - var(--space-6)), calc(0px - var(--space-6) - var(--space-4) - 1lh))
         scale(2.5);
     }
 
@@ -320,7 +320,7 @@ const products = items
     }
 
     .pc__track:has(.pc__card:hover) .pc__card:not(:hover) {
-      opacity: 0.5;
+      opacity: var(--opacity-subdued);
     }
   }
 
@@ -339,19 +339,19 @@ const products = items
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--card-w));
     justify-content: space-between;
-    gap: var(--space-3xl) var(--space-lg);
+    gap: var(--space-16) var(--space-6);
     margin: 0;
     padding: 0;
     overflow: visible;
   }
 
   .pc--grid :is(.pc__track, .pc__card) {
-    --card-w: calc((100cqi - 3 * var(--space-lg)) / 4);
+    --card-w: calc((100cqi - 3 * var(--space-6)) / 4);
   }
 
   @media (max-width: 1100px) {
     .pc--grid :is(.pc__track, .pc__card) {
-      --card-w: calc((100cqi - 2 * var(--space-lg)) / 3);
+      --card-w: calc((100cqi - 2 * var(--space-6)) / 3);
     }
   }
 
@@ -363,10 +363,6 @@ const products = items
   }
 
   @media (max-width: 700px) {
-    .pc {
-      padding-bottom: var(--space-16);
-    }
-
     .pc__foot {
       flex-wrap: wrap;
     }
@@ -376,11 +372,11 @@ const products = items
     }
 
     .pc--grid .pc__track {
-      row-gap: var(--space-xl);
+      row-gap: var(--space-8);
     }
 
     .pc--grid :is(.pc__track, .pc__card) {
-      --card-w: calc((100cqi - var(--space-lg)) / 2);
+      --card-w: calc((100cqi - var(--space-6)) / 2);
     }
 
     .pc--grid .pc__title {

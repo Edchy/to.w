@@ -119,10 +119,7 @@ const titleId = "courses-teaser";
 
 <style>
   .ct {
-    --ct-pad: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
-
     position: relative;
-    padding-block: var(--space-16) var(--space-24);
     color: var(--t-courses-fg, inherit);
     background: var(--t-courses-bg, transparent);
   }
@@ -149,17 +146,17 @@ const titleId = "courses-teaser";
     display: grid;
     align-content: center;
     justify-items: start;
-    gap: var(--space-lg);
+    gap: var(--space-6);
     order: 2;
-    padding: var(--space-16) var(--ct-pad) var(--space-16) var(--space-16);
+    padding: var(--space-section) var(--layout-edge) var(--space-section) var(--space-16);
   }
 
   .ct__title {
     font-family: var(--t-display, var(--font-display));
-    font-size: var(--study-type-catalogue-note);
+    font-size: var(--font-size-display);
     font-weight: var(--font-weight-regular);
-    line-height: var(--font-leading-statement);
-    letter-spacing: var(--font-tracking-negative);
+    line-height: var(--font-leading-display);
+    letter-spacing: var(--font-tracking-tight);
     text-wrap: balance;
   }
 
@@ -168,7 +165,6 @@ const titleId = "courses-teaser";
   }
 
   .ct__body {
-    max-width: 40ch;
     font-family: var(--t-body, var(--font-display));
     font-size: var(--font-size-base);
     line-height: var(--font-leading-normal);
@@ -176,9 +172,9 @@ const titleId = "courses-teaser";
 
   .ct__book {
     display: inline-block;
-    margin-top: var(--space-sm);
-    padding: var(--space-md) var(--space-lg);
-    border-radius: var(--radius-md);
+    margin-top: var(--space-2);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius);
     background: var(--t-btn-bg, var(--study-paper-bright));
     font-family: var(--t-body, var(--font-display));
     font-weight: var(--font-weight-medium);
@@ -223,7 +219,7 @@ const titleId = "courses-teaser";
     height: 100%;
     object-fit: cover;
     object-position: center 60%;
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
   }
 
   .ct__media :global(img.ct__photo[hidden]) {
@@ -244,22 +240,22 @@ const titleId = "courses-teaser";
   .ct__slider-nav {
     position: absolute;
     z-index: var(--z-raised);
-    bottom: var(--space-md);
-    left: var(--space-md);
+    bottom: var(--space-4);
+    left: var(--space-4);
     display: flex;
-    gap: var(--space-sm);
+    gap: var(--space-2);
   }
 
   .ct__slider-nav button {
     display: grid;
     place-items: center;
-    width: var(--space-10);
-    height: var(--space-10);
+    width: var(--size-control);
+    height: var(--size-control);
     padding: 0;
     color: var(--t-btn-fg, var(--study-ink));
     background: var(--t-btn-bg, var(--study-paper-bright));
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius);
     font: inherit;
     cursor: pointer;
     transition: background-color var(--transition-fast);
@@ -274,22 +270,21 @@ const titleId = "courses-teaser";
   /* A quiet, informational list — the main button below is the only call to action. */
   .ct__dates {
     width: 100%;
-    max-width: 30rem;
     font-family: var(--t-body, var(--font-display));
     font-variant-numeric: tabular-nums;
   }
 
   .ct__label {
-    padding-bottom: var(--space-xs);
-    border-bottom: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+    padding-bottom: var(--space-1);
+    border-bottom: var(--border-width) solid var(--color-rule);
     font-size: var(--font-size-xs);
     letter-spacing: var(--font-tracking-wider);
     text-transform: uppercase;
-    opacity: 0.8;
+    opacity: var(--opacity-muted);
   }
 
   .ct__empty {
-    padding-top: var(--space-sm);
+    padding-top: var(--space-2);
     font-family: var(--t-body, var(--font-display));
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-normal);
@@ -305,17 +300,17 @@ const titleId = "courses-teaser";
   .ct__dates li {
     display: grid;
     grid-template-columns: 4.5rem minmax(0, 1fr) auto;
-    column-gap: var(--space-md);
+    column-gap: var(--space-4);
     align-items: baseline;
-    padding-block: var(--space-sm);
-    border-bottom: 1px solid color-mix(in oklch, var(--study-paper-bright) 20%, transparent);
+    padding-block: var(--space-2);
+    border-bottom: var(--border-width) solid var(--color-rule-subtle);
     font-size: var(--font-size-sm);
   }
 
   .ct__date {
     display: flex;
     align-items: baseline;
-    gap: var(--space-xs);
+    gap: var(--space-1);
   }
 
   .ct__what {
@@ -338,13 +333,12 @@ const titleId = "courses-teaser";
   .ct__detail {
     font-size: var(--font-size-xs);
     white-space: nowrap;
-    opacity: 0.8;
+    opacity: var(--opacity-muted);
   }
 
 
   /* The private-workshop offer: a quiet line right under the button. */
   .ct .ct__private {
-    max-width: 34ch;
     font-family: var(--t-body, var(--font-display));
     font-size: var(--font-size-sm);
     line-height: var(--font-leading-normal);
@@ -382,7 +376,7 @@ const titleId = "courses-teaser";
     }
 
     .ct__text {
-      padding: var(--space-16) var(--layout-gutter) 0;
+      padding: var(--space-section) var(--layout-gutter) 0;
     }
 
   }

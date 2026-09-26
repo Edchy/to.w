@@ -1,10 +1,21 @@
 /**
  * Design Tokens — TO.W
  *
- * Three layers:
- *   1. Primitives  — raw values, never used directly in components
- *   2. Semantic    — purposeful aliases used in components
- *   3. Component   — per-component overrides
+ * Every repeatable visual value lives here. Scales are stepped so neighbouring values are clearly
+ * different: no two steps closer than about ×1.33 (spacing from 16px up, type sizes ×1.15+).
+ *
+ *   1. Primitives  — raw colours and scales
+ *   2. Semantic    — rhythm, type roles, rules, layout
+ *   3. Component   — values tied to one part but kept here so they stay in the system
+ *
+ * The three colour themes (Ren, Supreme, Blå) map these colours onto --t-* roles in SiteFrame.astro.
+ *
+ * Breakpoints (CSS can't read variables in media queries, so these are the only widths used):
+ *   700px  — phone      (max-width: 700px) / (min-width: 701px)
+ *   900px  — tablet     (max-width: 900px) / (min-width: 901px)
+ *   1100px — desktop    (max-width: 1100px) / (min-width: 1101px)
+ * Exception: the homepage hero also switches at 820px, where the letters that sit in front of the
+ * fingers change (tuned to the photo; see Home.astro).
  */
 
 :root {
@@ -12,70 +23,124 @@
      1. PRIMITIVES
   ───────────────────────────────────────────────────────── */
 
-  /* Neutrals — warm paper and soft ink */
-  --neutral-950: oklch(20% 0.020 75);
-  --neutral-700: oklch(43% 0.014 75);
-  --neutral-100: oklch(95% 0.012 88);
-  --neutral-50:  oklch(97% 0.010 90);
-
-  /* Paper ground */
+  /* Paper and ink (the plain pages outside the site frame) */
   --off-white: oklch(96% 0.011 88);
+  --neutral-950: oklch(20% 0.020 75);
 
-  /* Burnt orange — decisive dark fields */
-  --ember-950: oklch(24% 0.070 45);
-  --ember-700: oklch(46% 0.075 45);
-  --ember-200: oklch(80% 0.045 55);
-
-  /* Homepage palette (the Blå theme uses --study-blue and --study-pink) */
+  /* Blå theme palette */
   --study-paper: oklch(94% 0.018 86);
   --study-paper-bright: oklch(97% 0.010 88);
   --study-ink: oklch(20% 0.012 70);
   --study-blue: oklch(46.7% 0.121 248); /* #0D5D9A — Blå theme background */
   --study-pink: oklch(78% 0.15 350);
 
-  /* Spacing scale — 4pt base */
+  /* Ren and Supreme palette, and the logo's two colours */
+  --pure-black: rgb(0, 0, 0);
+  --pure-white: rgb(255, 255, 255);
+  --supreme-red: rgb(237, 28, 36);
+  --logo-blue: rgb(0, 60, 248);
+  --logo-pink: rgb(250, 36, 140);
+
+  /* Spacing scale — 4pt base, each step clearly larger than the last */
   --space-1: 4px;
   --space-2: 8px;
-  --space-3: 12px;
   --space-4: 16px;
-  --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
-  --space-20: 80px;
   --space-24: 96px;
   --space-32: 128px;
   --space-48: 192px;
 
-  /* Fluid type scale — calmer editorial
-   * Min 320px / Max 1400px, base 15→17px, scale 1.18→1.25
-   */
+  /* Fluid type scale — min 320px / max 1400px */
+  --step--2: clamp(0.7rem, calc(0.68rem + 0.06vw), 0.75rem);
   --step--1: clamp(0.82rem, calc(0.79rem + 0.08vw), 0.88rem);
   --step-0: clamp(0.95rem, calc(0.91rem + 0.16vw), 1.06rem);
   --step-1: clamp(1.13rem, calc(1.07rem + 0.28vw), 1.31rem);
   --step-2: clamp(1.35rem, calc(1.23rem + 0.52vw), 1.64rem);
-  --step-4: clamp(1.9rem,  calc(1.55rem + 1.55vw),  2.56rem);
-  --step-5: clamp(2.4rem,  calc(1.65rem + 3.20vw),  4.4rem);
+  --step-3: clamp(2rem, 4vw, 4.5rem);
+  --step-4: clamp(2.5rem, 19vw, 8rem);
 
-  /* Homepage display scale */
-  --study-type-catalogue-note: clamp(2rem, 4vw, 4.5rem);
+  /* ─────────────────────────────────────────────────────────
+     2. SEMANTIC TOKENS
+  ───────────────────────────────────────────────────────── */
 
-  /* Font weights */
-  --weight-light: 300;
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
+  /* Vertical rhythm — the two gaps every page is built from */
+  --space-section: clamp(var(--space-16), 8vw, var(--space-24));   /* between and inside sections: 64 → 96 */
+  --space-page-top: clamp(var(--space-32), 16vw, var(--space-48)); /* clears the floating header: 128 → 192 */
 
-  /* Border radius — mostly interface; --radius-md is for image cards */
-  --radius-sm: 2px;
-  --radius-md: 0; /* test: square corners (was 12px) */
-  --radius-none: 0;
+  /* Typography — families */
+  --font-display: "Jost", Futura, sans-serif;  /* titles and interface */
+  --font-text: "EB Garamond", Georgia, serif;   /* sentences */
+  /* EB Garamond's lowercase is shorter than Jost's (0.405 vs 0.46); this matches their x-heights. */
+  --font-text-adjust: 0.46;
 
-  /* Underline offset */
+  /* Typography — sizes */
+  --font-size-xs: var(--step--2);      /* uppercase labels, fine print */
+  --font-size-sm: var(--step--1);      /* metadata, ledger rows */
+  --font-size-base: var(--step-0);     /* body */
+  --font-size-lg: var(--step-1);       /* lead text */
+  --font-size-xl: var(--step-2);       /* product names, prices */
+  --font-size-display: var(--step-3);  /* section and page headings */
+  --font-size-mega: var(--step-4);     /* the mobile menu's links */
+
+  /* Typography — weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Typography — leading */
+  --font-leading-display: 0.9;
+  --font-leading-tight: 1.1;
+  --font-leading-normal: 1.5;
+
+  /* Typography — tracking */
+  --font-tracking-tight: -0.02em;
+  --font-tracking-wide: 0.04em;
+  --font-tracking-wider: 0.09em;
+
+  /* Colour — the plain pages outside the site frame */
+  --color-bg-base: var(--off-white);
+  --color-text-primary: var(--neutral-950);
+
+  /* Colour — rules, mixed from the text colour so they follow every theme */
+  --color-rule-subtle: color-mix(in oklch, currentColor 20%, transparent); /* between ledger rows */
+  --color-rule: color-mix(in oklch, currentColor 35%, transparent);        /* above and below blocks */
+  --color-rule-strong: color-mix(in oklch, currentColor 60%, transparent); /* form fields (3:1 contrast) */
+
+  /* Opacity — for secondary text and states */
+  --opacity-muted: 0.8;     /* labels, secondary details, hover fades */
+  --opacity-subdued: 0.5;   /* booked-out dates, cards stepping back */
+  --opacity-disabled: 0.35;
+
+  /* Borders and outlines */
+  --border-width: 1px;
+  --border-width-thick: 2px;
   --underline-offset: 3px;
+
+  /* Radius */
+  --radius: 0;         /* images, cards, buttons, fields */
+  --radius-full: 50%;  /* round swatches */
+
+  /* Shadows — cast by the ring renders onto the page colour */
+  --shadow-object: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 40%, transparent);
+  --shadow-object-soft: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 20%, transparent);
+
+  /* Layout */
+  --layout-site-width: 1500px;
+  --layout-gutter: clamp(var(--space-6), 4vw, var(--space-16));
+  /* Inline padding that keeps full-bleed sections' content within the site width. */
+  --layout-edge: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+  --grid-gutter: clamp(var(--space-8), 4vw, var(--space-16));
+
+  /* Measures — line lengths for running text */
+  --measure: 44ch;
+  --layout-content-width: 62ch;
+
+  /* Media */
+  --ratio-product: 4 / 5;
 
   /* Motion */
   --duration-fast: 80ms;
@@ -83,6 +148,9 @@
   --duration-slow: 320ms;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: var(--duration-fast) var(--ease-out-quart);
+  --transition-normal: var(--duration-normal) var(--ease-out-quart);
+  --transition-slow: var(--duration-slow) var(--ease-out-expo);
 
   /* Z-index */
   --z-base: 0;
@@ -91,89 +159,15 @@
   --z-modal: 400;
 
   /* ─────────────────────────────────────────────────────────
-     2. SEMANTIC TOKENS
-  ───────────────────────────────────────────────────────── */
-
-  /* Typography — families */
-  --font-display: "Jost", Futura, sans-serif;      /* titles and interface */
-  --font-text: "EB Garamond", Georgia, serif;       /* sentences */
-
-  /* Typography — sizes */
-  --font-size-xs: 0.7rem;
-  --font-size-sm: var(--step--1);
-  --font-size-base: var(--step-0);
-  --font-size-lg: var(--step-1);
-  --font-size-xl: var(--step-2);
-  --font-size-3xl: var(--step-4);
-  --font-size-display: var(--step-5);
-
-  /* Typography — weights */
-  --font-weight-light: var(--weight-light);
-  --font-weight-regular: var(--weight-regular);
-  --font-weight-medium: var(--weight-medium);
-  --font-weight-semibold: var(--weight-semibold);
-  --font-weight-bold: var(--weight-bold);
-
-  /* Typography — leading */
-  --font-leading-tight: 1.08;
-  --font-leading-snug: 1.35;
-  --font-leading-normal: 1.5;
-  --font-leading-relaxed: 1.5;
-  --font-leading-display: 0.9;
-  --font-leading-statement: 0.92;
-
-  /* Typography — tracking */
-  --font-tracking-tight: 0em;
-  --font-tracking-wide: 0.04em;
-  --font-tracking-wider: 0.09em;
-  --font-tracking-negative: -0.01em;
-
-  /* Color — backgrounds */
-  --color-bg-base: var(--off-white);
-  --color-bg-surface: var(--off-white);
-  --color-bg-card: var(--neutral-100);
-  --color-bg-inverse: var(--ember-950);
-
-  /* Color — text */
-  --color-text-primary: var(--neutral-950);
-  --color-text-secondary: var(--neutral-700);
-  --color-text-inverse: var(--neutral-50);
-  --color-text-inverse-muted: var(--ember-200);
-
-  /* Color — accent (active nav + inline links) */
-  --color-wordmark-nav: var(--color-text-primary);
-
-  /* Color — borders (form controls only) */
-  --color-border-default: oklch(80% 0.016 86);
-  --color-border-inverse: var(--ember-700);
-
-  /* Spacing — semantic */
-  --space-xs: var(--space-1);
-  --space-sm: var(--space-2);
-  --space-md: var(--space-4);
-  --space-lg: var(--space-6);
-  --space-xl: var(--space-8);
-  --space-3xl: var(--space-16);
-  --space-4xl: var(--space-24);
-
-  /* Layout */
-  --layout-site-width: 1500px;
-  --layout-wide-width: 1600px;
-  --layout-content-width: 62ch;
-  --layout-gutter: clamp(var(--space-6), 4vw, var(--space-16));
-
-  /* Motion */
-  --transition-fast: var(--duration-fast) var(--ease-out-quart);
-  --transition-normal: var(--duration-normal) var(--ease-out-quart);
-  --transition-slow: var(--duration-slow) var(--ease-out-expo);
-
-  /* ─────────────────────────────────────────────────────────
      3. COMPONENT TOKENS
   ───────────────────────────────────────────────────────── */
 
   /* Nav */
   --nav-height: 96px;
 
-  /* Work grid — the homepage's primary structure */
-  --grid-gutter: clamp(var(--space-8), 4vw, var(--space-16));
+  /* Square icon buttons (carousel and slider arrows, the menu button): the minimum touch target. */
+  --size-control: 44px;
+
+  /* The footer's logo */
+  --size-footer-logo: 5rem;
 }

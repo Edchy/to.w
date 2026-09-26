@@ -48,32 +48,31 @@ const steps = [
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--grid-gutter);
-    margin-top: var(--space-32);
-    padding-top: var(--space-xl);
-    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+    margin-top: var(--space-section);
+    padding-top: var(--space-8);
+    border-top: var(--border-width) solid var(--color-rule);
   }
 
   .order__steps {
     display: grid;
     justify-items: start;
-    gap: var(--space-lg);
+    gap: var(--space-6);
   }
 
   .order__steps ol {
     width: 100%;
-    margin-top: calc(0px - var(--space-lg));
+    margin-top: calc(0px - var(--space-6));
   }
 
   .order__text {
     font-family: var(--font-text);
     font-size: var(--font-size-base);
-    font-size-adjust: 0.46;
+    font-size-adjust: var(--font-text-adjust);
   }
 
   @media (max-width: 900px) {
     .order {
       grid-template-columns: 1fr;
-      margin-top: var(--space-24);
     }
   }
 </style>

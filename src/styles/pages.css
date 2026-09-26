@@ -6,7 +6,7 @@
   width: min(100%, var(--layout-site-width));
   margin-inline: auto;
   /* Clears the header, which floats over the top of every page. */
-  padding: var(--space-48) var(--layout-gutter) var(--space-24);
+  padding: var(--space-page-top) var(--layout-gutter) var(--space-section);
 }
 
 .pg :is(h1, h2, h3, p, ol, ul, dl, dd, figure) {
@@ -25,9 +25,9 @@
 /* Headlines, set like the homepage's section titles (heavy italic comes from the frame). */
 .pg__heading {
   font-family: var(--t-display);
-  font-size: var(--study-type-catalogue-note);
-  line-height: var(--font-leading-statement);
-  letter-spacing: var(--font-tracking-negative);
+  font-size: var(--font-size-display);
+  line-height: var(--font-leading-display);
+  letter-spacing: var(--font-tracking-tight);
   text-wrap: balance;
 }
 
@@ -40,44 +40,44 @@
   max-width: var(--layout-content-width);
   font-family: var(--font-text);
   font-size: var(--font-size-lg);
-  font-size-adjust: 0.46;
+  font-size-adjust: var(--font-text-adjust);
   line-height: var(--font-leading-normal);
 }
 
 /* A small uppercase caption over a ruled list. */
 .pg__label {
   justify-self: stretch;
-  padding-bottom: var(--space-xs);
-  border-bottom: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  padding-bottom: var(--space-1);
+  border-bottom: var(--border-width) solid var(--color-rule);
   font-size: var(--font-size-xs);
   letter-spacing: var(--font-tracking-wider);
   text-transform: uppercase;
-  opacity: 0.8;
+  opacity: var(--opacity-muted);
 }
 
 /* Ruled rows like a ledger: a term on the left, its value on the right. */
 .pg__ledger > * {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: var(--space-md);
+  gap: var(--space-4);
   align-items: baseline;
-  padding-block: var(--space-sm);
-  border-bottom: 1px solid color-mix(in oklch, currentColor 20%, transparent);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-rule-subtle);
   font-size: var(--font-size-sm);
   font-variant-numeric: tabular-nums;
 }
 
 .pg__ledger :is(dt, .pg__term) {
-  opacity: 0.8;
+  opacity: var(--opacity-muted);
 }
 
 /* The one call to action on a page, filled like the homepage's course button. */
 .pg__btn {
   display: inline-block;
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-4) var(--space-6);
   background: var(--t-btn-bg);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   font-family: var(--t-body);
   font-weight: var(--font-weight-medium);
   text-decoration: none;
@@ -97,7 +97,7 @@
 /* Ren's and Supreme's accents match their button colour, so the button fades instead. */
 :is(.a10--ren, .a10--supreme) .pg__btn:is(:hover, :focus-visible) {
   background: var(--t-btn-bg);
-  opacity: 0.75;
+  opacity: var(--opacity-muted);
 }
 
 /*
@@ -111,9 +111,9 @@
 
 /* Supreme's band is white, so its accent and button turn red, as in the homepage's courses. */
 .a10--supreme .pg__band {
-  --t-accent: var(--jr-supreme-red);
-  --t-btn-bg: var(--jr-supreme-red);
-  --t-btn-fg: var(--jr-vit);
+  --t-accent: var(--supreme-red);
+  --t-btn-bg: var(--supreme-red);
+  --t-btn-fg: var(--pure-white);
 }
 
 .visually-hidden {
@@ -126,11 +126,6 @@
 }
 
 @media (max-width: 700px) {
-  .pg {
-    padding-top: var(--space-32);
-    padding-bottom: var(--space-16);
-  }
-
   .pg__text {
     font-size: var(--font-size-base);
   }

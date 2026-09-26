@@ -162,10 +162,10 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-lg);
+    gap: var(--space-6);
     width: min(100%, var(--layout-site-width));
     margin-inline: auto;
-    padding: var(--space-lg) var(--layout-gutter);
+    padding: var(--space-6) var(--layout-gutter);
   }
 
   .a10__header a {
@@ -195,7 +195,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   /* Theme switcher: three small swatches beside the nav; the active one gets a ring. */
   .a10__themes {
     display: flex;
-    gap: var(--space-sm);
+    gap: var(--space-2);
     margin-left: auto;
   }
 
@@ -203,22 +203,22 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     width: var(--space-4);
     height: var(--space-4);
     padding: 0;
-    border: 1px solid currentColor;
-    border-radius: 50%;
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius-full);
     cursor: pointer;
   }
 
   .a10__theme[aria-pressed="true"] {
-    outline: 1px solid currentColor;
-    outline-offset: 3px;
+    outline: var(--border-width) solid currentColor;
+    outline-offset: var(--space-1);
   }
 
   .a10__theme--ren {
-    background: var(--jr-vit);
+    background: var(--pure-white);
   }
 
   .a10__theme--supreme {
-    background: var(--jr-supreme-red);
+    background: var(--supreme-red);
   }
 
   .a10__theme--bla {
@@ -228,7 +228,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
 
   .a10__header nav {
     display: flex;
-    gap: var(--space-lg);
+    gap: var(--space-6);
     padding-right: var(--space-32);
   }
 
@@ -238,7 +238,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   }
 
   /*
-   * Mobile menu, ported from the live site: at 760px and below the text links give way to a
+   * Mobile menu, ported from the live site: at 700px and below the text links give way to a
    * two-bar button that opens a full-screen panel in the version's own colours. While it is open
    * the header is pinned above the panel so the logo and the close button stay put.
    */
@@ -249,8 +249,8 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     justify-content: center;
     align-items: center;
     gap: var(--space-1);
-    width: 44px;
-    height: 44px;
+    width: var(--size-control);
+    height: var(--size-control);
     padding: 0;
     color: inherit;
     background: none;
@@ -290,7 +290,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     justify-content: space-between;
     align-items: stretch;
     overflow-y: auto;
-    padding: calc(var(--nav-height) + var(--space-10)) var(--layout-gutter) var(--space-12);
+    padding: calc(var(--nav-height) + var(--space-12)) var(--layout-gutter) var(--space-12);
     color: var(--t-fg);
     background-color: var(--t-page);
     opacity: 0;
@@ -323,9 +323,8 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   .a10__menu-link {
     display: block;
     font-family: var(--t-display);
-    font-size: clamp(var(--font-size-3xl), 19vw, 8rem);
+    font-size: var(--font-size-mega);
     line-height: var(--font-leading-display);
-    letter-spacing: var(--font-tracking-tight);
     color: inherit;
     text-decoration: none;
     transition: color var(--transition-fast);
@@ -337,21 +336,11 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
 
   .a10__menu-social {
     padding-top: var(--space-8);
-    border-top: 1px solid color-mix(in srgb, var(--t-fg) 30%, transparent);
+    border-top: var(--border-width) solid var(--color-rule);
     font-size: var(--font-size-lg);
     letter-spacing: var(--font-tracking-wide);
     color: inherit;
     text-decoration: none;
-  }
-
-  @media (max-width: 760px) {
-    .a10__header nav {
-      display: none;
-    }
-
-    .a10__burger {
-      display: flex;
-    }
   }
 
   @media (max-width: 1100px) {
@@ -362,11 +351,19 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
 
   @media (max-width: 700px) {
     .a10__header {
-      padding-block: var(--space-md);
+      padding-block: var(--space-4);
     }
 
     .a10__header nav {
-      gap: var(--space-md);
+      display: none;
+    }
+
+    .a10__burger {
+      display: flex;
+    }
+
+    .a10__header nav {
+      gap: var(--space-4);
     }
   }
 
@@ -374,27 +371,19 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
    * Blå is the base palette (the .a10 defaults at the top of <style>); Ren and Supreme override
    * it. Palette values are local, experimental colours (not tokens yet).
    */
-  .a10 {
-    --jr-svart: rgb(0, 0, 0);
-    --jr-vit: rgb(255, 255, 255);
-    --jr-supreme-red: rgb(237, 28, 36);
-    --jr-logo-blue: rgb(0, 60, 248);
-    --jr-logo-pink: rgb(250, 36, 140);
-  }
-
   /* Ren — clean: white page and sections throughout, black type, lines and buttons. */
   .a10--ren {
-    --t-page: var(--jr-vit);
-    --t-fg: var(--jr-svart);
-    --t-accent: var(--jr-svart);
-    --t-btn-bg: var(--jr-svart);
-    --t-btn-fg: var(--jr-vit);
-    --t-courses-bg: var(--jr-vit);
-    --t-courses-fg: var(--jr-svart);
-    --t-insta-bg: var(--jr-vit);
-    --t-insta-fg: var(--jr-svart);
-    --t-footer-bg: var(--jr-vit);
-    --t-footer-fg: var(--jr-svart);
+    --t-page: var(--pure-white);
+    --t-fg: var(--pure-black);
+    --t-accent: var(--pure-black);
+    --t-btn-bg: var(--pure-black);
+    --t-btn-fg: var(--pure-white);
+    --t-courses-bg: var(--pure-white);
+    --t-courses-fg: var(--pure-black);
+    --t-insta-bg: var(--pure-white);
+    --t-insta-fg: var(--pure-black);
+    --t-footer-bg: var(--pure-white);
+    --t-footer-fg: var(--pure-black);
   }
 
   /* Ren's accent is black like its type, so hovers underline, fade or invert instead of recolouring. */
@@ -408,22 +397,22 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
    * white courses with red type, black Instagram and footer.
    */
   .a10--supreme {
-    --t-page: var(--jr-supreme-red);
-    --t-fg: var(--jr-vit);
-    --t-accent: var(--jr-vit);
-    --t-btn-bg: var(--jr-vit);
-    --t-btn-fg: var(--jr-supreme-red);
-    --t-courses-bg: var(--jr-vit);
-    --t-courses-fg: var(--jr-supreme-red);
-    --t-insta-bg: var(--jr-svart);
-    --t-insta-fg: var(--jr-vit);
-    --t-footer-bg: var(--jr-svart);
-    --t-footer-fg: var(--jr-vit);
+    --t-page: var(--supreme-red);
+    --t-fg: var(--pure-white);
+    --t-accent: var(--pure-white);
+    --t-btn-bg: var(--pure-white);
+    --t-btn-fg: var(--supreme-red);
+    --t-courses-bg: var(--pure-white);
+    --t-courses-fg: var(--supreme-red);
+    --t-insta-bg: var(--pure-black);
+    --t-insta-fg: var(--pure-white);
+    --t-footer-bg: var(--pure-black);
+    --t-footer-fg: var(--pure-white);
   }
 
   /* Supreme's accent is white like its type, so menu links hover to black instead. */
   .a10--supreme .a10__menu-link:hover {
-    color: var(--jr-svart);
+    color: var(--pure-black);
   }
 
   /* Every heading in heavy italic; the doubled class outranks the sections' own heading rules. */

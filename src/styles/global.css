@@ -105,7 +105,7 @@ main {
    (0.405 vs 0.46 of the size). The homepage (body.prototype-body) sets its own. */
 body:not(.prototype-body) main p {
   font-family: var(--font-text);
-  font-size-adjust: 0.46;
+  font-size-adjust: var(--font-text-adjust);
 }
 
 a {
@@ -126,7 +126,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid currentColor;
+  outline: var(--border-width-thick) solid currentColor;
   outline-offset: var(--space-1);
 }
 
@@ -144,8 +144,8 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-lg);
-  padding-block: var(--space-lg);
+  gap: var(--space-6);
+  padding-block: var(--space-6);
 }
 
 .reset-wordmark {
@@ -156,21 +156,21 @@ textarea {
 .reset-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md);
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
 }
 
 .reset-nav a[aria-current="page"] {
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: var(--border-width-thick);
 }
 
 .reset-shell {
   display: grid;
   align-content: start;
-  gap: var(--space-lg);
+  gap: var(--space-6);
   min-height: 60vh;
-  padding-block: var(--space-4xl);
+  padding-block: var(--space-section);
 }
 
 .reset-shell > * {
@@ -185,13 +185,13 @@ textarea {
 
 .reset-form {
   display: grid;
-  gap: var(--space-lg);
+  gap: var(--space-6);
   width: min(100%, var(--layout-content-width));
 }
 
 .reset-form label {
   display: grid;
-  gap: var(--space-sm);
+  gap: var(--space-2);
 }
 
 .reset-form input,
@@ -199,11 +199,11 @@ textarea {
 .reset-form textarea,
 .reset-form button {
   width: 100%;
-  padding: var(--space-md);
+  padding: var(--space-4);
   color: inherit;
   background: transparent;
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-none);
+  border: var(--border-width) solid var(--color-rule-strong);
+  border-radius: var(--radius);
 }
 
 .reset-form button {
@@ -224,9 +224,5 @@ textarea {
   .reset-header {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .reset-shell {
-    padding-block: var(--space-3xl);
   }
 }

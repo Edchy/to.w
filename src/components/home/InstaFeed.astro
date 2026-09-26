@@ -48,7 +48,7 @@ const posts: { src: ImageMetadata; alt: string; decor?: "chair" | "can" }[] = [
   .ig {
     color: var(--t-insta-fg, inherit);
     background: var(--t-insta-bg, transparent);
-    padding: var(--space-24) max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+    padding: var(--space-section) var(--layout-edge);
   }
 
   /* Heading on its own row; the line and the handle share the row beneath, on one baseline. */
@@ -56,8 +56,8 @@ const posts: { src: ImageMetadata; alt: string; decor?: "chair" | "can" }[] = [
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: baseline;
-    gap: var(--space-md) var(--space-xl);
-    margin-bottom: var(--space-xl);
+    gap: var(--space-4) var(--space-8);
+    margin-bottom: var(--space-8);
   }
 
   .ig h2 {
@@ -67,9 +67,9 @@ const posts: { src: ImageMetadata; alt: string; decor?: "chair" | "can" }[] = [
   .ig h2 {
     margin: 0;
     font-family: var(--t-display, var(--font-display));
-    font-size: var(--study-type-catalogue-note);
-    line-height: var(--font-leading-statement);
-    letter-spacing: var(--font-tracking-negative);
+    font-size: var(--font-size-display);
+    line-height: var(--font-leading-display);
+    letter-spacing: var(--font-tracking-tight);
   }
 
   .ig__head p {
@@ -86,7 +86,7 @@ const posts: { src: ImageMetadata; alt: string; decor?: "chair" | "can" }[] = [
   .ig__grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-lg);
+    gap: var(--space-6);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -135,7 +135,7 @@ const posts: { src: ImageMetadata; alt: string; decor?: "chair" | "can" }[] = [
     height: auto;
     aspect-ratio: 1;
     object-fit: cover;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius);
     transition: scale var(--transition-slow);
   }
 
@@ -146,13 +146,9 @@ const posts: { src: ImageMetadata; alt: string; decor?: "chair" | "can" }[] = [
   }
 
   @media (max-width: 700px) {
-    .ig {
-      padding-block: var(--space-16);
-    }
-
     .ig__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-md);
+      gap: var(--space-4);
     }
 
     /* On phones the flower sits in the second row, so the can stays low enough to clear the photo above. */

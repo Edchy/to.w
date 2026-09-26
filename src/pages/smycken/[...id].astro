@@ -110,24 +110,24 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   /* The ring alone on the page colour, like the product cards, a little larger. */
   .pd__stage {
     position: sticky;
-    top: var(--space-xl);
+    top: var(--space-8);
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: var(--ratio-product);
   }
 
   .pd__stage :global(img) {
     width: 72%;
     height: auto;
-    filter: drop-shadow(0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 20%, transparent));
+    filter: drop-shadow(var(--shadow-object-soft));
   }
 
   .pd__info {
     display: grid;
     justify-items: start;
-    gap: var(--space-lg);
-    padding-top: var(--space-3xl);
+    gap: var(--space-6);
+    padding-top: var(--space-16);
   }
 
   .pd__back {
@@ -141,11 +141,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   .pd__title {
-    margin-top: var(--space-lg);
+    margin-top: var(--space-6);
   }
 
   .pd__price {
-    margin-top: calc(0px - var(--space-sm));
+    margin-top: calc(0px - var(--space-2));
     font-size: var(--font-size-xl);
     font-variant-numeric: tabular-nums;
   }
@@ -153,19 +153,19 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   .pd__facts {
     justify-self: stretch;
     max-width: var(--layout-content-width);
-    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+    border-top: var(--border-width) solid var(--color-rule);
   }
 
   .pd__note {
-    max-width: 44ch;
+    max-width: var(--measure);
     font-family: var(--font-text);
     font-size: var(--font-size-sm);
-    font-size-adjust: 0.46;
+    font-size-adjust: var(--font-text-adjust);
     line-height: var(--font-leading-normal);
   }
 
   .pd__more {
-    margin-top: var(--space-32);
+    margin-top: var(--space-section);
   }
 
   .pd__more-title {
@@ -187,10 +187,6 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
     .pd__info {
       padding-top: 0;
-    }
-
-    .pd__more {
-      margin-top: var(--space-24);
     }
   }
 </style>
