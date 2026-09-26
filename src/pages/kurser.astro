@@ -1,66 +1,385 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { openOccasions } from "../data/courses";
+import SiteFrame from "../components/site/SiteFrame.astro";
+import { courses, openOccasions, spotsLabel, spotsWord } from "../data/courses";
+import { CONTACT_EMAIL_HREF } from "../config/site";
+import "../styles/pages.css";
+
+// The signup lede names a spot count, which only reads correctly while every open
+// occasion has the same capacity. With mixed capacities, drop the number instead.
+const spotCounts = new Set(openOccasions.map(({ course }) => course.spots));
+const sharedSpots = spotCounts.size === 1 ? [...spotCounts][0] : null;
+
+// With every date full, the form still takes interest in the next one. The course name is only
+// shown when there is more than one to choose between.
+const formOptions = openOccasions.length
+  ? openOccasions.map(({ course, date }) => ({
+      value: `${course.title} — ${date.date}`,
+      label: courses.length > 1 ? `${date.date} — ${course.title}` : `${date.date}, ${date.time}`,
+      slug: date.slug,
+    }))
+  : courses.map((course) => ({
+      value: `${course.title} — nästa tillfälle`,
+      label: `Nästa tillfälle — ${course.title}`,
+      slug: undefined,
+    }));
+
+// The last word of a course title is picked out in the accent colour.
+const splitTitle = (title: string) => {
+  const cut = title.lastIndexOf(" ");
+  return [title.slice(0, cut + 1), title.slice(cut + 1)];
+};
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const successUrl = `${baseUrl}kurser/tack/`;
 ---
 
-<BaseLayout title="Kurser">
-  <section class="reset-shell">
-    <h1>Kurser</h1>
-    <p>Sidans innehåll är tömt inför omarbetning. Intresseanmälan finns kvar som fungerande grund.</p>
+<BaseLayout
+  bare
+  title="Kurser"
+  description="Kurser med Tove Wätte i Järna: forma din egen ring i vax som sedan gjuts i återvunnet sterling silver."
+>
+  <SiteFrame>
+    <div class="pg">
+      {courses.map((course, index) => {
+        const [titleStart, titleAccent] = splitTitle(course.title);
+        const allFull = course.dates.every((date) => !date.open);
+        const Heading = index === 0 ? "h1" : "h2";
+        return (
+          <article class="course" aria-labelledby={`course-${course.slug}`}>
+            <div class="course__text">
+              <Heading class="pg__heading" id={`course-${course.slug}`}>
+                {titleStart}<span class="pg__accent">{titleAccent}</span>
+              </Heading>
+              <p class="pg__text">{course.intro}</p>
 
-    <form
-      class="reset-form"
-      name="intresseanmalan"
-      method="POST"
-      action={successUrl}
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-    >
-      <input type="hidden" name="form-name" value="intresseanmalan" />
-      <input type="hidden" name="subject" value="Ny intresseanmälan — kurs" />
+              <dl class="pg__ledger course__facts">
+                {course.dates.map((date) => (
+                  <div class:list={[!date.open && "course__full"]}>
+                    <dt>{date.date}</dt>
+                    <dd>
+                      {date.time}
+                      {!date.open && <span class="course__note"> · fullbokad</span>}
+                    </dd>
+                  </div>
+                ))}
+                <div><dt>Pris</dt><dd>{course.price}</dd></div>
+                <div><dt>Platser</dt><dd>{spotsLabel(course.spots, course.dates.length > 1)}</dd></div>
+                <div><dt>Plats</dt><dd>{course.place}</dd></div>
+              </dl>
 
-      <p class="reset-honeypot" aria-hidden="true">
-        <label>
-          Lämna det här fältet tomt
-          <input type="text" name="bot-field" tabindex="-1" autocomplete="off" />
-        </label>
-      </p>
+              <a class="pg__btn" href="#anmalan">{allFull ? "Anmäl intresse för nästa ↓" : "Anmäl intresse ↓"}</a>
+            </div>
 
-      <label>
-        Namn
-        <input type="text" name="namn" autocomplete="name" required />
-      </label>
+            <div class="course__media">
+              <Image
+                src={course.image}
+                alt={course.imageAlt}
+                widths={[640, 1100, 1600]}
+                sizes="(max-width: 900px) 100vw, 50vw"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
 
-      <label>
-        E-post
-        <input type="email" name="email" autocomplete="email" required />
-      </label>
+            <div class="course__more">
+              <div class="course__body">
+                {course.body.map((paragraph) => <p class="pg__text">{paragraph}</p>)}
+              </div>
 
-      <label>
-        Telefon (valfritt)
-        <input type="tel" name="telefon" autocomplete="tel" />
-      </label>
+              <div>
+                <p class="pg__label">I kursavgiften ingår</p>
+                <ul class="pg__ledger course__includes">
+                  {course.includes.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+            </div>
+          </article>
+        );
+      })}
 
-      <label>
-        Kurs
-        <select name="kurs" required>
-          {openOccasions.map(({ course, date }) => (
-            <option value={`${course.title} — ${date.date}`}>
-              {date.date} — {course.title}
-            </option>
-          ))}
-        </select>
-      </label>
+      <section class="pg__band signup" id="anmalan" aria-labelledby="signup-title">
+        {/* Scroll targets for the deep links — one per bookable date */}
+        {openOccasions.map(({ date }) => (
+          <span class="signup__anchor" id={`anmalan-${date.slug}`} aria-hidden="true"></span>
+        ))}
 
-      <label>
-        Meddelande eller fråga (valfritt)
-        <textarea name="meddelande" rows="4"></textarea>
-      </label>
+        <div class="signup__intro">
+          <h2 class="pg__heading" id="signup-title">Anmäl <span class="pg__accent">intresse</span></h2>
+          <p class="pg__text">
+            Det här är en intresseanmälan, inte en bokning. {sharedSpots
+              ? `De ${spotsWord(sharedSpots)} platserna`
+              : "Platserna"} fördelas i tur och ordning, och platsen är din när jag har svarat med
+            bekräftelse och praktiska detaljer.
+          </p>
+        </div>
 
-      <button type="submit">Skicka intresseanmälan</button>
-    </form>
-  </section>
+        <form
+          class="signup__form"
+          name="intresseanmalan"
+          method="POST"
+          action={successUrl}
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+        >
+          {/* Netlify routes the submission by this name. */}
+          <input type="hidden" name="form-name" value="intresseanmalan" />
+
+          {/* Sets the notification email's subject line. */}
+          <input type="hidden" name="subject" value="Ny intresseanmälan — kurs" />
+
+          {/* Honeypot — hidden from people, tempting to bots. */}
+          <p class="visually-hidden" aria-hidden="true">
+            <label>
+              Lämna det här fältet tomt
+              <input type="text" name="bot-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
+
+          <label class="field">
+            <span class="field__label">Namn</span>
+            <input type="text" name="namn" autocomplete="name" required />
+          </label>
+
+          <label class="field">
+            <span class="field__label">E-post</span>
+            {/* Must be named "email" — Netlify uses this field as the notification's reply-to. */}
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Telefon (valfritt)</span>
+            <input type="tel" name="telefon" autocomplete="tel" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Kurs</span>
+            <select id="course" name="kurs" required>
+              {formOptions.map((option) => (
+                /* value is what Netlify emails; data-slug is what the deep link matches on */
+                <option value={option.value} data-slug={option.slug}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <label class="field field--wide">
+            <span class="field__label">Meddelande eller fråga (valfritt)</span>
+            <textarea name="meddelande" rows="4"></textarea>
+          </label>
+
+          <div class="signup__actions">
+            <button class="pg__btn" type="submit">Skicka intresseanmälan</button>
+            <p class="signup__privacy">
+              Dina uppgifter används bara för att svara om kursen, raderas när den är över och delas
+              aldrig vidare. Vill du att jag tar bort dem tidigare, <a href={CONTACT_EMAIL_HREF}>mejla mig</a>.
+            </p>
+          </div>
+        </form>
+      </section>
+
+      {/* Private workshops come last, after the form, so the form reads as the course's signup. */}
+      <section class="private" aria-labelledby="private-title">
+        <h2 class="pg__heading" id="private-title">Något <span class="pg__accent">eget?</span></h2>
+        <p class="pg__text">
+          Workshoppen går att boka privat, och upplägget är flexibelt: en möhippa, ett jobbevent, en
+          kväll med vänner eller något helt annat. Hör av dig så hittar vi en form som passar.
+          <a href={CONTACT_EMAIL_HREF}>Mejla mig →</a>
+        </p>
+      </section>
+    </div>
+  </SiteFrame>
 </BaseLayout>
+
+<script is:inline data-astro-rerun>
+  // The browser scrolls to #anmalan-<slug> natively; this only preselects that date.
+  {
+    const slug = location.hash.match(/^#anmalan-(.+)$/)?.[1];
+    const select = document.querySelector("#course");
+    const match = [...(select?.options ?? [])].find((option) => option.dataset.slug === slug);
+    if (match && select) select.value = match.value;
+  }
+</script>
+
+<style>
+  /* Text and facts on one half, the photo on the other; the longer description runs underneath. */
+  .course {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-3xl) var(--grid-gutter);
+  }
+
+  .course__text {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-lg);
+  }
+
+  .course__facts {
+    justify-self: stretch;
+    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  .course__full dd {
+    opacity: 0.6;
+  }
+
+  .course__media :global(img) {
+    width: 100%;
+    height: 100%;
+    max-height: 80svh;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .course__more {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--grid-gutter);
+    padding-top: var(--space-xl);
+    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  .course__body {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .course__includes > li {
+    grid-template-columns: 1fr;
+  }
+
+  .private {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--grid-gutter);
+    align-items: baseline;
+    margin-top: var(--space-24);
+    padding-top: var(--space-xl);
+    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  /* Supreme's white form band already ends right above, so the rule would double it. */
+  .a10--supreme .private {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .private a {
+    white-space: nowrap;
+  }
+
+  /* The signup form sits on the courses colours, like the courses section on the homepage. */
+  .signup {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--grid-gutter);
+    margin-top: var(--space-32);
+    padding-block: var(--space-24);
+  }
+
+  /* Deep links land a little above the form, not flush against the screen's top. */
+  .signup__anchor {
+    position: absolute;
+    top: calc(0px - var(--space-lg));
+  }
+
+  .signup__intro {
+    display: grid;
+    align-content: start;
+    gap: var(--space-lg);
+  }
+
+  .signup__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .field--wide,
+  .signup__actions {
+    grid-column: 1 / -1;
+  }
+
+  .field__label {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .field :is(input, select, textarea) {
+    width: 100%;
+    padding: var(--space-md);
+    color: inherit;
+    background: transparent;
+    border: 1px solid color-mix(in oklch, currentColor 45%, transparent);
+    border-radius: var(--radius-none);
+  }
+
+  .field :is(input, select, textarea):focus-visible {
+    border-color: currentColor;
+    outline-offset: 0;
+  }
+
+  /* The open list uses the system colours, which don't follow the theme. */
+  .field option {
+    color: initial;
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .signup__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .signup__privacy {
+    flex: 1 1 20rem;
+    font-family: var(--font-text);
+    font-size: var(--font-size-sm);
+    font-size-adjust: 0.46;
+    line-height: var(--font-leading-normal);
+  }
+
+  @media (max-width: 900px) {
+    .course,
+    .course__more,
+    .private,
+    .signup {
+      grid-template-columns: 1fr;
+    }
+
+    .course__media {
+      order: -1;
+    }
+
+    .private {
+      gap: var(--space-md);
+      margin-top: var(--space-16);
+    }
+
+    .signup {
+      margin-top: var(--space-24);
+      padding-block: var(--space-16);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .signup__form {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

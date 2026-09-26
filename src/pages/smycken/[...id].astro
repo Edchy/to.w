@@ -1,22 +1,196 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import { getProductSlug } from "../../config/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFrame from "../../components/site/SiteFrame.astro";
+import ProductCarousel from "../../components/home/ProductCarousel.astro";
+import ring from "../../assets/img/products/ring-placeholder.webp";
+import { CONTACT_EMAIL_HREF, RING_TRANSITION_CLASS, getProductSlug, ringTransitionName } from "../../config/site";
+import "../../styles/pages.css";
 
 export async function getStaticPaths() {
-  const items = await getCollection("jewelry");
-  return items.map((item) => ({
-    params: { id: getProductSlug(item.id) },
-    props: { entry: item },
+  const items = (await getCollection("jewelry")).sort((a, b) => b.data.date.localeCompare(a.data.date));
+  return items.map((entry) => ({
+    params: { id: getProductSlug(entry.id) },
+    props: { entry, others: items.filter((item) => item.id !== entry.id) },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, others } = Astro.props;
+const { title, price, sizes, description, body, material, technique, design } = entry.data;
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const formattedPrice = new Intl.NumberFormat("sv-SE").format(price);
+
+// Facts with a real value (the data has some blanks and "tba"s).
+const clean = (value?: string) => (value?.trim() && value.trim() !== "tba" ? value.trim() : undefined);
+const facts = [
+  { term: "Material", value: clean(material) },
+  { term: "Teknik", value: clean(technique) },
+  { term: "Form", value: clean(design) },
+  { term: sizes.length === 1 ? "Storlek" : "Storlekar", value: sizes.join(", ") || undefined },
+].filter((fact) => fact.value);
+
+// The order button opens a prefilled mail.
+const sizeLine =
+  sizes.length === 1 ? `Storlek / variant: ${sizes[0]}` : `Storlek / variant (välj: ${sizes.join(", ")}):`;
+const orderBody = `Hej Tove,
+
+Jag vill gärna beställa ${title} (${formattedPrice} kr).
+
+${sizeLine}
+Antal:
+LEVERANS: [post / hämtas i ateljén / överlämning i Järna]
+Adress, om post:
+Telefon:
+Övrigt:
+
+Vänliga hälsningar,`;
+const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}&body=${encodeURIComponent(orderBody)}`;
 ---
 
-<BaseLayout title={entry.data.title}>
-  <article class="reset-shell">
-    <h1>{entry.data.title}</h1>
-    <p>Sidan är tömd inför omarbetning.</p>
-  </article>
+<BaseLayout bare title={title} description={clean(description) ?? `${title}, handgjort smycke i återvunnet silver av Tove Wätte.`}>
+  <SiteFrame>
+    <div class="pg pd">
+      <div class="pd__stage">
+        <Image
+          src={ring}
+          alt={`Silverring som platshållare för ${title}`}
+          widths={[480, 960]}
+          sizes="(max-width: 900px) 70vw, 30vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+
+      <div class="pd__info">
+        <a class="pd__back" href={`${baseUrl}smycken/`}>← alla smycken</a>
+
+        <h1 class="pg__heading pd__title" style={`view-transition-name: ${ringTransitionName(getProductSlug(entry.id))}; view-transition-class: ${RING_TRANSITION_CLASS}`}>{title}</h1>
+        <p class="pd__price">{formattedPrice} kr</p>
+
+        {clean(description) && <p class="pg__text">{clean(description)}</p>}
+        {clean(body) && <p class="pg__text">{clean(body)}</p>}
+
+        {facts.length > 0 && (
+          <dl class="pg__ledger pd__facts">
+            {facts.map((fact) => (
+              <div>
+                <dt>{fact.term}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <a class="pg__btn" href={orderHref}>Beställ via mejl →</a>
+        <p class="pd__note">
+          Smycket görs för hand efter din beställning. Jag återkommer med bekräftelse, betalningsinfo och
+          ungefärlig leveranstid.
+        </p>
+      </div>
+    </div>
+
+    <section class="pd__more" aria-labelledby="more-title">
+      <h2 class="pg__heading pd__more-title" id="more-title">Fler smycken</h2>
+      <ProductCarousel items={others} />
+    </section>
+  </SiteFrame>
 </BaseLayout>
+
+<style>
+  .pd {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--grid-gutter);
+    align-items: start;
+    padding-bottom: 0;
+  }
+
+  /* The ring alone on the page colour, like the product cards, a little larger. */
+  .pd__stage {
+    position: sticky;
+    top: var(--space-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 5;
+  }
+
+  .pd__stage :global(img) {
+    width: 72%;
+    height: auto;
+    filter: drop-shadow(0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 20%, transparent));
+  }
+
+  .pd__info {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-lg);
+    padding-top: var(--space-3xl);
+  }
+
+  .pd__back {
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+  }
+
+  .pd__back:hover,
+  .pd__back:focus-visible {
+    text-decoration: underline;
+  }
+
+  .pd__title {
+    margin-top: var(--space-lg);
+  }
+
+  .pd__price {
+    margin-top: calc(0px - var(--space-sm));
+    font-size: var(--font-size-xl);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pd__facts {
+    justify-self: stretch;
+    max-width: var(--layout-content-width);
+    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  .pd__note {
+    max-width: 44ch;
+    font-family: var(--font-text);
+    font-size: var(--font-size-sm);
+    font-size-adjust: 0.46;
+    line-height: var(--font-leading-normal);
+  }
+
+  .pd__more {
+    margin-top: var(--space-32);
+  }
+
+  .pd__more-title {
+    width: min(100%, var(--layout-site-width));
+    margin: 0 auto;
+    padding-inline: var(--layout-gutter);
+  }
+
+  @media (max-width: 900px) {
+    .pd {
+      grid-template-columns: 1fr;
+    }
+
+    .pd__stage {
+      position: static;
+      width: min(100%, 28rem);
+      justify-self: center;
+    }
+
+    .pd__info {
+      padding-top: 0;
+    }
+
+    .pd__more {
+      margin-top: var(--space-24);
+    }
+  }
+</style>

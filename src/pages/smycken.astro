@@ -1,10 +1,79 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFrame from "../components/site/SiteFrame.astro";
+import ProductCarousel from "../components/home/ProductCarousel.astro";
+import { CONTACT_EMAIL_HREF } from "../config/site";
+import "../styles/pages.css";
+
+const jewelry = (await getCollection("jewelry")).sort((a, b) => b.data.date.localeCompare(a.data.date));
+
+const steps = [
+  { term: "Välj", text: "Välj smycke och storlek. Storlekarna står på varje smyckes sida." },
+  { term: "Mejla", text: "Skicka ett mejl. Knappen på smyckets sida fyller i det mesta åt dig." },
+  { term: "Svar", text: "Jag bekräftar och skickar betalningsinfo och ungefärlig leveranstid." },
+  { term: "Tillverkning", text: "Smycket görs för hand efter din beställning, och skickas med post eller hämtas i Järna." },
+];
 ---
 
-<BaseLayout title="Smycken">
-  <section class="reset-shell">
-    <h1>Smycken</h1>
-    <p>Sidan är tömd inför omarbetning.</p>
-  </section>
+<BaseLayout bare title="Smycken" description="Handgjorda smycken i återvunnet silver av Tove Wätte, gjorda efter beställning.">
+  <SiteFrame>
+    <div class="pg">
+      <h1 class="visually-hidden">Smycken</h1>
+
+      <ProductCarousel items={jewelry} grid />
+
+      <section class="order" aria-labelledby="order-title">
+        <h2 class="pg__heading" id="order-title">Så <span class="pg__accent">beställer</span> du</h2>
+
+        <div class="order__steps">
+          <p class="pg__label">Fyra steg</p>
+          <ol class="pg__ledger">
+            {steps.map((step, i) => (
+              <li>
+                <span class="pg__term">{i + 1}. {step.term}</span>
+                <span class="order__text">{step.text}</span>
+              </li>
+            ))}
+          </ol>
+          <a class="pg__btn" href={CONTACT_EMAIL_HREF}>Frågor? Mejla mig →</a>
+        </div>
+      </section>
+    </div>
+  </SiteFrame>
 </BaseLayout>
+
+<style>
+  .order {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--grid-gutter);
+    margin-top: var(--space-32);
+    padding-top: var(--space-xl);
+    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  .order__steps {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-lg);
+  }
+
+  .order__steps ol {
+    width: 100%;
+    margin-top: calc(0px - var(--space-lg));
+  }
+
+  .order__text {
+    font-family: var(--font-text);
+    font-size: var(--font-size-base);
+    font-size-adjust: 0.46;
+  }
+
+  @media (max-width: 900px) {
+    .order {
+      grid-template-columns: 1fr;
+      margin-top: var(--space-24);
+    }
+  }
+</style>

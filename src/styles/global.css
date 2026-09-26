@@ -38,6 +38,43 @@
   box-sizing: border-box;
 }
 
+/*
+ * Cross-page view transitions (plain page loads, no client router): a ring's name travels from
+ * its card to its product page heading (both carry the same view-transition-name, see
+ * ringTransitionName). Browsers without support just navigate.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+/* The page itself swaps at once; a cross-fade of two whole pages read as a glitch. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-out-expo);
+}
+
+/* A ring's name travels as one word: only the new page's picture of it is shown, scaling from the
+   card's size, instead of two differently sized pictures cross-fading into a blurred double. */
+::view-transition-old(*.ring-name) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(*.ring-name) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
 html {
   min-width: 320px;
   min-height: 100%;

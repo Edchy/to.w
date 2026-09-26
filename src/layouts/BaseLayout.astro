@@ -18,7 +18,8 @@ const {
   bare = false,
 } = Astro.props;
 
-const pageTitle = title ? `TO.W | ${title}` : "TO.W";
+// Page name first so tabs stay distinct; the homepage carries the tagline.
+const pageTitle = title ? `${title} · to.w` : "to.w · Handgjorda smycken i återvunnet silver";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => {
   const url = `${baseUrl}${path.replace(/^\//, "")}`;
@@ -27,6 +28,8 @@ const withBase = (path: string) => {
 
 const siteOrigin = Astro.site?.origin ?? "";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
+// Shared image for link previews (the logo on white, 1200×630); must be an absolute URL.
+const ogImageUrl = new URL(withBase("/og.png"), siteOrigin).href;
 const currentPath = Astro.url.pathname.replace(
   new URL(baseUrl, "https://example.com").pathname.replace(/\/$/, ""),
   "",
@@ -48,11 +51,24 @@ const navLinks = [
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="icon" type="image/svg+xml" href={withBase("/t-fav.svg")} />
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase("/favicon-32.png")} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="sv_SE" />
+    <meta property="og:site_name" content="to.w" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="to.w – logotypen med en gepard" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body class:list={{ "prototype-body": bare }}>
     {!bare && <header class="reset-header">
-      <a class="reset-wordmark" href={baseUrl}>TO.W</a>
+      <a class="reset-wordmark" href={baseUrl}>to.w</a>
       <nav aria-label="Huvudnavigering">
         <ul class="reset-nav" role="list">
           {navLinks.map(({ href, label }) => (

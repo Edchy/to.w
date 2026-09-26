@@ -1,10 +1,62 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFrame from "../components/site/SiteFrame.astro";
+import portrait from "../assets/img/om/portrait.avif";
+import "../styles/pages.css";
 ---
 
-<BaseLayout title="Om">
-  <section class="reset-shell">
-    <h1>Om</h1>
-    <p>Sidan är tömd inför omarbetning.</p>
-  </section>
+<BaseLayout
+  bare
+  title="Om"
+  description="Om Tove Wätte: handgjorda smycken i återvunnet silver, från Järna."
+>
+  <SiteFrame>
+    <div class="pg about">
+      <section class="about__intro">
+        <div class="about__portrait">
+          <Image
+            src={portrait}
+            alt="Tove Wätte håller händerna framför ansiktet och bär flera silverringar."
+            widths={[640, 1100, 1600]}
+            sizes="(max-width: 900px) 100vw, 55vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+
+        <div class="about__text">
+          <h1 class="pg__heading">Tove Wätte</h1>
+          <p class="pg__text">Lorem ipsum</p>
+        </div>
+      </section>
+    </div>
+  </SiteFrame>
 </BaseLayout>
+
+<style>
+  /* The portrait takes the larger share; the name and text sit beside it, from the top. */
+  .about__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--grid-gutter);
+    align-items: start;
+  }
+
+  .about__portrait :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+
+  .about__text {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  @media (max-width: 900px) {
+    .about__intro {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

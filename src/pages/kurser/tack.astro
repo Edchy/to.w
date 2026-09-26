@@ -1,14 +1,27 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFrame from "../../components/site/SiteFrame.astro";
+import "../../styles/pages.css";
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const coursesUrl = `${baseUrl}kurser/`;
 ---
 
-<BaseLayout title="Tack" description="Tack för din intresseanmälan till kursen.">
-  <section class="reset-shell">
-    <h1>Tack</h1>
-    <p>Din intresseanmälan är skickad. Jag hör av mig via mejl.</p>
-    <a href={coursesUrl}>Tillbaka till kurser</a>
-  </section>
+<BaseLayout bare title="Tack" description="Tack för din intresseanmälan till kursen." noindex>
+  <SiteFrame>
+    <div class="pg thanks">
+      <h1 class="pg__heading">Tack, din anmälan är <span class="pg__accent">skickad.</span></h1>
+      <p class="pg__text">Jag hör av mig via mejl med bekräftelse och praktiska detaljer.</p>
+      <a class="pg__btn" href={`${baseUrl}kurser/`}>← Tillbaka till kurser</a>
+    </div>
+  </SiteFrame>
 </BaseLayout>
+
+<style>
+  .thanks {
+    display: grid;
+    justify-items: start;
+    align-content: start;
+    gap: var(--space-lg);
+    min-height: 80svh;
+  }
+</style>

@@ -1,14 +1,15 @@
 ---
 // The homepage product strip: each ring sits on the section colour in a sideways-scrolling row.
+// With `grid`, the same cards are laid out in rows instead (the smycken page).
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-import { getProductSlug } from "../../config/site";
+import { RING_TRANSITION_CLASS, getProductSlug, ringTransitionName } from "../../config/site";
 import ring from "../../assets/img/products/ring-placeholder.webp";
 import floralFrame from "../../assets/img/illustrations/floral-frame.webp";
 
-type Props = { items: CollectionEntry<"jewelry">[] };
+type Props = { items: CollectionEntry<"jewelry">[]; grid?: boolean };
 
-const { items } = Astro.props;
+const { items, grid = false } = Astro.props;
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const fmt = new Intl.NumberFormat("sv-SE").format;
 
@@ -16,13 +17,14 @@ const fmt = new Intl.NumberFormat("sv-SE").format;
 const products = items
   .map((entry) => ({
     title: entry.data.title,
+    transitionName: ringTransitionName(getProductSlug(entry.id)),
     price: fmt(entry.data.price),
     href: `${baseUrl}smycken/${getProductSlug(entry.id)}/`,
   }))
   .reverse();
 ---
 
-<section class="pc" aria-label="Smycken" data-carousel>
+<section class:list={["pc", grid && "pc--grid"]} aria-label="Smycken" data-carousel={grid ? undefined : ""}>
   <ul class="pc__track" data-carousel-track>
     {products.map((product, index) => (
       <li class="pc__card">
@@ -40,7 +42,7 @@ const products = items
             />
           </span>
           <span class="pc__meta">
-            <span class="pc__title">{product.title}</span>
+            <span class="pc__title" data-transition-name={product.transitionName} data-transition-class={RING_TRANSITION_CLASS}>{product.title}</span>
             <span class="pc__price">{product.price} kr</span>
           </span>
         </a>
@@ -48,14 +50,33 @@ const products = items
     ))}
   </ul>
 
-  <div class="pc__foot">
+  {!grid && <div class="pc__foot">
     <div class="pc__controls">
       <button type="button" data-carousel-prev aria-label="Föregående smycken">←</button>
       <button type="button" data-carousel-next aria-label="Fler smycken">→</button>
       <a href={`${baseUrl}smycken/`}>alla smycken →</a>
     </div>
-  </div>
+  </div>}
 </section>
+
+<script is:inline>
+  // A ring's name travels between its card and its product page heading. Only the card for the
+  // page being opened (or returned from) gets the transition name; if every card had one, all the
+  // other names would fly across the product page too (its "Fler smycken" strip has them).
+  if (!window.ringTransitions) {
+    window.ringTransitions = true;
+    const name = (url) => {
+      const path = url && new URL(url).pathname;
+      const card = [...document.querySelectorAll(".pc__card a")].find((a) => new URL(a.href).pathname === path);
+      const title = card?.querySelector("[data-transition-name]");
+      if (!title) return;
+      title.style.viewTransitionName = title.dataset.transitionName;
+      title.style.viewTransitionClass = title.dataset.transitionClass;
+    };
+    addEventListener("pageswap", (e) => e.viewTransition && name(e.activation?.entry.url));
+    addEventListener("pagereveal", (e) => e.viewTransition && name(window.navigation?.activation?.from?.url));
+  }
+</script>
 
 <script>
   // Arrow buttons scroll the strip by one card; they disable themselves at either end.
@@ -242,6 +263,9 @@ const products = items
     z-index: var(--z-base);
     font-family: var(--t-display, var(--font-display));
     font-size: var(--font-size-xl);
+    /* Heavy italic, like the name's heading on the product page. */
+    font-weight: var(--font-weight-bold);
+    font-style: italic;
     line-height: var(--font-leading-tight);
     white-space: nowrap;
     pointer-events: none;
@@ -300,6 +324,37 @@ const products = items
     }
   }
 
+  /*
+   * Grid: every card at once, in rows of four (three on tablets, two on phones). Card widths come
+   * from the row's width (cqi), so the hover move still lands the name inside the photo.
+   */
+  .pc--grid {
+    --pc-pad: 0px;
+
+    container-type: inline-size;
+    padding-block: 0;
+  }
+
+  .pc--grid .pc__track {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--card-w));
+    justify-content: space-between;
+    gap: var(--space-3xl) var(--space-lg);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .pc--grid :is(.pc__track, .pc__card) {
+    --card-w: calc((100cqi - 3 * var(--space-lg)) / 4);
+  }
+
+  @media (max-width: 1100px) {
+    .pc--grid :is(.pc__track, .pc__card) {
+      --card-w: calc((100cqi - 2 * var(--space-lg)) / 3);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .pc__title,
     .pc__price {
@@ -318,6 +373,18 @@ const products = items
 
     .pc__card {
       --card-w: 72vw;
+    }
+
+    .pc--grid .pc__track {
+      row-gap: var(--space-xl);
+    }
+
+    .pc--grid :is(.pc__track, .pc__card) {
+      --card-w: calc((100cqi - var(--space-lg)) / 2);
+    }
+
+    .pc--grid .pc__title {
+      font-size: var(--font-size-lg);
     }
   }
 </style>

@@ -1,0 +1,137 @@
+/*
+ * Shared parts of the content pages (smycken, the product pages, kurser, om). They sit in the site
+ * frame and take its theme colours; there is no page-name title, the content starts under the header.
+ */
+.pg {
+  width: min(100%, var(--layout-site-width));
+  margin-inline: auto;
+  /* Clears the header, which floats over the top of every page. */
+  padding: var(--space-48) var(--layout-gutter) var(--space-24);
+}
+
+.pg :is(h1, h2, h3, p, ol, ul, dl, dd, figure) {
+  margin: 0;
+}
+
+.pg :is(ol, ul) {
+  padding: 0;
+  list-style: none;
+}
+
+.pg a {
+  color: inherit;
+}
+
+/* Headlines, set like the homepage's section titles (heavy italic comes from the frame). */
+.pg__heading {
+  font-family: var(--t-display);
+  font-size: var(--study-type-catalogue-note);
+  line-height: var(--font-leading-statement);
+  letter-spacing: var(--font-tracking-negative);
+  text-wrap: balance;
+}
+
+.pg__accent {
+  color: var(--t-accent);
+}
+
+/* Sentences in EB Garamond, scaled up to Jost's x-height. */
+.pg__text {
+  max-width: var(--layout-content-width);
+  font-family: var(--font-text);
+  font-size: var(--font-size-lg);
+  font-size-adjust: 0.46;
+  line-height: var(--font-leading-normal);
+}
+
+/* A small uppercase caption over a ruled list. */
+.pg__label {
+  justify-self: stretch;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--font-tracking-wider);
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Ruled rows like a ledger: a term on the left, its value on the right. */
+.pg__ledger > * {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block: var(--space-sm);
+  border-bottom: 1px solid color-mix(in oklch, currentColor 20%, transparent);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.pg__ledger :is(dt, .pg__term) {
+  opacity: 0.8;
+}
+
+/* The one call to action on a page, filled like the homepage's course button. */
+.pg__btn {
+  display: inline-block;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--t-btn-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--t-body);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+/* Outranks `.pg a`. */
+.pg .pg__btn {
+  color: var(--t-btn-fg);
+}
+
+.pg__btn:is(:hover, :focus-visible) {
+  background: var(--t-accent);
+}
+
+/* Ren's and Supreme's accents match their button colour, so the button fades instead. */
+:is(.a10--ren, .a10--supreme) .pg__btn:is(:hover, :focus-visible) {
+  background: var(--t-btn-bg);
+  opacity: 0.75;
+}
+
+/*
+ * A band of the courses colours, bleeding to the screen edges while its content keeps the margins
+ * (the border image paints the background out sideways; the frame clips it at the screen).
+ */
+.pg__band {
+  color: var(--t-courses-fg, inherit);
+  border-image: linear-gradient(var(--t-courses-bg, transparent) 0 0) fill 0 / 0 / 0 100vmax;
+}
+
+/* Supreme's band is white, so its accent and button turn red, as in the homepage's courses. */
+.a10--supreme .pg__band {
+  --t-accent: var(--jr-supreme-red);
+  --t-btn-bg: var(--jr-supreme-red);
+  --t-btn-fg: var(--jr-vit);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .pg {
+    padding-top: var(--space-32);
+    padding-bottom: var(--space-16);
+  }
+
+  .pg__text {
+    font-size: var(--font-size-base);
+  }
+}
