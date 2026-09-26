@@ -1,0 +1,239 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import RingProducts from "./RingProducts.astro";
+import CoursesSection from "./CoursesSection.astro";
+import AboutSection from "./AboutSection.astro";
+import InstagramSection from "./InstagramSection.astro";
+import StudyFooter from "./StudyFooter.astro";
+import handsCutout from "../../assets/img/studies/besthero-hands-cutout-study-v1.png";
+import fieldPhoto from "../../assets/img/insta/meadow.png";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<article class="a06" data-direction-panel="assembly-06" hidden>
+  <header class="a06__header">
+    <a class="a06__wordmark" href={baseUrl}>towtow</a>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+  </header>
+
+  <section class="a06__hero">
+    <div class="a06__band">
+      <Image
+        class="a06__photo"
+        src={fieldPhoto}
+        alt=""
+        widths={[800, 1600, 2400]}
+        sizes="100vw"
+        loading="eager"
+      />
+
+      <div class="a06__intro">
+        <h1>
+          silver, formad för
+          <span class="a06__marked">hand<svg viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M 150 12 C 92 -2 20 8 9 44 C 0 80 58 97 118 93 C 178 89 199 62 191 36 C 183 12 138 3 96 9" />
+            </svg></span>
+          i Järna
+        </h1>
+        <a href={withBase("/smycken")}>se smyckena →</a>
+      </div>
+    </div>
+
+    <Image
+      class="a06__hands"
+      src={handsCutout}
+      alt="Händer med flera handgjorda silverringar."
+      loading="eager"
+      fetchpriority="high"
+    />
+  </section>
+
+  <RingProducts items={items} variant="06" />
+  <CoursesSection variant="06" />
+  <AboutSection variant="06" />
+  <InstagramSection variant="06" />
+  <StudyFooter variant="06" />
+</article>
+
+<style>
+  .a06 {
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
+  }
+
+  .a06__header {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .a06__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a06__wordmark {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a06__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .a06__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - var(--space-24));
+    padding-top: var(--space-72);
+  }
+
+  .a06__hero :global(img.a06__hands) {
+    position: absolute;
+    z-index: var(--z-base);
+    top: calc(0px - var(--space-24) - var(--space-12));
+    left: 50%;
+    width: min(60vw, 64rem);
+    height: auto;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .a06__band {
+    position: relative;
+    flex: 1;
+    min-height: 20rem;
+    overflow: hidden;
+  }
+
+  .a06__band :global(img.a06__photo) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 62%;
+  }
+
+  .a06__intro {
+    position: absolute;
+    z-index: var(--z-raised);
+    inset: auto var(--layout-gutter) var(--space-12);
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    color: var(--study-ink);
+  }
+
+  .a06__intro h1 {
+    max-width: 11ch;
+    margin: 0;
+    font-family: var(--font-study-isenheim);
+    font-size: var(--study-type-poster-statement);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-statement);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a06__marked {
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .a06__marked svg {
+    position: absolute;
+    top: -0.22em;
+    left: -0.22em;
+    width: calc(100% + 0.44em);
+    height: calc(100% + 0.18em);
+    overflow: visible;
+    fill: none;
+    stroke: var(--study-cobalt);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .a06__marked path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .a06__intro a {
+    color: inherit;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a06__header nav {
+      padding-right: 0;
+    }
+
+    .a06__hero :global(img.a06__hands) {
+      width: 78vw;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .a06__header {
+      padding-block: var(--space-md);
+    }
+
+    .a06__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
+    }
+
+    .a06__hero {
+      padding-top: var(--space-48);
+    }
+
+    .a06__hero :global(img.a06__hands) {
+      top: calc(0px - var(--space-24));
+      width: clamp(30rem, 108vw, 40rem);
+    }
+
+    .a06__intro {
+      inset: var(--space-12) var(--layout-gutter) auto;
+      flex-direction: column;
+      align-items: start;
+    }
+
+    .a06__intro h1 {
+      font-size: var(--study-type-catalogue-hero-mobile);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .a06__header {
+      align-items: start;
+    }
+
+    .a06__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+  }
+</style>

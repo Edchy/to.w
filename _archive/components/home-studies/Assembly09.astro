@@ -1,0 +1,266 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import RingProducts from "./RingProducts.astro";
+import CoursesSection from "./CoursesSection.astro";
+import AboutSection from "./AboutSection.astro";
+import InstagramSection from "./InstagramSection.astro";
+import StudyFooter from "./StudyFooter.astro";
+import handsCutout from "../../assets/img/studies/besthero-hands-cutout-study-v1.png";
+import wadingBird from "../../assets/img/studies/wading-bird-pencil-study-v1.png";
+import sheep from "../../assets/img/insta/sheep.jpeg";
+import trattoria from "../../assets/img/insta/trattoria.jpeg";
+import mountain from "../../assets/img/insta/SCR-20260924-nned.jpeg";
+import dusk from "../../assets/img/insta/SCR-20260924-nlrt.jpeg";
+import sunflower from "../../assets/img/insta/flower.jpeg";
+import valley from "../../assets/img/insta/SCR-20260924-nmkp.jpeg";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+
+const prints = [
+  { src: sheep, alt: "Två får som betar hö." },
+  { src: sunflower, alt: "En hand med silverring håller en gul blomma mot svart bakgrund." },
+  { src: mountain, alt: "Ett snötäckt berg i dis." },
+  { src: trattoria, alt: "En gul bil framför en trattoria." },
+  { src: dusk, alt: "Kala träd i siluett mot en orange solnedgång." },
+  { src: valley, alt: "En grön dal med moln över bergen." },
+];
+---
+
+<article class="a09" data-direction-panel="assembly-09" hidden>
+  <header class="a09__header">
+    <a class="a09__wordmark" href={baseUrl}>towtow</a>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+  </header>
+
+  <section class="a09__hero">
+    <div class="a09__intro">
+      <h1>Ett arkiv av händer, ringar och platser.</h1>
+      <p>
+        Tove Wätte gör smycken i återvunnet silver i Järna.
+        <a href={withBase("/smycken")}>se smyckena →</a>
+      </p>
+      <Image class="a09__bird" src={wadingBird} alt="" aria-hidden="true" />
+    </div>
+
+    <ol class="a09__sheet">
+      {prints.map((print, index) => (
+        <li>
+          <Image src={print.src} alt={print.alt} widths={[400, 800]} sizes="(max-width: 700px) 45vw, 18vw" loading="eager" />
+          <span>{String(index + 1).padStart(2, "0")}</span>
+        </li>
+      ))}
+    </ol>
+
+    <Image
+      class="a09__hands"
+      src={handsCutout}
+      alt="Händer med flera handgjorda silverringar."
+      loading="eager"
+      fetchpriority="high"
+    />
+  </section>
+
+  <RingProducts items={items} variant="09" />
+  <CoursesSection variant="09" />
+  <AboutSection variant="09" />
+  <InstagramSection variant="09" />
+  <StudyFooter variant="09" />
+</article>
+
+<style>
+  .a09 {
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
+  }
+
+  .a09__header {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .a09__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a09__wordmark {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a09__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .a09__hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--space-xl);
+    align-items: end;
+    width: min(100%, var(--layout-site-width));
+    min-height: calc(100svh - var(--space-24));
+    margin-inline: auto;
+    padding: var(--space-12) var(--layout-gutter) var(--space-16);
+  }
+
+  .a09__intro {
+    position: relative;
+    z-index: var(--z-raised);
+  }
+
+  .a09__intro h1 {
+    max-width: 16ch;
+    margin: 0;
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a09__intro p {
+    max-width: 30ch;
+    margin: var(--space-md) 0 0;
+    line-height: var(--font-leading-snug);
+  }
+
+  .a09__intro a {
+    color: var(--study-cobalt);
+    white-space: nowrap;
+  }
+
+  .a09__intro :global(img.a09__bird) {
+    display: block;
+    width: clamp(7rem, 11vw, 11rem);
+    height: auto;
+    margin-top: var(--space-xl);
+  }
+
+  /* Contact sheet: three columns, each print nudged so the grid reads as pinned, not typeset. */
+  .a09__sheet {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-lg);
+    align-items: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .a09__sheet li {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .a09__sheet li:nth-child(2) {
+    margin-top: var(--space-12);
+    rotate: 1.5deg;
+  }
+
+  .a09__sheet li:nth-child(4) {
+    rotate: -1.5deg;
+  }
+
+  .a09__sheet li:nth-child(6) {
+    margin-top: calc(0px - var(--space-8));
+  }
+
+  .a09__sheet :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .a09__sheet span {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+  }
+
+  .a09__hero :global(img.a09__hands) {
+    position: absolute;
+    z-index: var(--z-base);
+    top: calc(0px - var(--space-24) - var(--space-12));
+    right: var(--layout-gutter);
+    width: min(52vw, 56rem);
+    height: auto;
+    pointer-events: none;
+  }
+
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a09__header nav {
+      padding-right: 0;
+    }
+
+    .a09__hero {
+      grid-template-columns: 1fr;
+    }
+
+    .a09__hero :global(img.a09__hands) {
+      width: 70vw;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .a09__header {
+      padding-block: var(--space-md);
+    }
+
+    .a09__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
+    }
+
+    .a09__hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      padding-top: var(--space-48);
+    }
+
+    .a09__sheet {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+
+    .a09__hero :global(img.a09__hands) {
+      top: calc(0px - var(--space-24));
+      right: calc(0px - var(--space-8));
+      width: clamp(30rem, 108vw, 40rem);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .a09__header {
+      align-items: start;
+    }
+
+    .a09__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+  }
+</style>

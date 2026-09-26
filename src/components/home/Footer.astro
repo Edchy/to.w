@@ -1,0 +1,87 @@
+---
+// The homepage footer: the logo, the site links, contact, and a small credit line.
+// Both logos are rendered; the page theme shows one (see .logo-light / .logo-pink in Home.astro).
+import logoLight from "../../assets/img/brand/logo-white.svg";
+import logoPink from "../../assets/img/brand/logo-pink.svg";
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
+---
+
+<footer class="f10">
+  <a class="f10__logo" href={baseUrl}>
+    <img class="logo-light" src={logoLight.src} width={logoLight.width} height={logoLight.height} alt="to.w – till startsidan" loading="lazy" />
+    <img class="logo-pink" src={logoPink.src} width={logoPink.width} height={logoPink.height} alt="to.w – till startsidan" loading="lazy" />
+  </a>
+
+  <nav class="f10__nav" aria-label="Sidfot">
+    <a href={withBase("/smycken")}>smycken</a>
+    <a href={withBase("/kurser")}>kurser</a>
+    <a href={withBase("/om")}>om</a>
+  </nav>
+
+  <div class="f10__contact">
+    <a href="mailto:tove.watte@gmail.com">tove.watte@gmail.com</a>
+    <a href="https://instagram.com/tovewatte">@tovewatte</a>
+  </div>
+
+  <p class="f10__small">Tove Wätte · © {new Date().getFullYear()}</p>
+</footer>
+
+<style>
+  .f10 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--space-xl) var(--space-3xl);
+    align-items: start;
+    margin-inline: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+    padding-block: var(--space-16) var(--space-10);
+    color: var(--t-footer-fg, inherit);
+    background: var(--t-footer-bg, transparent);
+    /* Full-bleed background while the content keeps its margins. */
+    box-shadow: 0 0 0 100vmax var(--t-footer-bg, transparent);
+    clip-path: inset(0 -100vmax);
+    border-top: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  .f10 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .f10 a:hover,
+  .f10 a:focus-visible {
+    text-decoration: underline;
+  }
+
+  .f10__logo img {
+    display: block;
+    width: auto;
+    height: var(--space-20);
+  }
+
+  .f10__nav,
+  .f10__contact {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .f10__small {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 700px) {
+    .f10 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .f10__logo {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

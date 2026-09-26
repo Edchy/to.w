@@ -1,0 +1,229 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import RingProducts from "./RingProducts.astro";
+import CoursesSection from "./CoursesSection.astro";
+import AboutSection from "./AboutSection.astro";
+import InstagramSection from "./InstagramSection.astro";
+import StudyFooter from "./StudyFooter.astro";
+import handsCutout from "../../assets/img/studies/besthero-hands-cutout-study-v1.png";
+import moonPhoto from "../../assets/img/insta/SCR-20260924-nkrm.png";
+import glowBird from "../../assets/img/studies/footer-bird-pencil-study-v2.png";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<article class="a07" data-direction-panel="assembly-07" hidden>
+  <header class="a07__header">
+    <a class="a07__wordmark" href={baseUrl}>towtow</a>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+  </header>
+
+  <section class="a07__hero">
+    <Image
+      class="a07__moon"
+      src={moonPhoto}
+      alt="Halvmånen på en mörk kvällshimmel."
+      widths={[800, 1400]}
+      sizes="(max-width: 700px) 90vw, 46vw"
+      loading="eager"
+    />
+
+    <Image
+      class="a07__hands"
+      src={handsCutout}
+      alt="Händer med flera handgjorda silverringar."
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <div class="a07__intro">
+      <h1>Silver som fångar kvällsljuset.</h1>
+      <p>
+        Smycken i återvunnet silver, formade för hand i Järna.
+        <a href={withBase("/smycken")}>se smyckena →</a>
+      </p>
+    </div>
+
+    <Image class="a07__bird" src={glowBird} alt="" aria-hidden="true" />
+  </section>
+
+  <RingProducts items={items} variant="07" />
+  <CoursesSection variant="07" />
+  <AboutSection variant="07" />
+  <InstagramSection variant="07" />
+  <StudyFooter variant="07" />
+</article>
+
+<style>
+  .a07 {
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--study-paper-bright);
+    background: var(--study-ink);
+    font-family: var(--font-study-sans);
+  }
+
+  .a07__header {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .a07__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a07__wordmark {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a07__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .a07__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: calc(100svh - var(--space-24));
+    padding: 0 var(--layout-gutter) var(--space-16);
+  }
+
+  /* The photo's night sky is close to the page ink, so its edges dissolve into the page. */
+  .a07__hero :global(img.a07__moon) {
+    position: absolute;
+    z-index: var(--z-base);
+    top: calc(0px - var(--space-12));
+    right: 0;
+    width: min(56vw, 52rem);
+    height: auto;
+    mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 68%);
+  }
+
+  .a07__hero :global(img.a07__hands) {
+    position: absolute;
+    z-index: var(--z-base);
+    top: calc(0px - var(--space-24) - var(--space-12));
+    left: 8%;
+    width: min(58vw, 60rem);
+    height: auto;
+    pointer-events: none;
+  }
+
+  .a07__intro {
+    position: relative;
+    z-index: var(--z-raised);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+  }
+
+  .a07__intro h1 {
+    max-width: 16ch;
+    margin: 0;
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a07__intro p {
+    max-width: 34ch;
+    margin: var(--space-lg) 0 0;
+    color: var(--study-paper);
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-snug);
+  }
+
+  .a07__intro a {
+    color: var(--study-yellow);
+    white-space: nowrap;
+  }
+
+  .a07__hero :global(img.a07__bird) {
+    position: absolute;
+    right: var(--layout-gutter);
+    bottom: var(--space-12);
+    width: clamp(8rem, 13vw, 13rem);
+    height: auto;
+  }
+
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a07__header nav {
+      padding-right: 0;
+    }
+
+    .a07__hero :global(img.a07__hands) {
+      left: 0;
+      width: 78vw;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .a07__header {
+      padding-block: var(--space-md);
+    }
+
+    .a07__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
+    }
+
+    .a07__hero {
+      padding-top: var(--space-72);
+      padding-bottom: var(--space-24);
+    }
+
+    .a07__hero :global(img.a07__moon) {
+      top: var(--space-16);
+      width: 90vw;
+    }
+
+    .a07__hero :global(img.a07__hands) {
+      top: calc(0px - var(--space-24));
+      left: calc(0px - var(--space-12));
+      width: clamp(30rem, 108vw, 40rem);
+    }
+
+    .a07__intro h1 {
+      font-size: var(--font-size-3xl);
+    }
+
+    .a07__hero :global(img.a07__bird) {
+      bottom: var(--space-md);
+      width: 7rem;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .a07__header {
+      align-items: start;
+    }
+
+    .a07__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+  }
+</style>

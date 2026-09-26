@@ -1,0 +1,222 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import RingProducts from "./RingProducts.astro";
+import CoursesSection from "./CoursesSection.astro";
+import AboutSection from "./AboutSection.astro";
+import InstagramSection from "./InstagramSection.astro";
+import StudyFooter from "./StudyFooter.astro";
+import handsCutout from "../../assets/img/studies/besthero-hands-cutout-study-v1.png";
+import cheetah from "../../assets/img/studies/cobalt-cheetah-study-v1.png";
+import treePhoto from "../../assets/img/insta/tree.png";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<article class="assembly" data-direction-panel="assembly" hidden>
+  <header class="assembly__header">
+    <a class="assembly__wordmark" href={baseUrl}>towtow</a>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+  </header>
+
+  <section class="assembly__hero">
+    <div class="assembly__intro">
+      <Image
+        class="assembly__tree"
+        src={treePhoto}
+        alt="En ensam tall mot en blekt vintervit himmel."
+        widths={[480, 960]}
+        sizes="(max-width: 700px) 64vw, 26rem"
+        loading="eager"
+      />
+      <h1>silver, formad för&nbsp;hand</h1>
+      <p>
+        Tove Wätte gör smycken i återvunnet silver och håller kurser i Järna.
+        <a href={withBase("/smycken")}>se smyckena →</a>
+      </p>
+    </div>
+
+    <Image
+      class="assembly__hands"
+      src={handsCutout}
+      alt="Händer med flera handgjorda silverringar."
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <Image class="assembly__cheetah" src={cheetah} alt="" aria-hidden="true" />
+  </section>
+
+  <RingProducts items={items} variant="04" />
+  <CoursesSection variant="04" />
+  <AboutSection variant="04" />
+  <InstagramSection variant="04" />
+  <StudyFooter variant="04" />
+</article>
+
+<style>
+  .assembly {
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
+  }
+
+  .assembly__header {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .assembly__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .assembly__wordmark {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .assembly__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .assembly__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: calc(100svh - var(--space-24));
+    padding: 0 var(--layout-gutter) var(--space-24);
+  }
+
+  .assembly__hero :global(img.assembly__hands) {
+    position: absolute;
+    z-index: var(--z-base);
+    top: calc(0px - var(--space-24) - var(--space-12));
+    right: var(--layout-gutter);
+    width: min(64vw, 70rem);
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    filter: sepia(0.18) saturate(1.25) hue-rotate(165deg);
+  }
+
+  .assembly__intro {
+    position: relative;
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+  }
+
+  .assembly__intro h1 {
+    margin: 0;
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .assembly__intro :global(img.assembly__tree) {
+    display: block;
+    width: clamp(16rem, 26vw, 26rem);
+    height: auto;
+    margin-bottom: var(--space-lg);
+  }
+
+  .assembly__intro p {
+    position: relative;
+    z-index: var(--z-raised);
+    max-width: 34ch;
+    margin: var(--space-lg) 0 0;
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-snug);
+  }
+
+  .assembly__intro a {
+    color: var(--study-cobalt);
+    white-space: nowrap;
+  }
+
+  .assembly__hero :global(img.assembly__cheetah) {
+    position: absolute;
+    right: var(--layout-gutter);
+    bottom: var(--space-8);
+    width: clamp(9rem, 16vw, 16rem);
+    height: auto;
+  }
+
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .assembly__header nav {
+      padding-right: 0;
+    }
+
+    .assembly__hero :global(img.assembly__hands) {
+      right: calc(0px - var(--space-6));
+      width: 78vw;
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .assembly__header {
+      align-items: center;
+      padding-block: var(--space-md);
+    }
+
+    .assembly__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
+    }
+
+    .assembly__hero {
+      padding-top: var(--space-48);
+      padding-bottom: var(--space-32);
+    }
+
+    .assembly__intro :global(img.assembly__tree) {
+      width: 64vw;
+      margin-left: auto;
+    }
+
+    .assembly__hero :global(img.assembly__hands) {
+      top: calc(0px - var(--space-32));
+      right: calc(0px - var(--space-8));
+      width: clamp(34rem, 112vw, 44rem);
+      max-width: none;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .assembly__header {
+      align-items: start;
+    }
+
+    .assembly__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+  }
+</style>

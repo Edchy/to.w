@@ -1,0 +1,353 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { StudyVariant } from "./types";
+import tree from "../../assets/img/insta/tree.png";
+import meadow from "../../assets/img/insta/meadow.png";
+import sunflower from "../../assets/img/insta/flower.jpeg";
+import moon from "../../assets/img/insta/SCR-20260924-nkrm.png";
+import barley from "../../assets/img/insta/SCR-20260924-nlix.jpeg";
+import pines from "../../assets/img/insta/SCR-20260924-nlct.jpeg";
+import sheep from "../../assets/img/insta/sheep.jpeg";
+import dusk from "../../assets/img/insta/SCR-20260924-nlrt.jpeg";
+import valley from "../../assets/img/insta/SCR-20260924-nmkp.jpeg";
+import trattoria from "../../assets/img/insta/trattoria.jpeg";
+import skyBird from "../../assets/img/insta/SCR-20260924-nmuk.jpeg";
+import mountain from "../../assets/img/insta/SCR-20260924-nned.jpeg";
+import chair from "../../assets/img/studies/cobalt-chair-study-v1.png";
+import cheetah from "../../assets/img/studies/cobalt-cheetah-study-v1.png";
+import pinkBird from "../../assets/img/studies/pink-seed-bird-study-v1.png";
+import pencilBird from "../../assets/img/studies/footer-bird-pencil-study-v1.png";
+import glowBird from "../../assets/img/studies/footer-bird-pencil-study-v2.png";
+import wadingBird from "../../assets/img/studies/wading-bird-pencil-study-v1.png";
+import tableCup from "../../assets/img/studies/cobalt-table-cup-study-v1.png";
+
+type Post = { src: ImageMetadata; alt: string };
+type Props = { variant: StudyVariant };
+
+const { variant } = Astro.props;
+const profileUrl = "https://instagram.com/tovewatte";
+
+const post = {
+  tree: { src: tree, alt: "En ensam tall mot en blek himmel." },
+  meadow: { src: meadow, alt: "En frostig äng i dimma." },
+  sunflower: { src: sunflower, alt: "En hand med silverring håller en gul blomma mot svart bakgrund." },
+  moon: { src: moon, alt: "Halvmånen på en mörk himmel." },
+  barley: { src: barley, alt: "Ett kornfält i skymningen." },
+  pines: { src: pines, alt: "Tallar i siluett mot en solnedgång över sjön." },
+  sheep: { src: sheep, alt: "Två får som betar hö." },
+  dusk: { src: dusk, alt: "Kala träd mot en orange solnedgång." },
+  valley: { src: valley, alt: "En grön dal med moln över bergen." },
+  trattoria: { src: trattoria, alt: "En gul bil framför en trattoria." },
+  skyBird: { src: skyBird, alt: "En liten fågel på en kal gren mot blå himmel." },
+  mountain: { src: mountain, alt: "Ett snötäckt berg i dis." },
+} satisfies Record<string, Post>;
+
+const looks: Record<StudyVariant, { posts: Post[]; decor?: ImageMetadata }> = {
+  "01": { posts: [post.sunflower, post.sheep, post.tree, post.meadow], decor: chair },
+  "02": { posts: [post.pines, post.trattoria, post.sunflower, post.moon], decor: cheetah },
+  "03": { posts: [post.valley, post.mountain, post.sheep, post.tree, post.meadow, post.barley], decor: tableCup },
+  "04": { posts: [post.tree, post.meadow, post.sheep, post.dusk, post.sunflower], decor: pinkBird },
+  "05": { posts: [post.skyBird, post.sunflower, post.moon] },
+  "06": { posts: [post.meadow, post.valley, post.mountain, post.barley, post.tree, post.pines], decor: pencilBird },
+  "07": { posts: [post.moon, post.dusk, post.pines, post.sunflower], decor: glowBird },
+  "08": { posts: [post.skyBird, post.trattoria, post.sunflower, post.barley], decor: pinkBird },
+  "09": {
+    posts: [post.sheep, post.sunflower, post.mountain, post.trattoria, post.dusk, post.valley, post.moon, post.pines],
+    decor: wadingBird,
+  },
+};
+const look = looks[variant];
+---
+
+<section class:list={["insta", `insta--v${variant}`]} aria-labelledby={`insta-title-${variant}`}>
+  <div class="insta__head">
+    <h2 id={`insta-title-${variant}`}>Instagram</h2>
+    <p>Nya smycken, kursdatum och vardag i verkstaden.</p>
+    <a href={profileUrl}>följ @tovewatte →</a>
+  </div>
+
+  <ul class="insta__grid">
+    {look.posts.map((item) => (
+      <li>
+        <a href={profileUrl} tabindex="-1" aria-hidden="true">
+          <Image src={item.src} alt={item.alt} widths={[320, 640]} sizes="(max-width: 700px) 50vw, 25vw" loading="lazy" />
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  {look.decor && <Image class="insta__decor" src={look.decor} alt="" aria-hidden="true" loading="lazy" />}
+</section>
+
+<style>
+  /* Base: heading row over a four-column square grid. Every image links to the profile. */
+  .insta {
+    --sec-bg: transparent;
+    --sec-fg: inherit;
+    --sec-font: var(--font-study-serif);
+    --sec-accent: var(--study-cobalt);
+    --insta-cols: 4;
+
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    padding: var(--space-24) max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+    overflow: clip;
+    color: var(--sec-fg);
+    background: var(--sec-bg);
+    isolation: isolate;
+  }
+
+  .insta__head {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm) var(--space-xl);
+  }
+
+  .insta h2 {
+    margin: 0;
+    font-family: var(--sec-font);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+  }
+
+  .insta__head p {
+    margin: 0;
+    flex: 1;
+  }
+
+  .insta a {
+    color: var(--sec-accent);
+  }
+
+  .insta__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--insta-cols), minmax(0, 1fr));
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .insta__grid a {
+    display: block;
+  }
+
+  .insta__grid :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: scale var(--transition-slow);
+  }
+
+  @media (hover: hover) {
+    .insta__grid a:hover :global(img) {
+      scale: 1.02;
+    }
+  }
+
+  /* When the decoration sits top right, the heading row leaves room so it never covers the link. */
+  .insta:not(.insta--v01):has(.insta__decor) .insta__head {
+    padding-right: clamp(8rem, 13vw, 13rem);
+  }
+
+  .insta :global(img.insta__decor) {
+    position: absolute;
+    z-index: var(--z-raised);
+    right: var(--layout-gutter);
+    top: var(--space-12);
+    width: clamp(7rem, 11vw, 11rem);
+    height: auto;
+    pointer-events: none;
+  }
+
+  /* 01 — notebook: the chair sketch leaning on the grid. */
+  .insta--v01 :global(img.insta__decor) {
+    top: auto;
+    bottom: var(--space-12);
+    rotate: -6deg;
+  }
+
+  /* 02 — poster: pink band, Bodoni, cheetah prowling across the top. */
+  .insta--v02 {
+    --sec-bg: var(--study-pink);
+    --sec-fg: var(--study-ink);
+    --sec-font: var(--font-study-fashion);
+    --sec-accent: var(--study-ink);
+  }
+
+  .insta--v02 h2 {
+    font-size: var(--study-type-poster-course);
+  }
+
+  .insta--v02 {
+    padding-top: var(--space-48);
+  }
+
+  .insta--v02 :global(img.insta__decor) {
+    top: var(--space-8);
+    width: clamp(8rem, 14vw, 14rem);
+  }
+
+  /* 03 — catalogue: six small grayscale thumbnails in one row. */
+  .insta--v03 {
+    --sec-bg: var(--study-paper-bright);
+    --insta-cols: 6;
+
+    border-top: 1px solid var(--study-ink);
+  }
+
+  .insta--v03 .insta__grid :global(img) {
+    filter: grayscale(1);
+  }
+
+  /* 04 — collage: prints scattered and tilted, not a grid. */
+  .insta--v04 {
+    --insta-cols: 5;
+  }
+
+  .insta--v04 .insta__grid {
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .insta--v04 .insta__grid li:nth-child(odd) {
+    margin-top: var(--space-12);
+    rotate: -2deg;
+  }
+
+  .insta--v04 .insta__grid li:nth-child(even) {
+    rotate: 2.5deg;
+  }
+
+  .insta--v04 .insta__grid :global(img) {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* 05 — typed: three wide frames, all text in the grotesk. */
+  .insta--v05 {
+    --sec-font: var(--font-study-sans);
+    --insta-cols: 3;
+
+    font-family: var(--font-study-sans);
+  }
+
+  .insta--v05 .insta__grid :global(img) {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* 06 — fog: a single scrolling strip of tall frames. */
+  .insta--v06 {
+    --sec-font: var(--font-study-isenheim);
+  }
+
+  .insta--v06 .insta__grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .insta--v06 .insta__grid li {
+    flex: 0 0 clamp(12rem, 22vw, 18rem);
+    scroll-snap-align: start;
+  }
+
+  .insta--v06 .insta__grid :global(img) {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* 07 — night: ink field, yellow link, the glowing bird. */
+  .insta--v07 {
+    --sec-bg: var(--study-ink);
+    --sec-fg: var(--study-paper-bright);
+    --sec-accent: var(--study-yellow);
+  }
+
+  /* 08 — cobalt: full cobalt band, paper type, pink bird. */
+  .insta--v08 {
+    --sec-bg: var(--study-cobalt);
+    --sec-fg: var(--study-paper-bright);
+    --sec-font: var(--font-study-isenheim);
+    --sec-accent: var(--study-paper-bright);
+  }
+
+  .insta--v08 h2 {
+    font-size: var(--study-type-poster-statement);
+  }
+
+  /* 09 — contact sheet: eight small numbered frames. */
+  .insta--v09 {
+    --insta-cols: 8;
+
+    counter-reset: frame;
+  }
+
+  .insta--v09 .insta__grid li {
+    counter-increment: frame;
+  }
+
+  .insta--v09 .insta__grid li::after {
+    content: counter(frame, decimal-leading-zero);
+    display: block;
+    margin-top: var(--space-xs);
+    font-family: var(--font-study-sans);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+  }
+
+  .insta--v09 .insta__grid :global(img) {
+    aspect-ratio: 4 / 5;
+  }
+
+  .insta--v09 :global(img.insta__decor) {
+    top: var(--space-8);
+    width: clamp(6rem, 8vw, 8rem);
+  }
+
+  @media (max-width: 700px) {
+    .insta {
+      --insta-cols: 2;
+
+      padding-block: var(--space-16);
+    }
+
+    .insta--v03,
+    .insta--v09 {
+      --insta-cols: 3;
+    }
+
+    .insta--v05 {
+      --insta-cols: 1;
+    }
+
+    .insta--v02 h2,
+    .insta--v08 h2 {
+      font-size: var(--font-size-display);
+    }
+
+    .insta--v04 .insta__grid li:nth-child(odd) {
+      margin-top: var(--space-6);
+    }
+
+    /* On phones the decoration joins the flow at the end of the section instead of floating. */
+    .insta .insta__head {
+      padding-right: 0;
+    }
+
+    .insta :global(img.insta__decor) {
+      position: relative;
+      top: auto;
+      right: auto;
+      bottom: auto;
+      justify-self: end;
+      width: 6rem;
+    }
+  }
+</style>

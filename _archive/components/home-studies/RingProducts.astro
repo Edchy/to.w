@@ -1,0 +1,418 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { CollectionEntry } from "astro:content";
+import { getProductSlug } from "../../config/site";
+import ring from "../../assets/img/studies/silver-ring-cutout-study-v1.png";
+import tree from "../../assets/img/insta/tree.png";
+import meadow from "../../assets/img/insta/meadow.png";
+import sheep from "../../assets/img/insta/sheep.jpeg";
+import mountain from "../../assets/img/insta/SCR-20260924-nned.jpeg";
+import valley from "../../assets/img/insta/SCR-20260924-nmkp.jpeg";
+import sunflower from "../../assets/img/insta/flower.jpeg";
+import dusk from "../../assets/img/insta/SCR-20260924-nlrt.jpeg";
+import barley from "../../assets/img/insta/SCR-20260924-nlix.jpeg";
+import moon from "../../assets/img/insta/SCR-20260924-nkrm.png";
+import skyBird from "../../assets/img/insta/SCR-20260924-nmuk.jpeg";
+import trattoria from "../../assets/img/insta/trattoria.jpeg";
+import chair from "../../assets/img/studies/cobalt-chair-study-v1.png";
+import poolDeck from "../../assets/img/studies/cobalt-pool-deck-study-v1.png";
+import tableCup from "../../assets/img/studies/cobalt-table-cup-study-v1.png";
+import wateringCan from "../../assets/img/studies/cobalt-watering-can-study-v1.png";
+import cheetah from "../../assets/img/studies/cobalt-cheetah-study-v1.png";
+
+type Variant = "01" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+type Stage =
+  | { kind: "none" }
+  | { kind: "color"; color: string }
+  | { kind: "photo"; src: ImageMetadata }
+  | { kind: "drawing"; src: ImageMetadata };
+type Props = { items: CollectionEntry<"jewelry">[]; variant: Variant };
+
+const { items, variant } = Astro.props;
+const fmt = new Intl.NumberFormat("sv-SE").format;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+
+const none: Stage = { kind: "none" };
+const photo = (src: ImageMetadata): Stage => ({ kind: "photo", src });
+const color = (token: string): Stage => ({ kind: "color", color: `var(${token})` });
+const drawing = (src: ImageMetadata): Stage => ({ kind: "drawing", src });
+
+// Each variant cycles through its own list of backgrounds behind the placeholder ring.
+const stages: Record<Variant, Stage[]> = {
+  "01": [none],
+  "03": [none],
+  "04": [tree, meadow, sheep, mountain, valley, sunflower, dusk, barley].map(photo),
+  "05": ["--study-cobalt", "--study-pink", "--study-yellow", "--study-wine"].map(color),
+  "06": [none],
+  "07": [none],
+  "08": [chair, poolDeck, tableCup, wateringCan, cheetah].map(drawing),
+  "09": [
+    photo(moon),
+    color("--study-yellow"),
+    none,
+    photo(skyBird),
+    color("--study-pink"),
+    photo(trattoria),
+    none,
+    color("--study-cobalt"),
+  ],
+};
+
+const products = items.map((entry, index) => {
+  const list = stages[variant];
+  return {
+    title: entry.data.title,
+    price: fmt(entry.data.price),
+    href: withBase(`/smycken/${getProductSlug(entry.id)}/`),
+    stage: list[index % list.length],
+  };
+});
+---
+
+<section class:list={["rings", `rings--v${variant}`]} aria-labelledby={`rings-title-${variant}`}>
+  {variant === "06" && (
+    <Image class="rings__backdrop" src={valley} alt="" widths={[1200, 2400]} sizes="100vw" loading="lazy" />
+  )}
+
+  <div class="rings__head">
+    <h2 id={`rings-title-${variant}`}>Smycken</h2>
+    <a href={withBase("/smycken/")}>alla smycken →</a>
+  </div>
+
+  <ul class="rings__list">
+    {products.map((product) => (
+      <li class="rings__item">
+        <a href={product.href}>
+          <span
+            class:list={["rings__stage", `rings__stage--${product.stage.kind}`]}
+            style={product.stage.kind === "color" ? `--stage-bg: ${product.stage.color}` : undefined}
+          >
+            {product.stage.kind === "photo" && (
+              <Image class="rings__photo" src={product.stage.src} alt="" widths={[480, 960]} sizes="(max-width: 700px) 50vw, 25vw" loading="lazy" />
+            )}
+            {product.stage.kind === "drawing" && (
+              <Image class="rings__drawing" src={product.stage.src} alt="" widths={[480, 960]} sizes="(max-width: 700px) 50vw, 25vw" loading="lazy" />
+            )}
+            <Image
+              class="rings__ring"
+              src={ring}
+              alt={`Silverring som platshållare för ${product.title}`}
+              widths={[320, 640]}
+              sizes="(max-width: 700px) 40vw, 20vw"
+              loading="lazy"
+            />
+          </span>
+          <span class="rings__meta">
+            <span class="rings__title">{product.title}</span>
+            <span>{product.price} kr</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  /* Base: four-column grid of 4:5 stages with the ring centred. Variants below adjust. */
+  .rings {
+    --rings-font: var(--font-study-serif);
+    --rings-ring-width: 62%;
+
+    position: relative;
+    padding: var(--space-24) var(--layout-gutter);
+    isolation: isolate;
+  }
+
+  .rings__head,
+  .rings__list {
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+  }
+
+  .rings__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .rings__head h2 {
+    margin: 0;
+    font-family: var(--rings-font);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+  }
+
+  .rings__head a {
+    color: inherit;
+  }
+
+  .rings__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-xl) var(--space-lg);
+    margin-block: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rings__item a {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .rings__stage {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--stage-bg, transparent);
+  }
+
+  .rings__stage :global(img.rings__photo) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .rings__stage :global(img.rings__drawing) {
+    position: absolute;
+    inset: 12% 5% auto;
+    width: 90%;
+    height: auto;
+    rotate: -6deg;
+  }
+
+  .rings__item:nth-child(even) .rings__stage :global(img.rings__drawing) {
+    rotate: 5deg;
+  }
+
+  .rings__stage :global(img.rings__ring) {
+    position: absolute;
+    z-index: var(--z-raised);
+    top: 50%;
+    left: 50%;
+    width: var(--rings-ring-width);
+    height: auto;
+    translate: -50% -50%;
+    transition: scale var(--transition-slow), rotate var(--transition-slow);
+  }
+
+  .rings__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .rings__title {
+    font-family: var(--rings-font);
+    font-size: var(--font-size-lg);
+  }
+
+  @media (hover: hover) {
+    .rings__item a:hover :global(img.rings__ring) {
+      scale: 1.04;
+      rotate: -3deg;
+    }
+
+    .rings__item a:hover .rings__title {
+      color: var(--study-cobalt);
+    }
+  }
+
+  /* 01 — no background: rings float on the notebook paper, staggered and tilted. */
+  .rings--v01 {
+    --rings-ring-width: 88%;
+  }
+
+  .rings--v01 .rings__list {
+    gap: var(--space-16) var(--space-xl);
+  }
+
+  .rings--v01 .rings__stage {
+    aspect-ratio: 1;
+  }
+
+  .rings--v01 .rings__item:nth-child(even) {
+    margin-top: var(--space-16);
+  }
+
+  .rings--v01 .rings__item:nth-child(3n) :global(img.rings__ring) {
+    rotate: 8deg;
+  }
+
+  .rings--v01 .rings__item:nth-child(3n + 1) :global(img.rings__ring) {
+    rotate: -6deg;
+  }
+
+  /* 03 — filmstrip: one sideways-scrolling row of numbered frames. */
+  .rings--v03 {
+    counter-reset: frame;
+  }
+
+  .rings--v03 .rings__list {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding-bottom: var(--space-md);
+    scroll-snap-type: x mandatory;
+  }
+
+  .rings--v03 .rings__item {
+    flex: 0 0 clamp(14rem, 22vw, 19rem);
+    scroll-snap-align: start;
+    counter-increment: frame;
+  }
+
+  .rings--v03 .rings__stage {
+    background: var(--study-paper-bright);
+    border: 1px solid var(--study-ink);
+  }
+
+  .rings--v03 .rings__stage::before {
+    content: counter(frame, decimal-leading-zero);
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    font-family: var(--font-study-sans);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+  }
+
+  /* 04 — a different photograph behind each ring. */
+  .rings--v04 {
+    --rings-ring-width: 56%;
+  }
+
+  /* 05 — solid colour blocks set edge to edge, heavy Besley titles. */
+  .rings--v05 .rings__list {
+    gap: 0;
+  }
+
+  .rings--v05 .rings__meta {
+    padding-inline: var(--space-md);
+  }
+
+  .rings--v05 .rings__head h2,
+  .rings--v05 .rings__title {
+    font-weight: var(--font-weight-black);
+  }
+
+  /* 06 — one shared misty photograph, rings floating across it without frames. */
+  .rings--v06 {
+    --rings-font: var(--font-study-isenheim);
+    --rings-ring-width: 78%;
+
+    padding-block: var(--space-32);
+    overflow: hidden;
+  }
+
+  .rings--v06 :global(img.rings__backdrop) {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .rings--v06::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: var(--study-paper);
+    opacity: 0.55;
+  }
+
+  /* 07 — night: rings on ink, each lit from within. */
+  .rings--v07 {
+    color: var(--study-paper-bright);
+    background: var(--study-ink);
+  }
+
+  .rings--v07 .rings__stage {
+    background: radial-gradient(circle at 50% 50%, var(--study-ink-soft), transparent 62%);
+  }
+
+  /* 08 — a cobalt sketch behind each ring. */
+  .rings--v08 {
+    --rings-font: var(--font-study-isenheim);
+    --rings-ring-width: 54%;
+  }
+
+  .rings--v08 .rings__stage {
+    background: var(--study-paper-bright);
+  }
+
+  /* 09 — collage: mixed backgrounds, some tiles twice as wide. */
+  .rings--v09 .rings__list {
+    --cols: 4;
+    --col-gap: var(--space-lg);
+
+    grid-auto-flow: dense;
+    column-gap: var(--col-gap);
+    container-type: inline-size;
+  }
+
+  /* Every tile shares one height (a 4:5 single column), so double-wide tiles line up with their row. */
+  .rings--v09 .rings__stage {
+    aspect-ratio: auto;
+    height: calc((100cqi - (var(--cols) - 1) * var(--col-gap)) / var(--cols) * 1.25);
+  }
+
+  .rings--v09 .rings__item:is(:nth-child(1), :nth-child(5), :nth-child(6), :nth-child(8)) {
+    grid-column: span 2;
+  }
+
+  .rings--v09 .rings__item:is(:nth-child(1), :nth-child(5), :nth-child(6), :nth-child(8)) :global(img.rings__ring) {
+    width: 34%;
+  }
+
+  @media (max-width: 700px) {
+    .rings {
+      padding-block: var(--space-16);
+    }
+
+    .rings__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-lg) var(--space-md);
+    }
+
+    .rings__meta {
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .rings__title {
+      font-size: var(--font-size-base);
+    }
+
+    .rings--v01 .rings__item:nth-child(even) {
+      margin-top: var(--space-8);
+    }
+
+    .rings--v05 .rings__list {
+      gap: 0;
+    }
+
+    .rings--v09 .rings__list {
+      --cols: 2;
+      --col-gap: var(--space-md);
+    }
+
+    .rings--v09 .rings__item:is(:nth-child(1), :nth-child(5), :nth-child(6), :nth-child(8)) :global(img.rings__ring) {
+      width: 40%;
+    }
+  }
+</style>

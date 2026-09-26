@@ -1,9 +1,0 @@
-{
-  "tool": "OpenAI built-in image generation",
-  "mode": "image-edit",
-  "createdAt": "2026-09-16T00:00:00.000Z",
-  "sourceAssets": [
-    "/images/studies/footer-bird-pencil-study-v1.png"
-  ],
-  "prompt": "Use case: image edit / transparent footer doodle. Asset type: handmade white chalk-pencil annotation for a dark website footer. Primary request: Redraw the same small bird standing on a carpenter's pencil, but make it much sloppier, quicker, and more charmingly imperfect. Use very sparse broken white grease-pencil or chalk lines, uneven pressure, loose doubled contours, scratchy feet, and an intentionally awkward bird silhouette. Keep only the bird and the pencil. Composition: centered landscape doodle with generous transparent breathing room, entirely visible and uncropped. Constraints: remove every handwritten note, crossed-out word, readable text, question mark, arrow, and stray symbol. Genuinely transparent background with alpha channel; white/off-white linework only; no black or colored backdrop, no border, no shadow, no typography, no watermark, no extra objects."
-}

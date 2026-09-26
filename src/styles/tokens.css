@@ -14,14 +14,7 @@
 
   /* Neutrals — warm paper and soft ink */
   --neutral-950: oklch(20% 0.020 75);
-  --neutral-900: oklch(26% 0.018 75);
-  --neutral-800: oklch(34% 0.016 75);
   --neutral-700: oklch(43% 0.014 75);
-  --neutral-600: oklch(54% 0.012 78);
-  --neutral-500: oklch(65% 0.011 80);
-  --neutral-400: oklch(75% 0.010 82);
-  --neutral-300: oklch(84% 0.012 84);
-  --neutral-200: oklch(90% 0.014 86);
   --neutral-100: oklch(95% 0.012 88);
   --neutral-50:  oklch(97% 0.010 90);
 
@@ -33,24 +26,12 @@
   --ember-700: oklch(46% 0.075 45);
   --ember-200: oklch(80% 0.045 55);
 
-  /* Accent — reserved for actions and active states */
-  --brand-orange: oklch(63% 0.18 48);
-
-  /* Homepage studies — provisional palette for direction finding */
+  /* Homepage palette (the Blå theme uses --study-blue and --study-pink) */
   --study-paper: oklch(94% 0.018 86);
   --study-paper-bright: oklch(97% 0.010 88);
   --study-ink: oklch(20% 0.012 70);
-  --study-ink-soft: oklch(42% 0.012 75);
-  --study-cobalt: oklch(55% 0.25 264);
+  --study-blue: oklch(46.7% 0.121 248); /* #0D5D9A — Blå theme background */
   --study-pink: oklch(78% 0.15 350);
-  --study-yellow: oklch(89% 0.19 103);
-  --study-wine: oklch(30% 0.10 24);
-
-  /* A monochrome turbulence layer gives flat color a subtle paper tooth. */
-  --study-paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E");
-
-  /* Depth */
-  --ink-shadow-soft: 0 var(--space-2) var(--space-8) oklch(20% 0.020 75 / 0.10);
 
   /* Spacing scale — 4pt base */
   --space-1: 4px;
@@ -67,7 +48,6 @@
   --space-24: 96px;
   --space-32: 128px;
   --space-48: 192px;
-  --space-72: 288px;
 
   /* Fluid type scale — calmer editorial
    * Min 320px / Max 1400px, base 15→17px, scale 1.18→1.25
@@ -76,19 +56,10 @@
   --step-0: clamp(0.95rem, calc(0.91rem + 0.16vw), 1.06rem);
   --step-1: clamp(1.13rem, calc(1.07rem + 0.28vw), 1.31rem);
   --step-2: clamp(1.35rem, calc(1.23rem + 0.52vw), 1.64rem);
-  --step-3: clamp(1.6rem,  calc(1.40rem + 0.90vw),  2.05rem);
   --step-4: clamp(1.9rem,  calc(1.55rem + 1.55vw),  2.56rem);
   --step-5: clamp(2.4rem,  calc(1.65rem + 3.20vw),  4.4rem);
 
-  /* Homepage studies — display scales */
-  --study-type-field-hero: clamp(4rem, 8vw, 9rem);
-  --study-type-field-hero-mobile: clamp(3.6rem, 18vw, 6rem);
-  --study-type-poster-hero: clamp(4.8rem, 12vw, 13rem);
-  --study-type-poster-hero-mobile: clamp(4.2rem, 22vw, 7rem);
-  --study-type-poster-statement: clamp(3rem, 7vw, 8rem);
-  --study-type-poster-course: clamp(2.8rem, 6vw, 6rem);
-  --study-type-catalogue-hero: clamp(3.7rem, 7vw, 8rem);
-  --study-type-catalogue-hero-mobile: clamp(3.2rem, 15vw, 5.5rem);
+  /* Homepage display scale */
   --study-type-catalogue-note: clamp(2rem, 4vw, 4.5rem);
 
   /* Font weights */
@@ -98,9 +69,9 @@
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* Border radius — interface only; imagery is square */
+  /* Border radius — mostly interface; --radius-md is for image cards */
   --radius-sm: 2px;
-  --radius-full: 9999px;
+  --radius-md: 0; /* test: square corners (was 12px) */
   --radius-none: 0;
 
   /* Underline offset */
@@ -112,7 +83,6 @@
   --duration-slow: 320ms;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-quart: cubic-bezier(0.5, 0, 0.75, 0);
 
   /* Z-index */
   --z-base: 0;
@@ -125,15 +95,8 @@
   ───────────────────────────────────────────────────────── */
 
   /* Typography — families */
-  --font-body-text: Avenir, Montserrat, Corbel, "URW Gothic", source-sans-pro, sans-serif;
-  --font-heading-text: var(--font-chillax);
-  --font-brand-text: var(--font-chillax);
-  --font-heading: var(--font-chillax);
-  --font-study-serif: "Besley", Georgia, serif;
-  --font-study-fashion: "Bodoni Moda", Didot, serif;
-  --font-study-sans: "Familjen Grotesk", Helvetica, sans-serif;
-  --font-study-labrada: "Labrada", Georgia, serif;
-  --font-study-isenheim: "Isenheim", Georgia, serif;
+  --font-display: "Jost", Futura, sans-serif;      /* titles and interface */
+  --font-text: "EB Garamond", Georgia, serif;       /* sentences */
 
   /* Typography — sizes */
   --font-size-xs: 0.7rem;
@@ -141,7 +104,6 @@
   --font-size-base: var(--step-0);
   --font-size-lg: var(--step-1);
   --font-size-xl: var(--step-2);
-  --font-size-2xl: var(--step-3);
   --font-size-3xl: var(--step-4);
   --font-size-display: var(--step-5);
 
@@ -157,19 +119,14 @@
   --font-leading-snug: 1.35;
   --font-leading-normal: 1.5;
   --font-leading-relaxed: 1.5;
-  --font-leading-poster: 0.78;
   --font-leading-display: 0.9;
   --font-leading-statement: 0.92;
-  --font-leading-note: 1.02;
 
   /* Typography — tracking */
-  --font-tracking-tightest: 0em;
   --font-tracking-tight: 0em;
-  --font-tracking-normal: 0em;
   --font-tracking-wide: 0.04em;
   --font-tracking-wider: 0.09em;
   --font-tracking-negative: -0.01em;
-  --font-tracking-poster: -0.055em;
 
   /* Color — backgrounds */
   --color-bg-base: var(--off-white);
@@ -180,28 +137,15 @@
   /* Color — text */
   --color-text-primary: var(--neutral-950);
   --color-text-secondary: var(--neutral-700);
-  --color-text-tertiary: var(--neutral-600);
   --color-text-inverse: var(--neutral-50);
   --color-text-inverse-muted: var(--ember-200);
 
   /* Color — accent (active nav + inline links) */
-  --color-accent: var(--brand-orange);
-  --color-contact-accent: var(--brand-orange);
   --color-wordmark-nav: var(--color-text-primary);
-  --color-contact-icon: var(--color-text-primary);
 
   /* Color — borders (form controls only) */
   --color-border-default: oklch(80% 0.016 86);
-  --color-border-subtle: oklch(88% 0.014 88);
   --color-border-inverse: var(--ember-700);
-
-  /* Köpbara kort — markeras i accentfärgen så de skiljs från galleribilder */
-  --color-border-product: var(--color-accent);
-  --border-width-product: 2px;
-  --product-marker-size: var(--space-2);
-
-  /* Depth */
-  --shadow-card: var(--ink-shadow-soft);
 
   /* Spacing — semantic */
   --space-xs: var(--space-1);
@@ -209,20 +153,14 @@
   --space-md: var(--space-4);
   --space-lg: var(--space-6);
   --space-xl: var(--space-8);
-  --space-2xl: var(--space-12);
   --space-3xl: var(--space-16);
   --space-4xl: var(--space-24);
-  --space-5xl: 192px;
 
   /* Layout */
-  --layout-site-width: 1600px;
+  --layout-site-width: 1500px;
   --layout-wide-width: 1600px;
   --layout-content-width: 62ch;
   --layout-gutter: clamp(var(--space-6), 4vw, var(--space-16));
-
-  /* Breakpoints */
-  --bp-md: 700px;   /* mobile → tablet */
-  --bp-lg: 1024px;  /* tablet → desktop */
 
   /* Motion */
   --transition-fast: var(--duration-fast) var(--ease-out-quart);
@@ -235,12 +173,7 @@
 
   /* Nav */
   --nav-height: 96px;
-  --nav-font: var(--font-body-text);
 
   /* Work grid — the homepage's primary structure */
-  --grid-columns: 4;
   --grid-gutter: clamp(var(--space-8), 4vw, var(--space-16));
-  --grid-row-gap: clamp(var(--space-20), 9vw, var(--space-48));
-  /* Lightbox */
-  --lightbox-scrim: oklch(28% 0.025 75 / 0.72);
 }

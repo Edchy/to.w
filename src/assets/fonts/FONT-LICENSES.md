@@ -1,16 +1,8 @@
-# Prototype font licenses
+# Font licenses
 
-The homepage studies self-host these variable font builds from the official Google Fonts repository:
+The site self-hosts two font families, both upright and italic variable builds (latin subset) from Fontsource:
 
-- Besley: https://github.com/google/fonts/tree/main/ofl/besley
-- Bodoni Moda: https://github.com/google/fonts/tree/main/ofl/bodonimoda
-- Familjen Grotesk: https://github.com/google/fonts/tree/main/ofl/familjengrotesk
+- Jost by Owen Earl (indestructible type*): https://github.com/indestructible-type/Jost — titles and interface (`--font-display`). SIL Open Font License 1.1; the full license is stored beside the font files as `Jost-OFL.txt`.
+- EB Garamond by Georg Duffner and Octavio Pardo: https://github.com/octaviopardo/EBGaramond12 — sentences (`--font-text`). SIL Open Font License 1.1; the full license is stored beside the font files as `EBGaramond-OFL.txt`.
 
-Each family is distributed under the SIL Open Font License 1.1. The full `OFL.txt` is available in each linked source directory.
-
-Additional homepage wordmark studies use:
-
-- Isenheim by Benoît Ferran, distributed by Tunera Type Foundry: https://gitlab.com/benoitsansterre/isenheim
-- Labrada by Mercedes Jáuregui and Omnibus Type: https://github.com/Omnibus-Type/Labrada
-
-Both are distributed under the SIL Open Font License 1.1. Their full licenses are stored beside the font files as `Isenheim-OFL.txt` and `Labrada-OFL.txt`.
+The logo SVGs in `src/assets/img/brand/` contain letter outlines converted from Labrada by Mercedes Jáuregui and Omnibus Type (https://github.com/Omnibus-Type/Labrada), SIL Open Font License 1.1. The font itself is not bundled.

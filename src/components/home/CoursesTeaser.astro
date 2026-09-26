@@ -1,0 +1,403 @@
+---
+// The homepage workshop section, split screen: the photo slider on one half; headline, pitch,
+// dates and button on the other.
+// The private-workshop line sits under the button.
+import { Image } from "astro:assets";
+import { openOccasions, spotsLabel } from "../../data/courses";
+import CoursesEmpty from "./CoursesEmpty.astro";
+import pinkBird from "../../assets/img/illustrations/bird.webp";
+
+const occasions = openOccasions;
+
+// The photo is a small slider of every image in src/assets/img/kurser/, in filename order
+// (so hands.jpeg opens it). Drop an image in the folder to add it; give it alt text here.
+const photoAlts: Record<string, string> = {
+  "hands.jpeg": "Två händer med silverringar håller i varandra i varmt solljus.",
+  "IMG_3309.jpg": "Två silverringar lödas med gaslåga på en kolkloss.",
+  "IMG_6609.avif": "Många handgjorda silverringar utspridda på ett ljust underlag.",
+  "silverring-kurs.jpg": "En silverring med platt, rundad topp på ett grått underlag.",
+  "silverring-kurs1.jpg": "En hand med en hjärtformad silverring häller upp kaffe.",
+};
+const photoFiles = import.meta.glob<{ default: ImageMetadata }>("../../assets/img/kurser/*.{jpg,jpeg,png,webp,avif}", { eager: true });
+const photos = Object.entries(photoFiles)
+  .map(([path, file]) => ({ name: path.split("/").pop() ?? path, src: file.default }))
+  .sort((a, b) => a.name.localeCompare(b.name, "sv", { sensitivity: "base" }))
+  .map(({ name, src }) => ({ src, alt: photoAlts[name] ?? "Bild från en av workshopparna." }));
+
+// Copy: general and warm — no fixed place, since locations vary. Placeholder, confirm with Tove.
+const copy = {
+  titleStart: "Vill du lära dig att göra",
+  titleAccent: "din egen ring?",
+  body: "Då och då bjuder jag in till små workshops där vi formar ringar i vax, dricker något gott och äter tillsammans. Efteråt gjuter jag din ring i återvunnet silver, så att du får ett smycke som du har gjort själv.",
+};
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const courseUrl = `${baseUrl}kurser/`;
+const mail = "mailto:tove.watte@gmail.com";
+const hasDates = occasions.length > 0;
+const titleId = "courses-teaser";
+---
+
+<section class="ct" aria-labelledby={titleId}>
+  <div class="ct__split">
+    <div class="ct__text">
+      <h2 id={titleId} class="ct__title">
+        {copy.titleStart} <span class="ct__accent">{copy.titleAccent}</span>
+      </h2>
+
+      <p class="ct__body">{copy.body}</p>
+
+      <div class="ct__dates">
+        <p class="ct__label">Kommande workshops</p>
+        {hasDates ? (
+          <ol>
+            {occasions.map(({ course: item, date }) => (
+              <li>
+                <span class="ct__date">
+                  <span class="ct__day">{date.day}</span>
+                  <span class="ct__month">{date.month.slice(0, 3)}</span>
+                </span>
+                <span class="ct__what">
+                  <span class="ct__name">{item.title}</span>
+                  <span class="ct__detail">{date.time} · {spotsLabel(item.spots)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div class="ct__empty"><CoursesEmpty /></div>
+        )}
+      </div>
+
+      <a class="ct__book" href={courseUrl}>{hasDates ? "Läs mer och boka →" : "Läs mer →"}</a>
+
+      <p class="ct__private">
+        Egen workshop för en möhippa, ett jobbevent eller några vänner? <a href={mail}>Hör av dig →</a>
+      </p>
+    </div>
+
+    <div class="ct__media" data-ct-slider role="group" aria-roledescription="bildspel" aria-label="Bilder från workshopparna">
+      {photos.map((photo, i) => (
+        <Image
+          class="ct__photo"
+          src={photo.src}
+          alt={photo.alt}
+          widths={[800, 1600]}
+          sizes="(max-width: 900px) 100vw, 50vw"
+          loading="lazy"
+          hidden={i !== 0}
+          data-ct-slide
+        />
+      ))}
+      {photos.length > 1 && (
+        <div class="ct__slider-nav">
+          <button type="button" data-ct-prev aria-label="Föregående bild">←</button>
+          <button type="button" data-ct-next aria-label="Nästa bild">→</button>
+        </div>
+      )}
+      <Image class="ct__bird" src={pinkBird} alt="" aria-hidden="true" widths={[240, 480]} sizes="12rem" loading="lazy" />
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+  // Previous/next swap which photo is shown, wrapping round at either end.
+  for (const media of document.querySelectorAll<HTMLElement>("[data-ct-slider]")) {
+    const slides = [...media.querySelectorAll<HTMLElement>("[data-ct-slide]")];
+    if (slides.length < 2) continue;
+    let current = 0;
+    const show = (index: number) => {
+      slides[current].hidden = true;
+      current = (index + slides.length) % slides.length;
+      slides[current].hidden = false;
+    };
+    media.querySelector("[data-ct-prev]")?.addEventListener("click", () => show(current - 1));
+    media.querySelector("[data-ct-next]")?.addEventListener("click", () => show(current + 1));
+  }
+</script>
+
+<style>
+  .ct {
+    --ct-pad: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+
+    position: relative;
+    padding-block: var(--space-16) var(--space-24);
+    color: var(--t-courses-fg, inherit);
+    background: var(--t-courses-bg, transparent);
+  }
+
+  .ct p,
+  .ct h2,
+  .ct ol {
+    margin: 0;
+  }
+
+  .ct a {
+    color: inherit;
+  }
+
+  /* Two halves: text on one, the photo bleeding to the section's edges on the other. */
+  .ct__split {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 90vh;
+  }
+
+  .ct__text {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-lg);
+    order: 2;
+    padding: var(--space-16) var(--ct-pad) var(--space-16) var(--space-16);
+  }
+
+  .ct__title {
+    font-family: var(--t-display, var(--font-display));
+    font-size: var(--study-type-catalogue-note);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-statement);
+    letter-spacing: var(--font-tracking-negative);
+    text-wrap: balance;
+  }
+
+  .ct__accent {
+    color: var(--t-accent, var(--study-pink));
+  }
+
+  .ct__body {
+    max-width: 40ch;
+    font-family: var(--t-body, var(--font-display));
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-normal);
+  }
+
+  .ct__book {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    background: var(--t-btn-bg, var(--study-paper-bright));
+    font-family: var(--t-body, var(--font-display));
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+  }
+
+  /* The pink bird stands on the photo's bottom edge with its tail over the photo's right edge.
+     Its feet sit 91.9% down its image, so it is shifted down by the transparent rest; the tail
+     is the leftmost fifth of the drawing, so a -18% shift puts it past the edge. */
+  .ct :global(img.ct__bird) {
+    position: absolute;
+    z-index: var(--z-raised);
+    bottom: 0;
+    right: 0;
+    width: clamp(16rem, 22vw, 24rem);
+    height: auto;
+    translate: 18% 8.1%;
+    /* Mirrored so the tail points right, over the photo's inner edge towards the text. */
+    scale: -1 1;
+    pointer-events: none;
+  }
+
+  .ct .ct__book {
+    color: var(--t-btn-fg, var(--study-ink));
+  }
+
+  .ct .ct__book:hover,
+  .ct .ct__book:focus-visible {
+    background: var(--t-accent, var(--study-pink));
+  }
+
+  /* Only the corners facing the text are rounded; the edges at the screen stay straight. */
+  /* The frame doesn't clip, so the bird can overhang it; the photo carries the rounded corners. */
+  .ct__media {
+    position: relative;
+  }
+
+  .ct__media :global(img.ct__photo) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 60%;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+
+  .ct__media :global(img.ct__photo[hidden]) {
+    display: none;
+  }
+
+  /* Side by side, the photo fills its half without sizing it, so every slide gets the same frame
+     and the section's height comes from the text (and its 90vh minimum), not from the photo. */
+  @media (min-width: 901px) {
+    .ct__media :global(img.ct__photo) {
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  /* Slider buttons on the photo's bottom-left corner (the bird has the right), styled like the
+     product carousel's arrows but filled, so they read on light and dark photos alike. */
+  .ct__slider-nav {
+    position: absolute;
+    z-index: var(--z-raised);
+    bottom: var(--space-md);
+    left: var(--space-md);
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .ct__slider-nav button {
+    display: grid;
+    place-items: center;
+    width: var(--space-10);
+    height: var(--space-10);
+    padding: 0;
+    color: var(--t-btn-fg, var(--study-ink));
+    background: var(--t-btn-bg, var(--study-paper-bright));
+    border: none;
+    border-radius: var(--radius-md);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+  }
+
+  .ct__slider-nav button:hover,
+  .ct__slider-nav button:focus-visible {
+    background: var(--t-accent, var(--study-pink));
+  }
+
+  /* Dates typed straight onto the blue, ruled like a ledger. */
+  /* A quiet, informational list — the main button below is the only call to action. */
+  .ct__dates {
+    width: 100%;
+    max-width: 30rem;
+    font-family: var(--t-body, var(--font-display));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ct__label {
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .ct__empty {
+    padding-top: var(--space-sm);
+    font-family: var(--t-body, var(--font-display));
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-normal);
+  }
+
+  .ct__dates ol {
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Each row: a fixed date block, the workshop and its details stacked, the link centred at the end. */
+  /* Each row on one line: date, workshop name, then time and spots. */
+  .ct__dates li {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    column-gap: var(--space-md);
+    align-items: baseline;
+    padding-block: var(--space-sm);
+    border-bottom: 1px solid color-mix(in oklch, var(--study-paper-bright) 20%, transparent);
+    font-size: var(--font-size-sm);
+  }
+
+  .ct__date {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+  }
+
+  .ct__what {
+    display: contents;
+  }
+
+  .ct__day {
+    color: var(--t-accent, var(--study-pink));
+  }
+
+  .ct__month {
+    text-transform: lowercase;
+  }
+
+  .ct__name {
+    font-family: var(--t-body, var(--font-display));
+    font-size: var(--font-size-sm);
+  }
+
+  .ct__detail {
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
+
+  /* The private-workshop offer: a quiet line right under the button. */
+  .ct .ct__private {
+    max-width: 34ch;
+    font-family: var(--t-body, var(--font-display));
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-normal);
+  }
+
+  .ct__private a {
+    color: var(--t-accent, var(--study-pink));
+    white-space: nowrap;
+  }
+
+  /* ─── Tablet and phone: photo on top, text below ─────────────────── */
+  @media (max-width: 900px) {
+    .ct__split {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .ct__media {
+      order: -1;
+    }
+
+    .ct__media :global(img.ct__photo) {
+      border-radius: 0;
+    }
+
+    .ct :global(img.ct__bird) {
+      right: var(--layout-gutter);
+      width: 14rem;
+      translate: 0 8.1%;
+    }
+
+    .ct__media :global(img.ct__photo) {
+      height: auto;
+      aspect-ratio: 4 / 3;
+    }
+
+    .ct__text {
+      padding: var(--space-16) var(--layout-gutter) 0;
+    }
+
+  }
+
+  @media (max-width: 700px) {
+    .ct__body {
+      font-size: var(--font-size-base);
+    }
+
+    .ct__dates li {
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+    }
+
+    .ct__detail {
+      grid-column: 2;
+    }
+  }
+</style>

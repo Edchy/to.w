@@ -1,0 +1,225 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import RingProducts from "./RingProducts.astro";
+import CoursesSection from "./CoursesSection.astro";
+import AboutSection from "./AboutSection.astro";
+import InstagramSection from "./InstagramSection.astro";
+import StudyFooter from "./StudyFooter.astro";
+import handsCutout from "../../assets/img/studies/besthero-hands-cutout-study-v1.png";
+import skyPhoto from "../../assets/img/insta/SCR-20260924-nmuk.jpeg";
+import pinkBird from "../../assets/img/studies/pink-seed-bird-study-v1.png";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+---
+
+<article class="a08" data-direction-panel="assembly-08" hidden>
+  <section class="a08__hero">
+    <Image
+      class="a08__sky"
+      src={skyPhoto}
+      alt="En liten fågel på en kal gren mot klarblå himmel."
+      widths={[800, 1600, 2400]}
+      sizes="100vw"
+      loading="eager"
+    />
+
+    <header class="a08__header">
+      <a class="a08__wordmark" href={baseUrl}>towtow</a>
+      <nav aria-label="Huvudnavigering">
+        <a href={withBase("/smycken")}>smycken</a>
+        <a href={withBase("/kurser")}>kurser</a>
+        <a href={withBase("/om")}>om</a>
+      </nav>
+    </header>
+
+    <Image
+      class="a08__hands"
+      src={handsCutout}
+      alt="Händer med flera handgjorda silverringar."
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <div class="a08__intro">
+      <h1>silver under öppen himmel</h1>
+      <a href={withBase("/smycken")}>se smyckena →</a>
+    </div>
+
+    <Image class="a08__bird" src={pinkBird} alt="" aria-hidden="true" />
+  </section>
+
+  <RingProducts items={items} variant="08" />
+  <CoursesSection variant="08" />
+  <AboutSection variant="08" />
+  <InstagramSection variant="08" />
+  <StudyFooter variant="08" />
+</article>
+
+<style>
+  .a08 {
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
+  }
+
+  .a08__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100svh;
+    padding: 0 var(--layout-gutter) var(--space-16);
+    overflow: hidden;
+    color: var(--study-paper-bright);
+    background: var(--study-cobalt);
+    isolation: isolate;
+  }
+
+  .a08__hero :global(img.a08__sky) {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 55% 70%;
+  }
+
+  .a08__header {
+    position: absolute;
+    z-index: var(--z-raised);
+    inset: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .a08__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a08__wordmark {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a08__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .a08__hero :global(img.a08__hands) {
+    position: absolute;
+    z-index: var(--z-base);
+    top: calc(0px - var(--space-12));
+    left: 50%;
+    width: min(56vw, 58rem);
+    height: auto;
+    translate: -40% 0;
+    pointer-events: none;
+  }
+
+  .a08__intro {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+  }
+
+  .a08__intro h1 {
+    max-width: 9ch;
+    margin: 0;
+    font-family: var(--font-study-isenheim);
+    font-size: var(--study-type-poster-hero);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-poster);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a08__intro a {
+    color: inherit;
+    white-space: nowrap;
+  }
+
+  .a08__hero :global(img.a08__bird) {
+    position: absolute;
+    z-index: var(--z-raised);
+    top: 30%;
+    right: calc(var(--layout-gutter) + var(--space-16));
+    width: clamp(7rem, 12vw, 12rem);
+    height: auto;
+    rotate: -8deg;
+  }
+
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a08__header nav {
+      padding-right: 0;
+    }
+
+    .a08__hero :global(img.a08__hands) {
+      width: 80vw;
+      translate: -50% 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .a08__header {
+      padding-block: var(--space-md);
+    }
+
+    .a08__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
+    }
+
+    .a08__hero :global(img.a08__hands) {
+      top: calc(0px - var(--space-6));
+      width: clamp(30rem, 108vw, 40rem);
+      translate: -50% 0;
+    }
+
+    .a08__intro {
+      flex-direction: column;
+      align-items: start;
+    }
+
+    .a08__intro h1 {
+      font-size: var(--study-type-poster-hero-mobile);
+    }
+
+    .a08__hero :global(img.a08__bird) {
+      top: 40%;
+      right: var(--layout-gutter);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .a08__header {
+      align-items: start;
+    }
+
+    .a08__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+  }
+</style>

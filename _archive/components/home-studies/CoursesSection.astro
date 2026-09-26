@@ -1,0 +1,1122 @@
+---
+import { Image } from "astro:assets";
+import { courses, openOccasions, spotsLabel } from "../../data/courses";
+import type { StudyVariant } from "./types";
+import CoursesEmpty from "./CoursesEmpty.astro";
+import waxRing from "../../content/gallery/ 0001-.jpg";
+import torch from "../../assets/img/kurser/IMG_3309.jpg";
+import pouring from "../../assets/img/kurser/silverring-kurs1.jpg";
+import manyRings from "../../assets/img/kurser/IMG_6609.avif";
+import windowSketch from "../../assets/img/studies/window-study-v3.png";
+import wateringCan from "../../assets/img/studies/cobalt-watering-can-study-v1.png";
+import cheetah from "../../assets/img/studies/cobalt-cheetah-study-v1.png";
+import wadingBird from "../../assets/img/studies/wading-bird-pencil-study-v1.png";
+import glowBird from "../../assets/img/studies/footer-bird-pencil-study-v2.png";
+import pinkBird from "../../assets/img/studies/pink-seed-bird-study-v1.png";
+import chair from "../../assets/img/studies/cobalt-chair-study-v1.png";
+
+type Props = { variant: StudyVariant };
+
+const { variant } = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const courseUrl = `${baseUrl}kurser/`;
+const course = courses[0];
+const hasDates = openOccasions.length > 0;
+const firstDate = openOccasions[0]?.date;
+const spots = spotsLabel(course.spots);
+const dateList = openOccasions.map(({ date }) => `${date.day} ${date.month}`).join(", ");
+
+const alt = {
+  wax: "En blå vaxmodell av en ring hålls upp mot ljuset.",
+  torch: "Två silverringar lödas med gaslåga på en kolkloss.",
+  pouring: "En hand med silverring häller upp kaffe under en kurskväll.",
+  rings: "Många handgjorda silverringar utspridda på ett ljust bord.",
+};
+const tickerText = hasDates
+  ? openOccasions.map(({ date }) => `${date.day} ${date.month} · ${date.time}`).join(" — ")
+  : "Inga datum just nu — nya släpps på Instagram";
+---
+
+{variant === "01" && (
+  <section class="c01" aria-labelledby="courses-title-01">
+    <div class="c01__page">
+      <span class="c01__margin" aria-hidden="true">kurser</span>
+      <figure class="c01__photo">
+        <Image src={waxRing} alt={alt.wax} widths={[400, 800]} sizes="(max-width: 700px) 60vw, 18rem" loading="lazy" />
+      </figure>
+      <h2 id="courses-title-01">{course.title}</h2>
+      <p>{course.intro}</p>
+      <p class="c01__facts">{course.place} · {course.price} · {spots}</p>
+      {hasDates ? (
+        <ul class="c01__dates">{openOccasions.map(({ date }) => <li>{date.day} {date.month}, {date.time}</li>)}</ul>
+      ) : (
+        <div class="c01__empty"><CoursesEmpty /></div>
+      )}
+      <a class="c01__more" href={courseUrl}>läs om kursen →</a>
+      <Image class="c01__sketch" src={windowSketch} alt="" aria-hidden="true" loading="lazy" />
+    </div>
+  </section>
+)}
+
+{variant === "02" && (
+  <section class="c02" aria-labelledby="courses-title-02">
+    <div class="c02__inner">
+      <p class="c02__kicker">Kurs i Järna</p>
+      <h2 id="courses-title-02">Forma din egen ring</h2>
+      <Image class="c02__photo" src={torch} alt={alt.torch} widths={[480, 960]} sizes="(max-width: 700px) 60vw, 30vw" loading="lazy" />
+      <div class="c02__foot">
+        {hasDates ? <p>{course.intro}</p> : <CoursesEmpty />}
+        <a href={courseUrl}>om kursen →</a>
+      </div>
+    </div>
+    <div class="c02__ticker" aria-hidden="true">
+      <span>{tickerText} — {tickerText} — {tickerText} — {tickerText} —&nbsp;</span>
+      <span>{tickerText} — {tickerText} — {tickerText} — {tickerText} —&nbsp;</span>
+    </div>
+  </section>
+)}
+
+{variant === "03" && (
+  <section class="c03" aria-labelledby="courses-title-03">
+    <div class="c03__head">
+      <h2 id="courses-title-03">Kurser</h2>
+      <span>Index K—01</span>
+    </div>
+    <dl class="c03__row">
+      <div class="c03__thumb">
+        <dt>Bild</dt>
+        <dd><Image src={manyRings} alt={alt.rings} widths={[240, 480]} sizes="8rem" loading="lazy" /></dd>
+      </div>
+      <div><dt>Kurs</dt><dd class="c03__title">{course.title}</dd></div>
+      <div><dt>Plats</dt><dd>{course.place}</dd></div>
+      <div><dt>Pris</dt><dd>{course.price}</dd></div>
+      <div><dt>Platser</dt><dd>{spots}</dd></div>
+      <div><dt>Datum</dt><dd>{hasDates ? dateList : "—"}</dd></div>
+    </dl>
+    <div class="c03__note">
+      <Image src={wateringCan} alt="" aria-hidden="true" loading="lazy" />
+      {hasDates ? <p>{course.intro}</p> : <CoursesEmpty />}
+      <a href={courseUrl}>till kursen →</a>
+    </div>
+  </section>
+)}
+
+{variant === "04" && (
+  <section class="c04" aria-labelledby="courses-title-04">
+    <article class="c04__flyer">
+      <Image src={pouring} alt={alt.pouring} widths={[480, 960]} sizes="(max-width: 700px) 80vw, 26rem" loading="lazy" />
+      <h2 id="courses-title-04">{course.title}</h2>
+      <p>{course.intro}</p>
+      <p class="c04__facts">{course.place}<br />{course.price}<br />{spots}</p>
+      <a href={courseUrl}>läs om kursen →</a>
+    </article>
+    <div class="c04__note">
+      {hasDates ? (
+        <>
+          <strong>Nästa kurs</strong>
+          <ul>{openOccasions.map(({ date }) => <li>{date.day} {date.month}</li>)}</ul>
+        </>
+      ) : (
+        <>
+          <strong>Inga datum än!</strong>
+          <CoursesEmpty />
+        </>
+      )}
+    </div>
+    <Image class="c04__cheetah" src={cheetah} alt="" aria-hidden="true" loading="lazy" />
+  </section>
+)}
+
+{variant === "05" && (
+  <section class="c05" aria-labelledby="courses-title-05">
+    <figure class="c05__photo">
+      <Image src={waxRing} alt={alt.wax} widths={[480, 960]} sizes="(max-width: 700px) 90vw, 28rem" loading="lazy" />
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M 30 78 C 45 70 70 60 96 42" /></svg>
+      <figcaption>vaxmodell, före gjutning</figcaption>
+    </figure>
+    <div class="c05__form">
+      <h2 id="courses-title-05">Kurs / anmälan</h2>
+      <dl>
+        <div><dt>Kurs</dt><dd>{course.title}</dd></div>
+        <div><dt>Plats</dt><dd>{course.place}</dd></div>
+        <div><dt>Pris</dt><dd>{course.price}</dd></div>
+        <div><dt>Platser</dt><dd>{spots}</dd></div>
+        <div><dt>Datum</dt><dd>{hasDates ? dateList : "— inga just nu —"}</dd></div>
+      </dl>
+      {!hasDates && <CoursesEmpty />}
+      <a href={courseUrl}>läs om kursen →</a>
+    </div>
+    <Image class="c05__chair" src={chair} alt="" aria-hidden="true" loading="lazy" />
+  </section>
+)}
+
+{variant === "06" && (
+  <section class="c06" aria-labelledby="courses-title-06">
+    <Image class="c06__bg" src={manyRings} alt="" widths={[1200, 2400]} sizes="100vw" loading="lazy" />
+    <div class="c06__panel">
+      <Image class="c06__bird" src={wadingBird} alt="" aria-hidden="true" loading="lazy" />
+      <h2 id="courses-title-06">Kurser</h2>
+      <p class="c06__name">{course.title}</p>
+      <p>{course.intro}</p>
+      {hasDates ? <p>{dateList}</p> : <CoursesEmpty />}
+      <a href={courseUrl}>läs om kursen →</a>
+    </div>
+  </section>
+)}
+
+{variant === "07" && (
+  <section class="c07" aria-labelledby="courses-title-07">
+    <Image class="c07__spot" src={torch} alt={alt.torch} widths={[600, 1200]} sizes="(max-width: 700px) 90vw, 36vw" loading="lazy" />
+    <div class="c07__listing">
+      <p class="c07__kicker">Kvällskurs · Järna</p>
+      <p class="c07__date" aria-hidden={hasDates ? undefined : "true"}>
+        <span>{firstDate ? firstDate.day : "—"}</span>
+        <span>{firstDate ? firstDate.month : "inga kvällar inbokade"}</span>
+      </p>
+      <h2 id="courses-title-07">{course.title}</h2>
+      {!hasDates && <CoursesEmpty />}
+      <a href={courseUrl}>läs om kursen →</a>
+    </div>
+    <Image class="c07__bird" src={glowBird} alt="" aria-hidden="true" loading="lazy" />
+  </section>
+)}
+
+{variant === "08" && (
+  <section class="c08" aria-labelledby="courses-title-08">
+    <div class="c08__text">
+      <h2 id="courses-title-08">Kurser</h2>
+      <p class="c08__name">{course.title}</p>
+      <p>{course.intro}</p>
+      {hasDates ? <p>{dateList}</p> : <CoursesEmpty />}
+      <a href={courseUrl}>läs om kursen →</a>
+    </div>
+    <div class="c08__photo">
+      <Image src={waxRing} alt={alt.wax} widths={[800, 1600]} sizes="(max-width: 700px) 100vw, 50vw" loading="lazy" />
+    </div>
+    <Image class="c08__bird" src={pinkBird} alt="" aria-hidden="true" loading="lazy" />
+  </section>
+)}
+
+{variant === "09" && (
+  <section class="c09" aria-labelledby="courses-title-09">
+    <div class="c09__head">
+      <h2 id="courses-title-09">Kurser</h2>
+      <p>{course.title}. {course.intro}</p>
+      <a href={courseUrl}>läs om kursen →</a>
+    </div>
+    <ol class="c09__strip">
+      <li><Image src={waxRing} alt={alt.wax} widths={[320, 640]} sizes="(max-width: 700px) 60vw, 20vw" loading="lazy" /></li>
+      <li><Image src={torch} alt={alt.torch} widths={[320, 640]} sizes="(max-width: 700px) 60vw, 20vw" loading="lazy" /></li>
+      <li><Image src={pouring} alt={alt.pouring} widths={[320, 640]} sizes="(max-width: 700px) 60vw, 20vw" loading="lazy" /></li>
+      <li class="c09__text">{hasDates ? <p>{dateList}</p> : <CoursesEmpty />}</li>
+    </ol>
+    <Image class="c09__sketch" src={windowSketch} alt="" aria-hidden="true" loading="lazy" />
+  </section>
+)}
+
+<style>
+  /* Shared shell: every layout keeps its content to the site width with the site gutter. */
+  section {
+    --shell-pad: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+
+    position: relative;
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  h2 {
+    margin: 0;
+    font-weight: var(--font-weight-regular);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  /* ─── 01 · notebook page ─────────────────────────────────────────── */
+  .c01 {
+    padding: var(--space-24) var(--shell-pad);
+  }
+
+  .c01__page {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: var(--space-md);
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: var(--space-16) var(--space-16) var(--space-16) var(--space-24);
+    background-color: var(--study-paper-bright);
+    background-image:
+      linear-gradient(90deg, transparent calc(var(--space-16) - 1px), var(--study-pink) calc(var(--space-16) - 1px), var(--study-pink) var(--space-16), transparent var(--space-16)),
+      repeating-linear-gradient(transparent 0 calc(var(--space-8) - 1px), color-mix(in oklch, var(--study-cobalt) 22%, transparent) calc(var(--space-8) - 1px) var(--space-8));
+    box-shadow: var(--ink-shadow-soft);
+  }
+
+  .c01__margin {
+    position: absolute;
+    top: var(--space-16);
+    left: var(--space-2);
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .c01__photo {
+    position: absolute;
+    top: calc(0px - var(--space-8));
+    right: calc(0px - var(--space-12));
+    width: min(18rem, 40%);
+    margin: 0;
+    padding: var(--space-2);
+    background: var(--study-paper-bright);
+    box-shadow: var(--ink-shadow-soft);
+    rotate: 4deg;
+  }
+
+  /* A strip of translucent tape holding the photo to the page. */
+  .c01__photo::before {
+    content: "";
+    position: absolute;
+    z-index: var(--z-raised);
+    top: calc(0px - var(--space-3));
+    left: 30%;
+    width: 40%;
+    height: var(--space-6);
+    background: color-mix(in oklch, var(--study-yellow) 65%, transparent);
+    rotate: -3deg;
+  }
+
+  .c01__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .c01 h2 {
+    max-width: 14ch;
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-3xl);
+    line-height: var(--font-leading-tight);
+  }
+
+  .c01 p {
+    max-width: 30ch;
+    line-height: var(--space-8);
+  }
+
+  .c01__facts {
+    font-family: var(--font-study-serif);
+    font-style: italic;
+  }
+
+  .c01__empty {
+    max-width: 30ch;
+    padding: var(--space-2) var(--space-sm);
+    background: color-mix(in oklch, var(--study-yellow) 45%, transparent);
+    line-height: var(--font-leading-snug);
+  }
+
+  .c01 a {
+    color: var(--study-cobalt);
+  }
+
+  .c01 :global(img.c01__sketch) {
+    position: absolute;
+    right: var(--space-lg);
+    bottom: var(--space-lg);
+    width: clamp(6rem, 10vw, 9rem);
+    height: auto;
+  }
+
+  /* ─── 02 · poster ─────────────────────────────────────────────────── */
+  .c02 {
+    color: var(--study-ink);
+    background: var(--study-yellow);
+  }
+
+  .c02__inner {
+    position: relative;
+    padding: var(--space-24) var(--shell-pad) var(--space-16);
+  }
+
+  .c02__kicker {
+    width: fit-content;
+    margin-bottom: var(--space-lg);
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--study-paper-bright);
+    background: var(--study-ink);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--font-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .c02 h2 {
+    position: relative;
+    z-index: var(--z-raised);
+    max-width: 8ch;
+    font-family: var(--font-study-fashion);
+    font-size: var(--study-type-poster-hero);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--font-leading-poster);
+    letter-spacing: var(--font-tracking-poster);
+  }
+
+  .c02 :global(img.c02__photo) {
+    position: absolute;
+    top: var(--space-16);
+    right: var(--shell-pad);
+    width: min(34vw, 30rem);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-full);
+    rotate: 8deg;
+  }
+
+  .c02__foot {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-top: var(--space-12);
+  }
+
+  .c02__foot > :global(p) {
+    max-width: 36ch;
+    font-size: var(--font-size-lg);
+  }
+
+  .c02__foot a {
+    color: inherit;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+  }
+
+  .c02__ticker {
+    display: flex;
+    overflow: hidden;
+    padding-block: var(--space-md);
+    color: var(--study-yellow);
+    background: var(--study-ink);
+    font-family: var(--font-study-fashion);
+    font-size: var(--font-size-2xl);
+    white-space: nowrap;
+  }
+
+  .c02__ticker span {
+    flex: none;
+    animation: c02-ticker 40s linear infinite;
+  }
+
+  @keyframes c02-ticker {
+    to {
+      translate: -100% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .c02__ticker span {
+      animation: none;
+    }
+  }
+
+  /* ─── 03 · catalogue index row ───────────────────────────────────── */
+  .c03 {
+    padding: var(--space-24) var(--shell-pad);
+    background: var(--study-paper-bright);
+    border-top: 1px solid var(--study-ink);
+  }
+
+  .c03__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--study-ink);
+  }
+
+  .c03 h2 {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-3xl);
+  }
+
+  .c03__head span,
+  .c03 dt {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .c03__row {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+    gap: var(--space-lg);
+    align-items: start;
+    margin: 0;
+    padding-block: var(--space-lg);
+    border-bottom: 1px solid var(--study-ink);
+  }
+
+  .c03 dt {
+    margin-bottom: var(--space-sm);
+    color: var(--study-ink-soft);
+  }
+
+  .c03 dd {
+    margin: 0;
+  }
+
+  .c03__thumb dt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .c03__thumb :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    filter: grayscale(1);
+  }
+
+  .c03__title {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-xl);
+  }
+
+  .c03__note {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr) auto;
+    gap: var(--space-lg);
+    align-items: center;
+    padding-top: var(--space-lg);
+  }
+
+  .c03__note :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .c03__note p {
+    max-width: 44ch;
+    font-size: var(--font-size-lg);
+  }
+
+  .c03 a {
+    color: var(--study-cobalt);
+  }
+
+  /* ─── 04 · flyer on the wall ─────────────────────────────────────── */
+  .c04 {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    padding: var(--space-24) var(--shell-pad) var(--space-32);
+  }
+
+  .c04__flyer {
+    display: grid;
+    gap: var(--space-md);
+    width: min(100%, 26rem);
+    padding: var(--space-lg) var(--space-lg) var(--space-xl);
+    background: var(--study-paper-bright);
+    box-shadow: var(--ink-shadow-soft);
+    rotate: -2.5deg;
+  }
+
+  .c04__flyer :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .c04 h2 {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-2xl);
+    line-height: var(--font-leading-tight);
+  }
+
+  .c04__facts {
+    font-size: var(--font-size-sm);
+    line-height: var(--font-leading-normal);
+  }
+
+  .c04 a {
+    color: var(--study-cobalt);
+  }
+
+  .c04__note {
+    position: relative;
+    z-index: var(--z-raised);
+    display: grid;
+    gap: var(--space-sm);
+    width: min(100%, 17rem);
+    margin: var(--space-24) 0 0 calc(0px - var(--space-12));
+    padding: var(--space-lg);
+    background: var(--study-yellow);
+    box-shadow: var(--ink-shadow-soft);
+    rotate: 5deg;
+  }
+
+  .c04__note strong {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .c04__note ul {
+    margin: 0;
+    padding-left: var(--space-md);
+  }
+
+  .c04 :global(img.c04__cheetah) {
+    position: absolute;
+    right: var(--shell-pad);
+    bottom: var(--space-8);
+    width: clamp(9rem, 16vw, 15rem);
+    height: auto;
+  }
+
+  /* ─── 05 · typed sign-up form ────────────────────────────────────── */
+  .c05 {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-3xl);
+    align-items: center;
+    padding: var(--space-24) var(--shell-pad);
+    font-family: var(--font-study-sans);
+  }
+
+  .c05__photo {
+    position: relative;
+    max-width: 28rem;
+    margin: 0;
+  }
+
+  .c05__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .c05__photo svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--study-cobalt);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+
+  .c05__photo path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .c05__photo figcaption {
+    position: absolute;
+    top: 38%;
+    left: 100%;
+    margin-left: var(--space-sm);
+    color: var(--study-cobalt);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+  }
+
+  .c05__form {
+    display: grid;
+    gap: var(--space-lg);
+    max-width: 36rem;
+    padding: var(--space-xl);
+    border: 1px solid var(--study-ink);
+  }
+
+  .c05 h2 {
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .c05 dl {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+  }
+
+  .c05 dl div {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: baseline;
+  }
+
+  .c05 dt {
+    flex: none;
+    text-transform: uppercase;
+  }
+
+  /* Dotted leader between label and value, like a typed form. */
+  .c05 dl div::after {
+    content: "";
+    order: 1;
+    flex: 1;
+    border-bottom: 1px dotted currentColor;
+  }
+
+  .c05 dd {
+    order: 2;
+    margin: 0;
+    text-align: right;
+  }
+
+  .c05 a {
+    color: var(--study-cobalt);
+  }
+
+  .c05 :global(img.c05__chair) {
+    position: absolute;
+    right: var(--shell-pad);
+    bottom: var(--space-8);
+    width: clamp(6rem, 8vw, 8rem);
+    height: auto;
+    rotate: 6deg;
+  }
+
+  /* ─── 06 · fog panel over a full-bleed photo ─────────────────────── */
+  .c06 {
+    display: grid;
+    place-items: center;
+    min-height: 90vh;
+    padding: var(--space-24) var(--shell-pad);
+  }
+
+  .c06 :global(img.c06__bg) {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .c06__panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-md);
+    max-width: 36rem;
+    padding: var(--space-16) var(--space-12);
+    background: color-mix(in oklch, var(--study-paper-bright) 88%, transparent);
+    text-align: center;
+  }
+
+  .c06 :global(img.c06__bird) {
+    position: absolute;
+    top: calc(0px - var(--space-24));
+    right: var(--space-lg);
+    width: clamp(5rem, 8vw, 7rem);
+    height: auto;
+  }
+
+  .c06 h2 {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--study-type-poster-statement);
+    line-height: var(--font-leading-statement);
+  }
+
+  .c06__name {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+  }
+
+  .c06 a {
+    color: var(--study-cobalt);
+  }
+
+  /* ─── 07 · night listing ─────────────────────────────────────────── */
+  .c07 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    padding: var(--space-24) var(--shell-pad);
+    color: var(--study-paper-bright);
+    background: var(--study-ink);
+  }
+
+  /* The torch photo fades out at the edges like a spotlight on a dark stage. */
+  .c07 :global(img.c07__spot) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    mask-image: radial-gradient(circle at 50% 50%, black 35%, transparent 70%);
+  }
+
+  .c07__listing {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-md);
+  }
+
+  .c07__kicker {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .c07__date {
+    display: grid;
+    font-family: var(--font-study-serif);
+  }
+
+  .c07__date span:first-child {
+    font-size: var(--study-type-poster-hero);
+    line-height: var(--font-leading-poster);
+  }
+
+  .c07__date span:last-child {
+    color: var(--study-yellow);
+    font-size: var(--font-size-xl);
+  }
+
+  .c07 h2 {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-2xl);
+  }
+
+  .c07 :global(.courses-empty) {
+    max-width: 34ch;
+    color: var(--study-paper);
+  }
+
+  .c07 a {
+    color: var(--study-yellow);
+  }
+
+  .c07 :global(img.c07__bird) {
+    position: absolute;
+    right: var(--shell-pad);
+    bottom: var(--space-12);
+    width: clamp(7rem, 10vw, 10rem);
+    height: auto;
+  }
+
+  /* ─── 08 · split screen ──────────────────────────────────────────── */
+  .c08 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 80vh;
+  }
+
+  .c08__text {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-md);
+    padding: var(--space-24) var(--space-16) var(--space-24) var(--shell-pad);
+    color: var(--study-paper-bright);
+    background: var(--study-cobalt);
+  }
+
+  .c08 h2 {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--study-type-poster-hero);
+    line-height: var(--font-leading-poster);
+  }
+
+  .c08__name {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-2xl);
+  }
+
+  .c08__text p {
+    max-width: 34ch;
+  }
+
+  .c08 a {
+    color: inherit;
+  }
+
+  .c08__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .c08 :global(img.c08__bird) {
+    position: absolute;
+    bottom: var(--space-16);
+    left: 50%;
+    width: clamp(8rem, 13vw, 12rem);
+    height: auto;
+    translate: -50% 0;
+    rotate: -8deg;
+  }
+
+  /* ─── 09 · filmstrip ─────────────────────────────────────────────── */
+  .c09 {
+    display: grid;
+    gap: var(--space-xl);
+    padding: var(--space-24) 0;
+  }
+
+  .c09__head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-xl);
+    align-items: baseline;
+    padding-left: var(--shell-pad);
+    padding-right: calc(var(--shell-pad) + clamp(6rem, 9vw, 9rem));
+  }
+
+  .c09 h2 {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-3xl);
+  }
+
+  .c09__head p {
+    max-width: 52ch;
+  }
+
+  .c09 a {
+    color: var(--study-cobalt);
+  }
+
+  /* An ink band with paper-coloured sprocket holes along both edges. */
+  .c09__strip {
+    display: flex;
+    gap: var(--space-md);
+    margin: 0;
+    padding: var(--space-10) var(--shell-pad);
+    overflow-x: auto;
+    list-style: none;
+    background-color: var(--study-ink);
+    background-image:
+      repeating-linear-gradient(90deg, var(--study-paper) 0 var(--space-3), transparent var(--space-3) var(--space-8)),
+      repeating-linear-gradient(90deg, var(--study-paper) 0 var(--space-3), transparent var(--space-3) var(--space-8));
+    background-size: 100% var(--space-3);
+    background-position: 0 var(--space-3), 0 calc(100% - var(--space-3) * 2);
+    background-repeat: no-repeat;
+    counter-reset: frame;
+  }
+
+  .c09__strip li {
+    flex: 0 0 clamp(12rem, 20vw, 17rem);
+    counter-increment: frame;
+  }
+
+  .c09__strip li::after {
+    content: counter(frame, decimal-leading-zero);
+    display: block;
+    margin-top: var(--space-xs);
+    color: var(--study-paper);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+  }
+
+  .c09__strip :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  /* The fourth frame holds text instead of a photo. The paragraph stays a normal text block so its links flow inline. */
+  .c09__text > :global(:first-child) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    padding: var(--space-lg);
+    color: var(--study-ink);
+    background: var(--study-paper-bright);
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-lg);
+    line-height: var(--font-leading-snug);
+  }
+
+  .c09 :global(img.c09__sketch) {
+    position: absolute;
+    top: var(--space-16);
+    right: var(--shell-pad);
+    width: clamp(6rem, 9vw, 9rem);
+    height: auto;
+  }
+
+  /* ─── Tablet and phone ───────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .c01__photo {
+      right: var(--space-lg);
+    }
+
+    .c03__row {
+      grid-template-columns: 6rem repeat(2, minmax(0, 1fr));
+    }
+
+    .c05 {
+      grid-template-columns: 1fr;
+    }
+
+    .c05__photo figcaption {
+      top: auto;
+      bottom: var(--space-md);
+      left: auto;
+      right: var(--space-md);
+      margin: 0;
+      padding: var(--space-2) var(--space-sm);
+      background: var(--study-paper-bright);
+    }
+
+    .c07 {
+      grid-template-columns: 1fr;
+    }
+
+    .c07 :global(img.c07__spot) {
+      max-width: 28rem;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .c01__page {
+      padding: var(--space-12) var(--space-lg) var(--space-24) var(--space-16);
+    }
+
+    .c01__photo {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: 70%;
+      justify-self: end;
+    }
+
+    .c01 :global(img.c01__sketch) {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      justify-self: end;
+    }
+
+    .c02 :global(img.c02__photo) {
+      position: relative;
+      top: auto;
+      right: auto;
+      display: block;
+      width: 70%;
+      margin: var(--space-lg) 0 0 auto;
+    }
+
+    .c02 h2 {
+      font-size: var(--study-type-poster-hero-mobile);
+    }
+
+    .c02__foot {
+      flex-direction: column;
+      align-items: start;
+    }
+
+    .c03__row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .c03__thumb {
+      grid-column: 1 / -1;
+      max-width: 8rem;
+    }
+
+    .c03__note {
+      grid-template-columns: 5rem minmax(0, 1fr);
+    }
+
+    .c03__note a {
+      grid-column: 2;
+    }
+
+    .c04 {
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: var(--space-48);
+    }
+
+    .c04__note {
+      margin: calc(0px - var(--space-8)) 0 0 var(--space-16);
+    }
+
+    .c04 :global(img.c04__cheetah) {
+      right: auto;
+      left: var(--layout-gutter);
+    }
+
+    .c05 :global(img.c05__chair) {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      justify-self: end;
+    }
+
+    .c05__form {
+      padding: var(--space-lg);
+    }
+
+    .c05 dl div {
+      flex-wrap: wrap;
+    }
+
+    .c05 dl div::after {
+      display: none;
+    }
+
+    .c05 dd {
+      flex-basis: 100%;
+      text-align: left;
+    }
+
+    .c06__panel {
+      padding: var(--space-12) var(--space-lg);
+    }
+
+    .c08 {
+      grid-template-columns: 1fr;
+    }
+
+    .c08__text {
+      padding: var(--space-16) var(--layout-gutter);
+    }
+
+    .c08__photo :global(img) {
+      height: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .c08 :global(img.c08__bird) {
+      bottom: auto;
+      left: auto;
+      right: var(--layout-gutter);
+      translate: 0 -50%;
+      width: 7rem;
+    }
+
+    .c09__head {
+      grid-template-columns: 1fr;
+      padding-right: var(--shell-pad);
+    }
+
+    .c09 :global(img.c09__sketch) {
+      display: none;
+    }
+  }
+</style>

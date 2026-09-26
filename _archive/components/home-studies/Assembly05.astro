@@ -1,0 +1,323 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import handsCutout from "../../assets/img/studies/besthero-hands-cutout-study-v1.png";
+import { getProductSlug } from "../../config/site";
+import RingProducts from "./RingProducts.astro";
+import CoursesSection from "./CoursesSection.astro";
+import AboutSection from "./AboutSection.astro";
+import InstagramSection from "./InstagramSection.astro";
+import StudyFooter from "./StudyFooter.astro";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+const fmt = new Intl.NumberFormat("sv-SE").format;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}`;
+
+// Making steps, typed as a plain note (no numbering), drawn from the course copy (carved in wax, cast in recycled silver) — confirm with Tove.
+const process = [
+  "formas för hand i vax",
+  "gjuts i återvunnet silver",
+  "filas och poleras, långsamt",
+  "blir aldrig likadan som nästa",
+];
+
+// Placeholder pairing of rings in the photo with products — confirm with Tove.
+// Labels sit in one row under the hands; `x` is the label's anchor as a percentage of the image width.
+// Each line runs from its ring down to that anchor, in the image's 1512×1040 pixel space.
+const annotations = [
+  { slug: "bark", x: 4, align: "start", line: "M 262 628 C 200 700 90 820 60 1050" },
+  { slug: "frost", x: 50, align: "center", line: "M 935 415 C 850 520 770 760 756 1050" },
+  { slug: "måne", x: 96, align: "end", line: "M 1285 330 C 1410 330 1455 520 1452 1050" },
+]
+  .map((note) => ({ ...note, entry: items.find((item) => getProductSlug(item.id) === note.slug) }))
+  .filter((note) => note.entry);
+---
+
+<article class="a05" data-direction-panel="assembly-05" hidden>
+  <header class="a05__header">
+    <a class="a05__wordmark" href={baseUrl}>towtow</a>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+  </header>
+
+  <section class="a05__hero">
+    <div class="a05__hands">
+      <div class="a05__photo">
+        <Image
+          src={handsCutout}
+          alt="Händer med flera handgjorda silverringar."
+          loading="eager"
+          fetchpriority="high"
+        />
+
+        <svg class="a05__lines" viewBox="0 0 1512 1040" aria-hidden="true">
+          {annotations.map((note) => <path d={note.line} />)}
+        </svg>
+      </div>
+
+      <div class="a05__labels">
+        {annotations.map((note) => (
+          <a
+            class:list={["a05__label", `a05__label--${note.align}`]}
+            style={`left: ${note.x}%;`}
+            href={withBase(`/smycken/${note.slug}/`)}
+          >
+            <span class="a05__label-title">{note.entry!.data.title}</span>
+            <span>{fmt(note.entry!.data.price)} kr</span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="a05__intro">
+      <h1>Handgjorda silverringar i återvunnet sterlingsilver.</h1>
+      <ul class="a05__process">
+        {process.map((step) => <li>{step}</li>)}
+      </ul>
+      <a href={withBase("/smycken")}>alla smycken →</a>
+    </div>
+  </section>
+
+  <RingProducts items={items} variant="05" />
+  <CoursesSection variant="05" />
+  <AboutSection variant="05" />
+  <InstagramSection variant="05" />
+  <StudyFooter variant="05" />
+</article>
+
+<style>
+  .a05 {
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--study-ink);
+    background-color: var(--study-paper);
+    background-image: var(--study-paper-texture);
+    font-family: var(--font-study-sans);
+  }
+
+  .a05__header {
+    position: relative;
+    z-index: var(--z-raised);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .a05__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a05__wordmark {
+    font-family: var(--font-study-isenheim);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a05__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  .a05__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - var(--space-24));
+    padding: var(--space-20) var(--layout-gutter) var(--space-24);
+  }
+
+  /* Hands and their labels move as one unit, so the annotations hold at every width. */
+  .a05__hands {
+    position: absolute;
+    top: calc(0px - var(--space-24) - var(--space-12));
+    right: var(--layout-gutter);
+    width: min(54vw, 60rem);
+  }
+
+  .a05__photo {
+    position: relative;
+  }
+
+  .a05__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .a05__lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--study-cobalt);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .a05__lines path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .a05__labels {
+    position: relative;
+    height: var(--space-16);
+  }
+
+  .a05__label {
+    position: absolute;
+    top: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    color: var(--study-ink);
+    font-family: var(--font-study-sans);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .a05__label--center {
+    align-items: center;
+    translate: -50% 0;
+  }
+
+  .a05__label--end {
+    align-items: end;
+    translate: -100% 0;
+  }
+
+  .a05__label:hover .a05__label-title,
+  .a05__label:focus-visible .a05__label-title {
+    color: var(--study-cobalt);
+  }
+
+  .a05__label-title {
+    font-family: var(--font-study-serif);
+    font-size: var(--font-size-xl);
+    line-height: var(--font-leading-tight);
+  }
+
+  /* Left column on desktop: heading, then the making steps typed like a workshop note. */
+  .a05__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-xl);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    font-family: var(--font-study-sans);
+  }
+
+  .a05__intro h1 {
+    max-width: 27ch;
+    text-wrap: balance;
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+  }
+
+  .a05__process {
+    display: grid;
+    gap: var(--space-sm);
+    max-width: 36ch;
+    margin: 0;
+    padding: 0;
+    font-size: var(--font-size-lg);
+    list-style: none;
+  }
+
+  .a05__process li {
+    color: var(--study-ink-soft);
+  }
+
+  .a05__intro a {
+    color: var(--study-cobalt);
+    white-space: nowrap;
+  }
+
+  /* Below desktop the hands drop into the flow and the intro follows them directly. */
+  @media (max-width: 1100px) {
+    .a05__hero {
+      min-height: 0;
+      padding-top: 0;
+    }
+
+    .a05__hands {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: min(100%, 44rem);
+      margin: calc(0px - var(--space-24)) auto 0;
+    }
+
+    .a05__intro {
+      margin-top: var(--space-12);
+    }
+  }
+
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a05__header nav {
+      padding-right: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .a05__header {
+      padding-block: var(--space-md);
+    }
+
+    .a05__header nav {
+      gap: var(--space-md);
+      padding-right: 0;
+    }
+
+    .a05__hero {
+      padding-bottom: var(--space-16);
+    }
+
+    .a05__hands {
+      width: 100vw;
+      margin-top: calc(0px - var(--space-12));
+      margin-inline: calc(0px - var(--layout-gutter));
+    }
+
+    .a05__label-title {
+      font-size: var(--font-size-lg);
+    }
+
+    .a05__intro h1 {
+      font-size: var(--font-size-xl);
+    }
+
+    .a05__process {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .a05__header {
+      align-items: start;
+    }
+
+    .a05__header nav {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+  }
+</style>

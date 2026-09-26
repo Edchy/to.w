@@ -1,0 +1,298 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { StudyVariant } from "./types";
+// tove.avif has a white border baked in; this is the same photo cropped to the image itself.
+import portrait from "../../assets/img/studies/tove-portrait-crop-v1.jpg";
+import handsBySea from "../../assets/img/hero.avif";
+import childHand from "../../content/gallery/d1hand.avif";
+import handRing from "../../content/gallery/typ1.avif";
+import pencilBird from "../../assets/img/studies/footer-bird-pencil-study-v1.png";
+import pinkBird from "../../assets/img/studies/pink-seed-bird-study-v1.png";
+import chair from "../../assets/img/studies/cobalt-chair-study-v1.png";
+import wateringCan from "../../assets/img/studies/cobalt-watering-can-study-v1.png";
+import cheetah from "../../assets/img/studies/cobalt-cheetah-study-v1.png";
+import tableCup from "../../assets/img/studies/cobalt-table-cup-study-v1.png";
+import wadingBird from "../../assets/img/studies/wading-bird-pencil-study-v1.png";
+
+type Photo = { src: ImageMetadata; alt: string };
+type Props = { variant: StudyVariant };
+
+const { variant } = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+
+const photo = {
+  portrait: { src: portrait, alt: "Tove Wätte sitter på huk i ateljén, klädd i vit tröja." },
+  sea: { src: handsBySea, alt: "Händer med silverringar håller för ansiktet framför havet." },
+  child: { src: childHand, alt: "En barnhand med en tunn silverring mot randigt tyg." },
+  hand: { src: handRing, alt: "En hand med en tunn silverring." },
+} satisfies Record<string, Photo>;
+
+const looks: Record<StudyVariant, { photos: Photo[]; decor?: ImageMetadata }> = {
+  "01": { photos: [photo.portrait], decor: pencilBird },
+  "02": { photos: [photo.portrait], decor: pinkBird },
+  "03": { photos: [photo.portrait], decor: chair },
+  "04": { photos: [photo.sea], decor: wateringCan },
+  "05": { photos: [photo.portrait] },
+  "06": { photos: [photo.sea], decor: pencilBird },
+  "07": { photos: [photo.sea], decor: cheetah },
+  "08": { photos: [photo.child], decor: tableCup },
+  "09": { photos: [photo.portrait, photo.hand], decor: wadingBird },
+};
+const look = looks[variant];
+---
+
+<section class:list={["about", `about--v${variant}`]} aria-labelledby={`about-title-${variant}`}>
+  <div class="about__media">
+    {look.photos.map((item) => (
+      <Image src={item.src} alt={item.alt} widths={[480, 960]} sizes="(max-width: 700px) 100vw, 36vw" loading="lazy" />
+    ))}
+  </div>
+
+  <div class="about__body">
+    <h2 id={`about-title-${variant}`}>Hej! Det är jag som gör ringarna.</h2>
+    <p>Jag heter Tove och gör smycken i återvunnet sterlingsilver, här i Järna.</p>
+    <p>Allt görs för hand, en ring i taget. Det tar sin tid – men det är också därför ingen blir den andra lik.</p>
+    <a href={`${baseUrl}om/`}>läs mer →</a>
+  </div>
+
+  {look.decor && <Image class="about__decor" src={look.decor} alt="" aria-hidden="true" loading="lazy" />}
+</section>
+
+<style>
+  /* Base: text beside one photo. Variants flip, recolour and add the decoration. */
+  .about {
+    --sec-bg: transparent;
+    --sec-fg: inherit;
+    --sec-font: var(--font-study-serif);
+    --sec-accent: var(--study-cobalt);
+
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-3xl);
+    align-items: center;
+    padding: var(--space-24) max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
+    overflow: clip;
+    color: var(--sec-fg);
+    background: var(--sec-bg);
+    isolation: isolate;
+  }
+
+  .about__media {
+    order: 2;
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .about__media :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .about__body {
+    position: relative;
+    z-index: var(--z-raised);
+    display: grid;
+    justify-items: start;
+    gap: var(--space-md);
+    max-width: 34rem;
+  }
+
+  .about h2 {
+    max-width: 18ch;
+    margin: 0;
+    text-wrap: balance;
+    font-family: var(--sec-font);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-tight);
+  }
+
+  .about p {
+    margin: 0;
+    font-family: var(--sec-font);
+    font-size: var(--font-size-xl);
+    line-height: var(--font-leading-snug);
+  }
+
+  .about a {
+    color: var(--sec-accent);
+  }
+
+  .about :global(img.about__decor) {
+    position: absolute;
+    z-index: var(--z-base);
+    left: var(--layout-gutter);
+    bottom: var(--space-8);
+    width: clamp(8rem, 13vw, 13rem);
+    height: auto;
+    pointer-events: none;
+  }
+
+  /* 01 — notebook: portrait left, pencil bird under the text. */
+  .about--v01 {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .about--v01 .about__media {
+    order: 0;
+  }
+
+  .about--v01 :global(img.about__decor) {
+    left: auto;
+    right: var(--layout-gutter);
+  }
+
+  /* 02 — poster: wine field, paper type, pink bird. */
+  .about--v02 {
+    --sec-bg: var(--study-wine);
+    --sec-fg: var(--study-paper-bright);
+    --sec-font: var(--font-study-fashion);
+    --sec-accent: var(--study-pink);
+  }
+
+  .about--v02 :global(img.about__decor) {
+    left: 40%;
+    bottom: var(--space-12);
+  }
+
+  /* 03 — catalogue: grayscale square portrait, the chair as a quiet mark. */
+  .about--v03 {
+    --sec-bg: var(--study-paper-bright);
+
+    border-top: 1px solid var(--study-ink);
+  }
+
+  .about--v03 .about__media :global(img) {
+    aspect-ratio: 1;
+    filter: grayscale(1);
+  }
+
+  .about--v03 :global(img.about__decor) {
+    width: clamp(6rem, 9vw, 9rem);
+  }
+
+  /* 04 — collage: a tilted print of the hands by the sea. */
+  .about--v04 .about__media {
+    rotate: -2deg;
+  }
+
+  .about--v04 :global(img.about__decor) {
+    left: 38%;
+    bottom: var(--space-md);
+    rotate: -6deg;
+  }
+
+  /* 05 — typed: grotesk and a narrow portrait. */
+  .about--v05 {
+    --sec-font: var(--font-study-sans);
+
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    font-family: var(--font-study-sans);
+  }
+
+  .about--v05 p {
+    font-size: var(--font-size-lg);
+  }
+
+  /* 06 — fog: centred Isenheim over a wide photo band. */
+  .about--v06 {
+    --sec-font: var(--font-study-isenheim);
+
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .about--v06 .about__media {
+    order: 0;
+    width: min(100%, 44rem);
+  }
+
+  .about--v06 .about__media :global(img) {
+    aspect-ratio: 16 / 9;
+  }
+
+  .about--v06 .about__body {
+    justify-items: center;
+  }
+
+  /* 07 — night: ink field, yellow link, cheetah in cobalt. */
+  .about--v07 {
+    --sec-bg: var(--study-ink);
+    --sec-fg: var(--study-paper-bright);
+    --sec-accent: var(--study-yellow);
+  }
+
+  /* 08 — cobalt accents on paper: the child's hand and the table sketch. */
+  .about--v08 {
+    --sec-font: var(--font-study-isenheim);
+
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .about--v08 .about__media {
+    order: 0;
+  }
+
+  .about--v08 :global(img.about__decor) {
+    left: auto;
+    right: var(--layout-gutter);
+    width: clamp(10rem, 18vw, 18rem);
+  }
+
+  /* 09 — contact sheet: two small prints side by side. */
+  .about--v09 .about__media {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about--v09 .about__media :global(img:last-child) {
+    margin-top: var(--space-12);
+  }
+
+  .about--v09 :global(img.about__decor) {
+    left: 48%;
+    width: clamp(6rem, 8vw, 8rem);
+  }
+
+  /* Below desktop the corner drawing gets its own row after the content, so it never sits on text. */
+  @media (max-width: 1100px) {
+    .about :global(img.about__decor) {
+      position: relative;
+      inset: auto;
+      grid-column: 1 / -1;
+      justify-self: end;
+      width: 8rem;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .about,
+    .about--v01,
+    .about--v05,
+    .about--v08 {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+      padding-block: var(--space-16);
+    }
+
+    .about .about__media {
+      order: 0;
+      max-width: 22rem;
+    }
+
+    .about--v06 .about__media,
+    .about--v09 .about__media {
+      max-width: none;
+    }
+
+    .about p {
+      font-size: var(--font-size-lg);
+    }
+
+  }
+</style>

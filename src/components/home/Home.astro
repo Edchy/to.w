@@ -1,0 +1,1023 @@
+---
+// The homepage: hero (hands + woven headline + ring annotations), products, courses, Instagram,
+// footer. One layout in three colour themes (Ren, Supreme, Blå), switched from the header.
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import handsCutout from "../../assets/img/hero/hands.webp";
+import logoLight from "../../assets/img/brand/logo-white.svg";
+import logoPink from "../../assets/img/brand/logo-pink.svg";
+import { getProductSlug } from "../../config/site";
+import ProductCarousel from "./ProductCarousel.astro";
+import CoursesTeaser from "./CoursesTeaser.astro";
+import InstaFeed from "./InstaFeed.astro";
+import Footer from "./Footer.astro";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+
+// Colour themes: each is a class on the article (palettes in <style>). Ren is the default; the
+// visitor's pick is remembered in localStorage and applied before the page paints.
+const themes = [
+  { id: "ren", label: "Ren" },
+  { id: "supreme", label: "Supreme" },
+  { id: "bla", label: "Blå" },
+];
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
+
+// Annotated rings on the right hand: "glimpse" is the band on the middle finger (confirmed);
+// "måne" is the signet on the little finger (placeholder pairing — confirm with Tove).
+const bySlug = (slug: string) => items.find((item) => getProductSlug(item.id) === slug);
+const mane = bySlug("måne");
+const glimpse = bySlug("glimpse");
+
+// Hand-drawn loops around the ring names, in a 200×100 box. Each is drawn in three passes
+// (thin all round, then heavier stretches) to fake uneven pen pressure.
+const loopMane = "M 162 18 C 120 2 44 4 16 30 C -4 50 8 84 60 94 C 116 104 186 92 196 58 C 204 28 170 8 118 6 C 80 4 40 12 28 22";
+const loopGlimpse = "M 30 80 C 60 100 160 102 190 70 C 212 44 176 6 110 4 C 50 2 2 22 6 52 C 10 80 60 92 120 88 C 150 86 176 76 186 62";
+
+// Hand-drawn stems from ring to name, in a 20×1000 box stretched to the stem's length:
+// a loose wander either side of the centre line, starting and ending on it.
+const stemMane = "M 10 0 C 6 90 15 180 13.5 300 C 12 420 4 480 5.5 610 C 7 740 16 820 13.5 900 C 11.5 950 10 980 10 1000";
+const stemGlimpse = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800 5.5 880 7.5 950 C 8.5 975 10 990 10 1000";
+
+// The headline is set letter by letter, each letter numbered 1–36 across the four lines, so each
+// breakpoint can pick exactly which letters sit in front of the fingers (see the end of <style>).
+const title = "Handgjorda smycken i återvunnet silver.";
+const titleRows = ["Handgjorda", "smycken", "i återvunnet", "silver."];
+const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length + 1);
+---
+
+<article class="a10 a10--jost a10--ren" data-themes={themes.map((t) => t.id).join(" ")}>
+  <script is:inline>
+    // Apply the remembered theme before the page paints (no flash of the default).
+    (() => {
+      const article = document.currentScript.parentElement;
+      let saved = null;
+      try { saved = localStorage.getItem("tow-theme"); } catch {}
+      if (saved && article.dataset.themes.split(" ").includes(saved)) {
+        article.classList.remove("a10--ren");
+        article.classList.add(`a10--${saved}`);
+      }
+    })();
+  </script>
+  <header class="a10__header">
+    <a class="a10__wordmark" href={baseUrl}>
+      <img class="a10__logo logo-light" src={logoLight.src} width={logoLight.width} height={logoLight.height} alt="to.w" />
+      <img class="a10__logo logo-pink" src={logoPink.src} width={logoPink.width} height={logoPink.height} alt="to.w" />
+    </a>
+    <div class="a10__themes" role="group" aria-label="Färgtema">
+      {themes.map((theme) => (
+        <button class={`a10__theme a10__theme--${theme.id}`} type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label}></button>
+      ))}
+    </div>
+    <nav aria-label="Huvudnavigering">
+      <a href={withBase("/smycken")}>smycken</a>
+      <a href={withBase("/kurser")}>kurser</a>
+      <a href={withBase("/om")}>om</a>
+    </nav>
+    <button class="a10__burger" type="button" aria-label="Öppna meny" aria-expanded="false" aria-controls="a10-menu">
+      <span class="a10__burger-bar"></span>
+      <span class="a10__burger-bar"></span>
+    </button>
+  </header>
+
+  <!-- Mobile menu, as on the live site: a full-screen panel in the theme's colours. -->
+  <div class="a10__menu" id="a10-menu" role="dialog" aria-label="Meny" aria-modal="true">
+    <ul class="a10__menu-list" role="list">
+      <li><a class="a10__menu-link" href={withBase("/smycken")}>smycken</a></li>
+      <li><a class="a10__menu-link" href={withBase("/kurser")}>kurser</a></li>
+      <li><a class="a10__menu-link" href={withBase("/om")}>om</a></li>
+    </ul>
+    <a class="a10__menu-social" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
+  </div>
+
+  <section class="a10__hero">
+    <h1 aria-label={title}>
+        {titleRows.map((row, r) => (
+          <span class="a10__row" aria-hidden="true">
+            {[...row].map((char, i) => {
+              const n = rowStarts[r] + i;
+              const letter = <span class={`a10__l a10__l${n}`} data-n={n}>{char}</span>;
+              return r === 3 && char !== "." ? <span class="a10__accent">{letter}</span> : letter;
+            })}
+          </span>
+        ))}
+    </h1>
+
+    <div class="a10__hands">
+      <Image
+        src={handsCutout}
+        alt="Händer med flera handgjorda silverringar."
+        loading="eager"
+        fetchpriority="high"
+      />
+
+      <!-- A dot on each annotated ring; the lines down to the names are the labels' stems. -->
+      <svg class="a10__line" viewBox="0 0 1512 1040" aria-hidden="true">
+        {mane && <circle cx="1258" cy="336" r="9" />}
+        {glimpse && <circle cx="982" cy="408" r="9" />}
+      </svg>
+
+      {mane && (
+        <a class="a10__label a10__label--mane" href={withBase(`/smycken/${getProductSlug(mane.id)}`)}>
+          <span class="a10__label-name">{mane.data.title}</span>
+          <svg class="a10__stem" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__stem-base" d={stemMane} />
+            <path class="a10__stem-press" d={stemMane} pathLength="100" />
+          </svg>
+          <svg class="a10__loop" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__loop-base" d={loopMane} />
+            <path class="a10__loop-press" d={loopMane} pathLength="100" />
+            <path class="a10__loop-peak" d={loopMane} pathLength="100" />
+          </svg>
+        </a>
+      )}
+
+      {glimpse && (
+        <a class="a10__label a10__label--glimpse" href={withBase(`/smycken/${getProductSlug(glimpse.id)}`)}>
+          <span class="a10__label-name">{glimpse.data.title}</span>
+          <svg class="a10__stem" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__stem-base" d={stemGlimpse} />
+            <path class="a10__stem-press" d={stemGlimpse} pathLength="100" />
+          </svg>
+          <svg class="a10__loop" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__loop-base" d={loopGlimpse} />
+            <path class="a10__loop-press" d={loopGlimpse} pathLength="100" />
+            <path class="a10__loop-peak" d={loopGlimpse} pathLength="100" />
+          </svg>
+        </a>
+      )}
+    </div>
+  </section>
+
+  <ProductCarousel items={items} />
+
+  <CoursesTeaser />
+  <InstaFeed />
+  <Footer />
+</article>
+
+<script>
+  // Mobile menu, ported from the live site's BaseLayout. While open, the page behind is
+  // scroll-locked and inert; Escape or the button closes it.
+  for (const btn of document.querySelectorAll<HTMLButtonElement>(".a10__burger")) {
+    const menu = document.getElementById(btn.getAttribute("aria-controls") ?? "");
+    const article = btn.closest(".a10");
+    if (!menu || !article) continue;
+
+    // Everything in the panel except the header (it holds the close button) and the menu itself.
+    const behind = [...article.children].filter((el) => el !== menu && !el.classList.contains("a10__header"));
+    let lockedScrollY = 0;
+
+    const setOpen = (open: boolean) => {
+      menu.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? "Stäng meny" : "Öppna meny");
+      for (const el of behind) el.toggleAttribute("inert", open);
+
+      if (open) {
+        lockedScrollY = window.scrollY;
+        document.documentElement.classList.add("has-mobile-nav-open");
+        Object.assign(document.body.style, { position: "fixed", top: `-${lockedScrollY}px`, left: "0", right: "0", width: "100%" });
+        menu.querySelector("a")?.focus();
+      } else {
+        document.documentElement.classList.remove("has-mobile-nav-open");
+        Object.assign(document.body.style, { position: "", top: "", left: "", right: "", width: "" });
+        window.scrollTo(0, lockedScrollY);
+        btn.focus();
+      }
+    };
+
+    btn.addEventListener("click", () => setOpen(btn.getAttribute("aria-expanded") !== "true"));
+    menu.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setOpen(false);
+    });
+  }
+
+  // Theme switcher: swaps the theme class on the article and remembers the pick.
+  for (const article of document.querySelectorAll<HTMLElement>(".a10[data-themes]")) {
+    const ids = (article.dataset.themes ?? "").split(" ");
+    const buttons = [...article.querySelectorAll<HTMLButtonElement>("[data-theme]")];
+    const mark = () => {
+      for (const b of buttons) b.setAttribute("aria-pressed", String(article.classList.contains(`a10--${b.dataset.theme}`)));
+    };
+    for (const b of buttons) {
+      b.addEventListener("click", () => {
+        for (const id of ids) article.classList.remove(`a10--${id}`);
+        article.classList.add(`a10--${b.dataset.theme}`);
+        try { localStorage.setItem("tow-theme", b.dataset.theme ?? ""); } catch {}
+        mark();
+      });
+    }
+    mark();
+  }
+</script>
+
+<style>
+  /*
+   * Theme variables. 10's values are the defaults below; versions 01–09 override them further down.
+   * --t-page is the page (and hero) colour; each section can set its own --t-<section>-bg / -fg.
+   */
+  .a10 {
+    --t-page: var(--study-blue);
+    --t-fg: var(--study-paper-bright);
+    --t-accent: var(--study-pink);
+    --t-display: var(--font-display);
+    --t-body: var(--font-display);
+    --t-btn-bg: var(--study-paper-bright);
+    --t-btn-fg: var(--study-ink);
+
+    position: relative;
+    min-height: 100svh;
+    overflow-x: clip;
+    color: var(--t-fg);
+    background-color: var(--t-page);
+    font-family: var(--t-body);
+    /* Light type on dark blue renders heavy on macOS by default; grayscale smoothing thins it. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Inherited by every underlined link in the page's sections. */
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .a10__header {
+    position: absolute;
+    z-index: var(--z-raised);
+    inset: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    width: min(100%, var(--layout-site-width));
+    margin-inline: auto;
+    padding: var(--space-lg) var(--layout-gutter);
+  }
+
+  .a10__header a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Logo test: the "to.w" + cheetah SVG (vector text, embedded drawing), sized as the live version was. */
+  .a10__wordmark {
+    display: inline-block;
+    font-size: var(--font-size-xl);
+    line-height: 0;
+  }
+
+  .a10__logo {
+    width: auto;
+    height: 2.6em;
+  }
+
+  /* Header and footer carry both logos; Ren (all white) shows the pink one, the others the white one.
+     Only the unwanted one is hidden (outranking the footer's own logo rule), so each keeps its display. */
+  .a10:not(.a10--ren) :global(.logo-pink),
+  .a10.a10--ren :global(.logo-light) {
+    display: none;
+  }
+
+  /* Theme switcher: three small swatches beside the nav; the active one gets a ring. */
+  .a10__themes {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: auto;
+  }
+
+  .a10__theme {
+    width: var(--space-4);
+    height: var(--space-4);
+    padding: 0;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .a10__theme[aria-pressed="true"] {
+    outline: 1px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  .a10__theme--ren {
+    background: var(--jr-vit);
+  }
+
+  .a10__theme--supreme {
+    background: var(--jr-supreme-red);
+  }
+
+  .a10__theme--bla {
+    background: var(--study-blue);
+  }
+
+
+  .a10__header nav {
+    display: flex;
+    gap: var(--space-lg);
+    padding-right: var(--space-32);
+  }
+
+  /*
+   * Mobile menu, ported from the live site: at 760px and below the text links give way to a
+   * two-bar button that opens a full-screen panel in the version's own colours. While it is open
+   * the header is pinned above the panel so the logo and the close button stay put.
+   */
+  .a10__burger {
+    display: none;
+    flex-direction: column;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-1);
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .a10__burger-bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: currentColor;
+    transform-origin: center;
+    transition: transform var(--transition-normal);
+  }
+
+  .a10__burger[aria-expanded="true"] .a10__burger-bar:nth-child(1) {
+    transform: translateY(3px) rotate(45deg);
+  }
+
+  .a10__burger[aria-expanded="true"] .a10__burger-bar:nth-child(2) {
+    transform: translateY(-3px) rotate(-45deg);
+  }
+
+  /* Outranks the header layering further down (the header is lowered behind the hands). */
+  .a10 .a10__header:has(.a10__burger[aria-expanded="true"]) {
+    position: fixed;
+    z-index: var(--z-modal);
+  }
+
+  .a10__menu {
+    position: fixed;
+    z-index: var(--z-overlay);
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    overflow-y: auto;
+    padding: calc(var(--nav-height) + var(--space-10)) var(--layout-gutter) var(--space-12);
+    color: var(--t-fg);
+    background-color: var(--t-page);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+  }
+
+  .a10__menu.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  :global(html.has-mobile-nav-open),
+  :global(html.has-mobile-nav-open body) {
+    overflow: hidden;
+  }
+
+  .a10__menu-list {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(var(--space-2), 2vh, var(--space-6));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .a10__menu-link {
+    display: block;
+    font-family: var(--t-display);
+    font-size: clamp(var(--font-size-3xl), 19vw, 8rem);
+    line-height: var(--font-leading-display);
+    letter-spacing: var(--font-tracking-tight);
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .a10__menu-link:hover {
+    color: var(--t-accent);
+  }
+
+  .a10__menu-social {
+    padding-top: var(--space-8);
+    border-top: 1px solid color-mix(in srgb, var(--t-fg) 30%, transparent);
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--font-tracking-wide);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (max-width: 760px) {
+    .a10__header nav {
+      display: none;
+    }
+
+    .a10__burger {
+      display: flex;
+    }
+  }
+
+  /*
+   * The hero: a left-aligned four-line headline with the hands hanging into it from the top. These
+   * are fallbacks; the real geometry is set per breakpoint further down (--h-size, --hands-w,
+   * --hands-left, --h-top), and the letter-by-letter layering at the end of <style> decides which
+   * letters sit in front of the fingers.
+   */
+  .a10__hero {
+    --hands-top: calc(0px - var(--space-12));
+    --h-size: 8vw;
+    --h-top: 18vw;
+    --hands-w: 58vw;
+    --hands-left: 25vw;
+
+    /* A full screen: the product strip only appears once you scroll. */
+    width: min(100%, var(--layout-site-width));
+    min-height: 100svh;
+    margin-inline: auto;
+    padding: calc(var(--h-top) + var(--hands-top)) var(--layout-gutter) var(--space-md);
+  }
+
+  .a10__hero h1 {
+    margin: 0;
+    font-family: var(--t-display);
+    font-size: var(--h-size);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--font-leading-display);
+    letter-spacing: var(--font-tracking-negative);
+  }
+
+  .a10__hero h1 > span {
+    display: block;
+  }
+
+  /* Test: "silver" picked out in pink. */
+  .a10__accent {
+    color: var(--t-accent);
+  }
+
+  .a10__hands {
+    position: absolute;
+    z-index: var(--z-base);
+    top: var(--hands-top);
+    left: var(--hands-left);
+    width: var(--hands-w);
+  }
+
+  .a10__hands :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  /* The annotation: a thin pink line from the ring to its name. */
+  .a10__line {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  /* A small dot where each line touches its ring. */
+  .a10__line circle {
+    fill: var(--t-accent);
+    stroke: none;
+  }
+
+  /* A loose, not-quite-closed pen loop around each ring name. */
+  .a10__loop {
+    position: absolute;
+    top: -0.8em;
+    left: -1.1em;
+    width: calc(100% + 2.2em);
+    height: calc(100% + 1.6em);
+    overflow: visible;
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  /*
+   * Pen pressure: widths are in the loop's own units (about half a pixel each at label size).
+   * The thin pass runs all the way round; the heavier passes only cover stretches of it,
+   * set with dashes along a path length of 100, and their round caps taper into the thin line.
+   */
+  .a10__loop-base {
+    stroke-width: 2.4;
+  }
+
+  .a10__loop-press {
+    stroke-width: 4.2;
+    stroke-dasharray: 0 8 34 58;
+  }
+
+  .a10__loop-peak {
+    stroke-width: 5.8;
+    stroke-dasharray: 0 16 14 70;
+  }
+
+  .a10__label--glimpse .a10__loop-press {
+    stroke-dasharray: 0 50 32 18;
+  }
+
+  .a10__label--glimpse .a10__loop-peak {
+    stroke-dasharray: 0 58 12 30;
+  }
+
+  .a10__label--mane .a10__loop {
+    rotate: -4deg;
+  }
+
+  .a10__label--glimpse .a10__loop {
+    rotate: 3deg;
+  }
+
+  /* Hand-drawn ring-to-name stems (shown further down, with the hero). */
+  .a10__stem {
+    display: none;
+  }
+
+  .a10__label {
+    position: absolute;
+    display: grid;
+    font-family: var(--t-body);
+    font-weight: var(--font-weight-medium);
+    gap: var(--space-xs);
+    color: var(--t-accent);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .a10__label-name {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-tight);
+  }
+
+  .a10__label:hover .a10__label-name,
+  .a10__label:focus-visible .a10__label-name {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 1100px) {
+    .a10__header nav {
+      padding-right: 0;
+    }
+  }
+
+  /* Tablet: ring names a size down. */
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a10__label-name {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .a10__header {
+      padding-block: var(--space-md);
+    }
+
+    .a10__header nav {
+      gap: var(--space-md);
+    }
+  }
+
+  /* ═══ Colour themes ════════════════════════════════════════════════════════════
+   * Blå is the base palette (the .a10 defaults at the top of <style>); Ren and Supreme override
+   * it. Palette values are local, experimental colours (not tokens yet).
+   */
+  .a10 {
+    --jr-svart: rgb(0, 0, 0);
+    --jr-vit: rgb(255, 255, 255);
+    --jr-supreme-red: rgb(237, 28, 36);
+    --jr-logo-blue: rgb(0, 60, 248);
+    --jr-logo-pink: rgb(250, 36, 140);
+  }
+
+  /* Ren — clean: white page and sections throughout, black type, lines and buttons. */
+  .a10--ren {
+    --t-page: var(--jr-vit);
+    --t-fg: var(--jr-svart);
+    --t-accent: var(--jr-svart);
+    --t-btn-bg: var(--jr-svart);
+    --t-btn-fg: var(--jr-vit);
+    --t-courses-bg: var(--jr-vit);
+    --t-courses-fg: var(--jr-svart);
+    --t-insta-bg: var(--jr-vit);
+    --t-insta-fg: var(--jr-svart);
+    --t-footer-bg: var(--jr-vit);
+    --t-footer-fg: var(--jr-svart);
+  }
+
+  /*
+   * Ren's ring annotations use the logo's pink (with the cheetah blue, the complements to its black and
+   * white): pink lines, dots and loops, black names. On hover the loop fills pink behind the name.
+   */
+  .a10--ren .a10__line,
+  .a10--ren .a10__label {
+    --t-accent: var(--jr-logo-pink);
+  }
+
+  .a10--ren .a10__label {
+    color: var(--t-fg);
+  }
+
+  .a10--ren .a10__label-name {
+    position: relative;
+    z-index: var(--z-raised);
+  }
+
+  .a10--ren .a10__loop-base {
+    transition: fill var(--transition-fast);
+  }
+
+  .a10--ren .a10__label:is(:hover, :focus-visible) .a10__loop-base {
+    fill: var(--t-accent);
+  }
+
+  /* Ren's accent is black like its type, so hovers underline, fade or invert instead of recolouring. */
+  .a10--ren .a10__menu-link:hover {
+    text-decoration: underline;
+  }
+
+  .a10.a10--ren :global(:is(.ct__book, .ct__slider-nav button):is(:hover, :focus-visible)) {
+    background: var(--t-btn-bg);
+    opacity: 0.75;
+  }
+
+  .a10.a10--ren :global(.pc__controls button:hover:not(:disabled)) {
+    color: var(--jr-vit);
+    background: var(--jr-svart);
+  }
+
+  /*
+   * Supreme — box-logo red page, white type in heavy slanted Jost (a Futura revival, self-hosted
+   * so the letters sit the same everywhere) for titles and interface, EB Garamond for sentences;
+   * white courses with red type, black Instagram and footer.
+   */
+  .a10--supreme {
+    --t-page: var(--jr-supreme-red);
+    --t-fg: var(--jr-vit);
+    --t-accent: var(--jr-vit);
+    --t-btn-bg: var(--jr-vit);
+    --t-btn-fg: var(--jr-supreme-red);
+    --t-courses-bg: var(--jr-vit);
+    --t-courses-fg: var(--jr-supreme-red);
+    --t-insta-bg: var(--jr-svart);
+    --t-insta-fg: var(--jr-vit);
+    --t-footer-bg: var(--jr-svart);
+    --t-footer-fg: var(--jr-vit);
+  }
+
+  /*
+   * Sentences (course intro, empty-state line, workshop offer, Instagram intro) in EB Garamond.
+   * Its lowercase is shorter than Jost's (0.405 vs 0.46 of the size), so font-size-adjust scales it
+   * up to Jost's x-height. The sentences also run the full column instead of stopping at 34–40ch.
+   */
+  .a10.a10--jost :global(:is(.ct__body, .ct__private, .courses-empty, .ig__head p)) {
+    max-width: none;
+    font-family: var(--font-text);
+    font-size-adjust: 0.46;
+  }
+
+  /*
+   * @tovewatte is the section's real call to action, so it is set exactly like the "Instagram"
+   * title and shares its row (title left, handle right); the intro runs underneath.
+   */
+  .a10.a10--jost :global(.ig__head h2) {
+    grid-column: 1;
+  }
+
+  .a10.a10--jost :global(.ig__head a) {
+    grid-row: 1;
+    grid-column: 2;
+    font-family: var(--t-display);
+    font-size: var(--study-type-catalogue-note);
+    font-weight: var(--font-weight-bold);
+    font-style: italic;
+    line-height: var(--font-leading-statement);
+    letter-spacing: var(--font-tracking-negative);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a10.a10--jost :global(.ig__head a:hover) {
+    text-decoration: underline;
+  }
+
+  .a10.a10--jost :global(.ig__head p) {
+    grid-column: 1 / -1;
+  }
+
+  /*
+   * From 701px the handle follows you down the section: the header block dissolves so the title,
+   * intro and photos share one grid with the handle, which spans every row of the right-hand column
+   * and sticks near the top of the screen until the photos end.
+   */
+  @media (min-width: 701px) {
+    .a10.a10--jost :global(.ig) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-md) var(--space-xl);
+    }
+
+    .a10.a10--jost :global(.ig__head) {
+      display: contents;
+    }
+
+    .a10.a10--jost :global(.ig__head h2) {
+      grid-row: 1;
+    }
+
+    .a10.a10--jost :global(.ig__head p) {
+      grid-row: 2;
+      grid-column: 1;
+      margin-bottom: var(--space-xl);
+    }
+
+    .a10.a10--jost :global(.ig__head a) {
+      position: sticky;
+      top: var(--space-lg);
+      grid-row: 1 / 4;
+      align-self: start;
+    }
+
+    .a10.a10--jost :global(.ig__grid) {
+      grid-row: 3;
+      grid-column: 1;
+    }
+  }
+
+  /* The courses section sits flush against the sections above and below. */
+  .a10.a10--jost :global(.ct) {
+    padding-block: 0;
+  }
+
+  /* The ruled workshop list runs the full column too, so its rule lines up with the sentences. */
+  .a10.a10--jost :global(.ct__dates) {
+    max-width: none;
+  }
+
+  /* More room above the products, the same as below them (the headline ends lower here). */
+  .a10.a10--jost :global(.pc) {
+    padding-top: var(--space-24);
+  }
+
+  /* The rings sit without mood backgrounds, so the ring's shadow
+     sits on the flat section colour; it is softened to half strength there. */
+  .a10.a10--jost :global(.pc__frame img.pc__ring) {
+    filter: drop-shadow(0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 20%, transparent));
+  }
+
+  /* Supreme's ring annotations (lines, dots, loops, names) take the cheetah's blue from the logo. */
+  .a10--supreme :is(.a10__line, .a10__label) {
+    --t-accent: var(--jr-logo-blue);
+  }
+
+  /* Supreme's accent is white like its type, so menu links hover to black instead. */
+  .a10--supreme .a10__menu-link:hover {
+    color: var(--jr-svart);
+  }
+
+  .a10--supreme :global(.ct) {
+    --t-accent: var(--jr-supreme-red);
+    --t-btn-bg: var(--jr-supreme-red);
+    --t-btn-fg: var(--jr-vit);
+  }
+
+  /* Every heading in heavy italic; the doubled class outranks the sections' own heading rules. */
+  .a10--jost h1,
+  .a10--jost .a10__menu-link,
+  .a10.a10--jost :global(:is(h2, h3)) {
+    font-weight: var(--font-weight-bold);
+    font-style: italic;
+  }
+
+  /* Instagram as a 2×2 grid of larger photos. */
+  @media (min-width: 701px) {
+    .a10--jost :global(.ig__grid) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 60rem;
+    }
+  }
+
+  /* Narrower product cards, so more rings show at once. */
+  .a10--jost :global(.pc__card) {
+    --card-w: clamp(12rem, 17vw, 17rem);
+  }
+
+  /*
+   * Hero, shared by every version; only the colours differ.
+   * --h-size: headline size · --hands-w / --hands-left: the hands · --hands-top: where they hang from.
+   */
+  @media (min-width: 1101px) {
+    /*
+     * The hero stops growing at the site width: sizes are in --u (1vw, but never more than 1% of the site
+     * width), and past it the hero is a centred frame lined up with the header.
+     */
+    .a10 .a10__hero {
+      --u: min(1vw, var(--layout-site-width) / 100);
+      --h-size: calc(10.5 * var(--u));
+      --hands-w: calc(80 * var(--u));
+      --hands-left: calc(max(0px, (100% - var(--layout-site-width)) / 2) + 13 * var(--u));
+      --h-top: calc(15 * var(--u));
+      --hands-top: 0px;
+    }
+
+    /* Jost is set a size up. */
+    .a10--jost .a10__hero {
+      --h-size: calc(12 * var(--u));
+    }
+  }
+
+  /*
+   * At every width: the ring names sit near the bottom of the screen, each on a long straight line
+   * up to its ring (ring y = ring's share of the 1512×1040 image × --hw, the hands' width; the hands
+   * hang from the top edge).
+   */
+  .a10 .a10__hero {
+    --hw: var(--hands-w);
+  }
+
+  .a10 .a10__line {
+    display: block;
+  }
+
+  .a10 .a10__label {
+    display: grid;
+    top: var(--label-y);
+    justify-items: center;
+    translate: -50% 0;
+  }
+
+  /*
+   * The stem runs from the ring down to the top of the name's loop. It is stretched to length, so
+   * strokes are kept at screen width (non-scaling); the wander is up to about half an em either side.
+   * Like the loops: a thin pass all the way, a heavier pass over stretches of it for pen pressure.
+   */
+  .a10 .a10__stem {
+    position: absolute;
+    bottom: calc(100% + 0.8em);
+    left: 50%;
+    display: block;
+    width: 2em;
+    height: calc(var(--label-y) - var(--ring-y) - 0.8em);
+    overflow: visible;
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-linecap: round;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .a10 .a10__stem path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .a10 .a10__stem-base {
+    stroke-width: 1.4;
+  }
+
+  .a10 .a10__stem-press {
+    stroke-width: 2.4;
+    stroke-dasharray: 0 6 38 22 18 16;
+  }
+
+  .a10 .a10__label--glimpse .a10__stem-press {
+    stroke-dasharray: 0 14 26 12 36 12;
+  }
+
+  .a10 .a10__label--mane {
+    --ring-y: calc(0.2222 * var(--hw));
+    --label-y: calc(100svh - var(--space-48));
+
+    left: 83.2%;
+  }
+
+  .a10 .a10__label--glimpse {
+    --ring-y: calc(0.2697 * var(--hw));
+    --label-y: calc(100svh - var(--space-32));
+
+    left: 64.9%;
+  }
+
+  /*
+   * Up to 1100px. The hands are --hw wide at --h-left; the title is --fs. The left fingertips land
+   * ~0.667 × --hw down and each title line is 0.9 × --fs, so starting the title 2.4 lines
+   * (2.16 × --fs) above that drops them into "i återvunnet".
+   */
+  @media (max-width: 1100px) {
+    /* Wide screens: the title is set by height, the hands fill the height and sit against the right edge. */
+    .a10 .a10__hero {
+      --hands-top: 0px;
+      --hw: min(100svh, 80vw);
+      --h-left: calc(100vw - var(--hw));
+      --fs: 15svh;
+
+      padding-top: calc(0.667 * var(--hw) - 2.16 * var(--fs));
+    }
+
+    .a10 .a10__hero h1 {
+      font-size: var(--fs);
+    }
+
+    .a10 .a10__hands {
+      left: var(--h-left);
+      width: var(--hw);
+    }
+  }
+
+  /* Tall screens: the title is set by width; the hands grow (up to 110vw, capped by height) and sit left. */
+  @media (max-width: 1100px) and (orientation: portrait) {
+    .a10 .a10__hero {
+      --hw: min(110vw, 90svh);
+      --h-left: calc(48vw - 0.5 * var(--hw));
+      --fs: 15vw;
+    }
+  }
+
+  /*
+   * ═══ Letter-by-letter layering ════════════════════════════════════════════════
+   * The headline letters are numbered 1–36 (Handgjorda 1–10, smycken 11–17, "i återvunnet" 18–29
+   * with the space as 19, silver. 30–36). Letters are behind the fingers unless listed here.
+   * The lists were tuned in the Supreme theme; the geometry is the same in every theme.
+   */
+  .a10--jost .a10__l {
+    position: relative;
+  }
+
+  /*
+   * The desktop composition holds down to 820px: headline, hands and spacing all in one width
+   * unit (desktop's --u is 1vw below 1500px), so the letters meet the same fingers at every width.
+   */
+  @media (820px <= width <= 1100px) {
+    .a10--jost .a10__hero {
+      --u: 1vw;
+      --hw: calc(80 * var(--u));
+      --h-left: calc(13 * var(--u));
+      --fs: calc(12 * var(--u));
+
+      padding-top: calc(15 * var(--u));
+    }
+  }
+
+  /* 820px and up: 1–7 "Handgjo", 18–25 "i återvu", 29 "t", 35–36 "r.". */
+  @media (width >= 820px) {
+    .a10--jost :is(.a10__l1, .a10__l2, .a10__l3, .a10__l4, .a10__l5, .a10__l6, .a10__l7, .a10__l18, .a10__l19, .a10__l20, .a10__l21, .a10__l22, .a10__l23, .a10__l24, .a10__l25, .a10__l29, .a10__l35, .a10__l36) {
+      z-index: var(--z-raised);
+    }
+  }
+
+  /* Below 820px: 6–10 "jorda", 11–17 "smycken", 20 "å". */
+  @media (width < 820px) {
+    .a10--jost :is(.a10__l6, .a10__l7, .a10__l8, .a10__l9, .a10__l10, .a10__l11, .a10__l12, .a10__l13, .a10__l14, .a10__l15, .a10__l16, .a10__l17, .a10__l20) {
+      z-index: var(--z-raised);
+    }
+  }
+
+  /*
+   * The logo goes behind the hands, the nav stays in front. The header drops its own layer so
+   * its parts can split; the hands let clicks through to the logo (the ring names stay clickable).
+   */
+  .a10--jost .a10__header {
+    z-index: auto;
+  }
+
+  .a10--jost .a10__header :is(nav, .a10__themes, .a10__burger) {
+    position: relative;
+    z-index: var(--z-raised);
+  }
+
+  .a10--jost .a10__hands {
+    pointer-events: none;
+  }
+
+  .a10--jost .a10__label {
+    pointer-events: auto;
+  }
+</style>
