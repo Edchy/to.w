@@ -6,8 +6,27 @@ import Home from "../components/home/Home.astro";
 const jewelry = (await getCollection("jewelry")).sort((a, b) =>
   b.data.date.localeCompare(a.data.date),
 );
+
+const site = Astro.site?.href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebSite", "@id": `${site}#website`, url: site, name: "to.w", inLanguage: "sv" },
+    {
+      "@type": "Person",
+      "@id": `${site}#tove`,
+      name: "Tove Wätte",
+      url: site,
+      sameAs: ["https://instagram.com/tovewatte"],
+    },
+  ],
+};
 ---
 
-<BaseLayout bare description="Handgjorda smycken i återvunnet silver av Tove Wätte.">
+<BaseLayout
+  bare
+  description="Handgjorda smycken i återvunnet sterling silver av Tove Wätte i Järna. Ringar och hängen efter beställning, och kurser där du formar din egen ring."
+  jsonLd={jsonLd}
+>
   <Home items={jewelry} />
 </BaseLayout>

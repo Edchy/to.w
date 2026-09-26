@@ -5,6 +5,8 @@ import { glob } from "astro/loaders";
 const productSchema = ({ image }: SchemaContext) =>
   z.object({
     title: z.string(),
+    /** What the piece is ("ring", "hänge"), used in the page title for search results. */
+    kind: z.string().optional(),
     price: z.number(),
     sizes: z.array(z.string()),
     description: z.string().optional(),

@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteFrame from "../../components/site/SiteFrame.astro";
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { entry, others } = Astro.props;
-const { title, price, sizes, description, body, material, technique, design } = entry.data;
+const { title, kind, price, sizes, description, body, material, technique, design, images } = entry.data;
 
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const formattedPrice = new Intl.NumberFormat("sv-SE").format(price);
@@ -30,6 +30,38 @@ const facts = [
   { term: "Form", value: clean(design) },
   { term: sizes.length === 1 ? "Storlek" : "Storlekar", value: sizes.join(", ") || undefined },
 ].filter((fact) => fact.value);
+
+// Search and link previews: the title says what the piece is, the description is cut at a sentence
+// so it fits a result snippet (~155 characters), and previews show the real photo.
+const pageTitle = kind ? `${title} – ${kind} i återvunnet silver` : title;
+const summary = (text: string, max = 155) => {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) ?? [text];
+  let out = "";
+  for (const sentence of sentences) {
+    if ((out + sentence).trim().length > max) break;
+    out += sentence;
+  }
+  return (out || text.slice(0, max)).trim();
+};
+const metaDescription = summary(clean(description) ?? `${title}, handgjort smycke i återvunnet silver av Tove Wätte.`);
+const photo = images[0] ? await getImage({ src: images[0], width: 1200, format: "jpg" }) : undefined;
+const productUrl = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: title,
+  description: clean(description),
+  image: photo ? new URL(photo.src, Astro.site).href : undefined,
+  material: clean(material),
+  brand: { "@type": "Brand", name: "to.w" },
+  offers: {
+    "@type": "Offer",
+    url: productUrl,
+    price,
+    priceCurrency: "SEK",
+    availability: "https://schema.org/MadeToOrder",
+  },
+};
 
 // The order button opens a prefilled mail.
 const sizeLine =
@@ -49,7 +81,7 @@ Vänliga hälsningar,`;
 const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}&body=${encodeURIComponent(orderBody)}`;
 ---
 
-<BaseLayout bare title={title} description={clean(description) ?? `${title}, handgjort smycke i återvunnet silver av Tove Wätte.`}>
+<BaseLayout bare title={pageTitle} description={metaDescription} image={photo?.src} imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`} jsonLd={jsonLd}>
   <SiteFrame>
     <div class="pg pd">
       <div class="pd__stage">
