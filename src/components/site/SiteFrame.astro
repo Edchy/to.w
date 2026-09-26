@@ -369,8 +369,9 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
 
   /* ═══ Colour themes ════════════════════════════════════════════════════════════
    * Blå is the base palette (the .a10 defaults at the top of <style>); Ren and Supreme override
-   * it. Palette values are local, experimental colours (not tokens yet).
+   * it. The palette colours are primitives in tokens.css.
    */
+
   /* Ren — clean: white page and sections throughout, black type, lines and buttons. */
   .a10--ren {
     --t-page: var(--pure-white);

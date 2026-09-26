@@ -550,8 +550,11 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
    * with the space as 19, silver. 30–36). Letters are behind the fingers unless listed here.
    * The lists were tuned in the Supreme theme; the geometry is the same in every theme.
    */
+  /* The letters are only a picture of the headline (the h1's aria-label carries the text), so clicks
+     pass through them: the ones layered in front of the fingers would otherwise cover the ring names. */
   .a10--jost .a10__l {
     position: relative;
+    pointer-events: none;
   }
 
   /*
