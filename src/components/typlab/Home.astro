@@ -1,0 +1,713 @@
+---
+// The homepage: hero (hands + woven headline + ring annotations), products, courses, Instagram.
+// The header, theme switcher and footer come from the site frame.
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import handsCutout from "../../assets/img/hero/hands.webp";
+import { getProductSlug } from "../../config/site";
+import SiteFrame from "../site/SiteFrame.astro";
+import ProductCarousel from "./ProductCarousel.astro";
+import CoursesTeaser from "./CoursesTeaser.astro";
+import InstaFeed from "./InstaFeed.astro";
+
+type Props = { items: CollectionEntry<"jewelry">[] };
+const { items } = Astro.props;
+
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
+
+// Annotated rings on the right hand: "glimpse" is the band on the middle finger (confirmed);
+// "lyra" is the signet on the little finger; it has no product link yet.
+const bySlug = (slug: string) => items.find((item) => getProductSlug(item.id) === slug);
+const mane = bySlug("måne");
+const glimpse = bySlug("glimpse");
+
+// Hand-drawn loops around the ring names, in a 200×100 box. Each is drawn in three passes
+// (thin all round, then heavier stretches) to fake uneven pen pressure.
+const loopMane = "M 162 18 C 120 2 44 4 16 30 C -4 50 8 84 60 94 C 116 104 186 92 196 58 C 204 28 170 8 118 6 C 80 4 40 12 28 22";
+const loopGlimpse = "M 30 80 C 60 100 160 102 190 70 C 212 44 176 6 110 4 C 50 2 2 22 6 52 C 10 80 60 92 120 88 C 150 86 176 76 186 62";
+
+// Hand-drawn stems from ring to name, in a 20×1000 box stretched to the stem's length:
+// a loose wander either side of the centre line, starting and ending on it.
+const stemMane = "M 10 0 C 6 90 15 180 13.5 300 C 12 420 4 480 5.5 610 C 7 740 16 820 13.5 900 C 11.5 950 10 980 10 1000";
+const stemGlimpse = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800 5.5 880 7.5 950 C 8.5 975 10 990 10 1000";
+
+// The headline is set letter by letter, each letter numbered 1–36 across the four lines, so each
+// breakpoint can pick exactly which letters sit in front of the fingers (see the end of <style>).
+const title = "Handgjorda smycken i återvunnet silver.";
+const titleRows = ["Handgjorda", "smycken", "i återvunnet", "silver."];
+const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length + 1);
+---
+
+<SiteFrame data-typlab>
+  <section class="a10__hero">
+    <h1 aria-label={title}>
+        {titleRows.map((row, r) => (
+          <span class="a10__row" aria-hidden="true">
+            {[...row].map((char, i) => {
+              const n = rowStarts[r] + i;
+              const letter = <span class={`a10__l a10__l${n}`} data-n={n}>{char}</span>;
+              return r === 3 && char !== "." ? <span class="a10__accent">{letter}</span> : letter;
+            })}
+          </span>
+        ))}
+    </h1>
+
+    <div class="a10__hands">
+      <Image
+        src={handsCutout}
+        alt="Händer med flera handgjorda silverringar."
+        loading="eager"
+        fetchpriority="high"
+      />
+
+      <!-- A dot on each annotated ring; the lines down to the names are the labels' stems. -->
+      <svg class="a10__line" viewBox="0 0 1512 1040" aria-hidden="true">
+        {mane && <circle cx="1258" cy="336" r="9" />}
+        {glimpse && <circle cx="982" cy="408" r="9" />}
+      </svg>
+
+      {mane && (
+        <span class="a10__label a10__label--mane">
+          <span class="a10__label-name">lyra</span>
+          <svg class="a10__stem" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__stem-base" d={stemMane} />
+            <path class="a10__stem-press" d={stemMane} pathLength="100" />
+          </svg>
+          <svg class="a10__loop" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__loop-base" d={loopMane} />
+            <path class="a10__loop-press" d={loopMane} pathLength="100" />
+            <path class="a10__loop-peak" d={loopMane} pathLength="100" />
+          </svg>
+        </span>
+      )}
+
+      {glimpse && (
+        <a class="a10__label a10__label--glimpse" href={withBase(`/smycken/${getProductSlug(glimpse.id)}`)}>
+          <span class="a10__label-name">{glimpse.data.title}</span>
+          <svg class="a10__stem" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__stem-base" d={stemGlimpse} />
+            <path class="a10__stem-press" d={stemGlimpse} pathLength="100" />
+          </svg>
+          <svg class="a10__loop" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="a10__loop-base" d={loopGlimpse} />
+            <path class="a10__loop-press" d={loopGlimpse} pathLength="100" />
+            <path class="a10__loop-peak" d={loopGlimpse} pathLength="100" />
+          </svg>
+        </a>
+      )}
+    </div>
+  </section>
+
+  <ProductCarousel items={items} />
+
+  <CoursesTeaser />
+  <InstaFeed />
+</SiteFrame>
+
+<style>
+  /*
+   * The hero: a left-aligned four-line headline with the hands hanging into it from the top. These
+   * are fallbacks; the real geometry is set per breakpoint further down (--h-size, --hands-w,
+   * --hands-left, --h-top), and the letter-by-letter layering at the end of <style> decides which
+   * letters sit in front of the fingers.
+   */
+  .a10__hero {
+    --hands-top: calc(0px - var(--space-12));
+    --h-size: 8vw;
+    --h-top: 18vw;
+    --hands-w: 58vw;
+    --hands-left: 25vw;
+
+    /* A full screen: the product strip only appears once you scroll. */
+    width: min(100%, var(--layout-site-width));
+    min-height: 100svh;
+    margin-inline: auto;
+    padding: calc(var(--h-top) + var(--hands-top)) var(--layout-gutter) var(--space-4);
+  }
+
+  /*
+   * ═══ Type lab: the hero headline's type ═══════════════════════════════════════
+   * Change these four to try a face. Nyght Serif weights: 300, 400, 500, 700, 800 ("Dark"), each
+   * with an italic. The letter-by-letter layering at the end of <style> was tuned for Jost, so a
+   * new face moves which letters land on which fingers; retune it once a face is chosen.
+   */
+  /* The colour sits on the lab's frame so the header (outside the hero) can use it too. */
+  .a10[data-typlab] {
+    --hero-color: var(--pure-white);
+    /* Lifts the small white things (nav, logo, ring names) off the paper: a hairline edge and a
+       faint glow in ink. The headline goes without. */
+    --hero-lift:
+      drop-shadow(0 0 0.5px color-mix(in oklch, var(--study-ink) 50%, transparent))
+      drop-shadow(0 1px 5px color-mix(in oklch, var(--study-ink) 20%, transparent));
+  }
+
+  .a10__hero {
+    --hero-font: "Nyght Serif", Georgia, serif;
+    --hero-weight: 700;
+    --hero-style: italic;
+    --hero-tracking: var(--font-tracking-tight);
+    /* Looks tried with the white headline (set one pair, or leave both at their defaults):
+       shadow → --hero-shadow: 0 0.015em 0.04em color-mix(in oklch, var(--study-ink) 22%, transparent);
+       off-white → --hero-color (on [data-typlab] above): color-mix(in oklch, var(--study-paper) 82%, var(--study-ink));
+       inverted over the hands → --hero-blend: difference; */
+    --hero-shadow: none;
+    --hero-blend: normal;
+
+    /* Mixed setting: every row but "silver." (rows 1–3) in this second face. */
+    --hero-font-alt: var(--font-display);
+    --hero-weight-alt: var(--font-weight-bold);
+    --hero-style-alt: italic;
+  }
+
+  .a10__hero h1 {
+    margin: 0;
+    font-size: var(--h-size);
+    line-height: var(--font-leading-display);
+  }
+
+  /* Doubled class: outranks the frame's heavy-italic rule for every heading. Only the face lives
+     here: a size in this rule would also outrank the per-breakpoint --fs sizes further down. */
+  .a10.a10 .a10__hero h1 {
+    font-family: var(--hero-font);
+    font-weight: var(--hero-weight);
+    font-style: var(--hero-style);
+    letter-spacing: var(--hero-tracking);
+    color: var(--hero-color);
+    text-shadow: var(--hero-shadow);
+  }
+
+  /* The blend goes on the letters themselves: they are the layers painted over the hands. */
+  .a10.a10 .a10__hero .a10__l {
+    mix-blend-mode: var(--hero-blend);
+  }
+
+  /* The accent ("silver.") takes the headline colour too. */
+  .a10.a10 .a10__hero .a10__accent {
+    color: inherit;
+  }
+
+  .a10__hero h1 > span {
+    display: block;
+  }
+
+  .a10.a10 .a10__hero h1 > .a10__row:not(:last-child) {
+    font-family: var(--hero-font-alt);
+    font-weight: var(--hero-weight-alt);
+    font-style: var(--hero-style-alt);
+  }
+
+  /* Test: "silver" picked out in pink. */
+  .a10__accent {
+    color: var(--t-accent);
+  }
+
+  .a10__hands {
+    position: absolute;
+    z-index: var(--z-base);
+    top: var(--hands-top);
+    left: var(--hands-left);
+    width: var(--hands-w);
+  }
+
+  .a10__hands :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  /* The annotation: a thin pink line from the ring to its name. */
+  .a10__line {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  /* A small dot where each line touches its ring. */
+  .a10__line circle {
+    fill: var(--t-accent);
+    stroke: none;
+  }
+
+  /* A loose, not-quite-closed pen loop around each ring name. */
+  .a10__loop {
+    position: absolute;
+    top: -0.8em;
+    left: -1.1em;
+    width: calc(100% + 2.2em);
+    height: calc(100% + 1.6em);
+    overflow: visible;
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  /*
+   * Pen pressure: widths are in the loop's own units (about half a pixel each at label size).
+   * The thin pass runs all the way round; the heavier passes only cover stretches of it,
+   * set with dashes along a path length of 100, and their round caps taper into the thin line.
+   */
+  .a10__loop-base {
+    stroke-width: 2.4;
+  }
+
+  .a10__loop-press {
+    stroke-width: 4.2;
+    stroke-dasharray: 0 8 34 58;
+  }
+
+  .a10__loop-peak {
+    stroke-width: 5.8;
+    stroke-dasharray: 0 16 14 70;
+  }
+
+  .a10__label--glimpse .a10__loop-press {
+    stroke-dasharray: 0 50 32 18;
+  }
+
+  .a10__label--glimpse .a10__loop-peak {
+    stroke-dasharray: 0 58 12 30;
+  }
+
+  .a10__label--mane .a10__loop {
+    rotate: -4deg;
+  }
+
+  .a10__label--glimpse .a10__loop {
+    rotate: 3deg;
+  }
+
+  /* Hand-drawn ring-to-name stems (shown further down, with the hero). */
+  .a10__stem {
+    display: none;
+  }
+
+  .a10__label {
+    position: absolute;
+    display: grid;
+    font-family: var(--t-body);
+    font-weight: var(--font-weight-medium);
+    gap: var(--space-1);
+    color: var(--t-accent);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .a10__label-name {
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-tight);
+  }
+
+  .a10__label:hover .a10__label-name,
+  .a10__label:focus-visible .a10__label-name {
+    text-decoration: underline;
+  }
+
+  /* Tablet: ring names a size down. */
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .a10__label-name {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  /* ═══ Colour themes ════════════════════════════════════════════════════════════
+   * The palettes live in the site frame; the homepage only adjusts its own parts per theme.
+   */
+
+  /* Ren's ring annotations use black lines, dots and loops. On hover the loop fills black and the name turns white. */
+  .a10--ren .a10__line,
+  .a10--ren .a10__label {
+    --t-accent: var(--pure-black);
+  }
+
+  .a10--ren .a10__label {
+    color: var(--t-fg);
+  }
+
+  .a10--ren .a10__label-name {
+    position: relative;
+    z-index: var(--z-raised);
+    transition: color var(--transition-fast);
+  }
+
+  .a10--ren .a10__loop-base {
+    transition: fill var(--transition-fast);
+  }
+
+  .a10--ren .a10__label:is(:hover, :focus-visible) .a10__loop-base {
+    fill: var(--t-accent);
+  }
+
+  .a10--ren .a10__label:is(:hover, :focus-visible) .a10__label-name {
+    color: var(--pure-white);
+    text-decoration: none;
+  }
+
+  .a10.a10--ren :global(:is(.ct__book, .ct__slider-nav button):is(:hover, :focus-visible)) {
+    background: var(--t-btn-bg);
+    opacity: var(--opacity-muted);
+  }
+
+  .a10.a10--ren :global(.pc__controls button:hover:not(:disabled)) {
+    color: var(--pure-white);
+    background: var(--pure-black);
+  }
+
+  /*
+   * Sentences (course intro, empty-state line, workshop offer, Instagram intro) in EB Garamond.
+   * Its lowercase is shorter than Jost's (0.405 vs 0.46 of the size), so font-size-adjust scales it
+   * up to Jost's x-height.
+   */
+  .a10.a10--jost :global(:is(.ct__body, .ct__private, .courses-empty, .ig__head p)) {
+    font-family: var(--font-text);
+    font-size-adjust: var(--font-text-adjust);
+  }
+
+  /*
+   * @tovewatte is the section's real call to action, so it is set exactly like the "Instagram"
+   * title and shares its row (title left, handle right); the intro runs underneath.
+   */
+  .a10.a10--jost :global(.ig__head h2) {
+    grid-column: 1;
+  }
+
+  .a10.a10--jost :global(.ig__head a) {
+    grid-row: 1;
+    grid-column: 2;
+    font-family: var(--t-display);
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-bold);
+    font-style: italic;
+    line-height: var(--font-leading-display);
+    letter-spacing: var(--font-tracking-tight);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .a10.a10--jost :global(.ig__head a:hover) {
+    text-decoration: underline;
+  }
+
+  .a10.a10--jost :global(.ig__head p) {
+    grid-column: 1 / -1;
+  }
+
+  /*
+   * From 701px the handle follows you down the section: the header block dissolves so the title,
+   * intro and photos share one grid with the handle, which spans every row of the right-hand column
+   * and sticks near the top of the screen until the photos end.
+   */
+  @media (min-width: 701px) {
+    .a10.a10--jost :global(.ig) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-4) var(--space-8);
+    }
+
+    .a10.a10--jost :global(.ig__head) {
+      display: contents;
+    }
+
+    .a10.a10--jost :global(.ig__head h2) {
+      grid-row: 1;
+    }
+
+    .a10.a10--jost :global(.ig__head p) {
+      grid-row: 2;
+      grid-column: 1;
+      margin-bottom: var(--space-8);
+    }
+
+    .a10.a10--jost :global(.ig__head a) {
+      position: sticky;
+      top: var(--space-6);
+      grid-row: 1 / 4;
+      align-self: start;
+    }
+
+    .a10.a10--jost :global(.ig__grid) {
+      grid-row: 3;
+      grid-column: 1;
+    }
+  }
+
+  /* The products take a full section's room above them, the same as below. */
+  .a10.a10--jost :global(.pc) {
+    padding-top: var(--space-section);
+  }
+
+  /* The rings sit without mood backgrounds, so the ring's shadow
+     sits on the flat section colour; it is softened to half strength there. */
+  .a10.a10--jost :global(.pc__frame img.pc__ring) {
+    filter: drop-shadow(var(--shadow-object-soft));
+  }
+
+  /* Supreme's ring annotations (lines, dots, loops, names) take the cheetah's blue from the logo. */
+  .a10--supreme :is(.a10__line, .a10__label) {
+    --t-accent: var(--logo-blue);
+  }
+
+  .a10--supreme :global(.ct) {
+    --t-accent: var(--supreme-red);
+    --t-btn-bg: var(--supreme-red);
+    --t-btn-fg: var(--pure-white);
+  }
+
+  /* Instagram as a 2×2 grid of larger photos. */
+  @media (min-width: 701px) {
+    .a10--jost :global(.ig__grid) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 60rem;
+    }
+  }
+
+  /* Narrower product cards, so more rings show at once. */
+  .a10--jost :global(.pc__card) {
+    --card-w: clamp(12rem, 17vw, 17rem);
+  }
+
+  /*
+   * Hero, shared by every version; only the colours differ.
+   * --h-size: headline size · --hands-w / --hands-left: the hands · --hands-top: where they hang from.
+   */
+  @media (min-width: 1101px) {
+    /*
+     * The hero stops growing at the site width: sizes are in --u (1vw, but never more than 1% of the site
+     * width), and past it the hero is a centred frame lined up with the header.
+     */
+    .a10 .a10__hero {
+      --u: min(1vw, var(--layout-site-width) / 100);
+      --h-size: calc(10.5 * var(--u));
+      --hands-w: calc(80 * var(--u));
+      --hands-left: calc(max(0px, (100% - var(--layout-site-width)) / 2) + 13 * var(--u));
+      --h-top: calc(15 * var(--u));
+      --hands-top: 0px;
+    }
+
+    /* Jost is set a size up. */
+    .a10--jost .a10__hero {
+      --h-size: calc(12 * var(--u));
+    }
+  }
+
+  /*
+   * At every width: the ring names sit near the bottom of the screen, each on a long straight line
+   * up to its ring (ring y = ring's share of the 1512×1040 image × --hw, the hands' width; the hands
+   * hang from the top edge).
+   */
+  .a10 .a10__hero {
+    --hw: var(--hands-w);
+  }
+
+  .a10 .a10__line {
+    display: block;
+  }
+
+  .a10 .a10__label {
+    display: grid;
+    top: var(--label-y);
+    justify-items: center;
+    translate: -50% 0;
+  }
+
+  /*
+   * The stem runs from the ring down to the top of the name's loop. It is stretched to length, so
+   * strokes are kept at screen width (non-scaling); the wander is up to about half an em either side.
+   * Like the loops: a thin pass all the way, a heavier pass over stretches of it for pen pressure.
+   */
+  .a10 .a10__stem {
+    position: absolute;
+    bottom: calc(100% + 0.8em);
+    left: 50%;
+    display: block;
+    width: 2em;
+    height: calc(var(--label-y) - var(--ring-y) - 0.8em);
+    overflow: visible;
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-linecap: round;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .a10 .a10__stem path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .a10 .a10__stem-base {
+    stroke-width: 1.4;
+  }
+
+  .a10 .a10__stem-press {
+    stroke-width: 2.4;
+    stroke-dasharray: 0 6 38 22 18 16;
+  }
+
+  .a10 .a10__label--glimpse .a10__stem-press {
+    stroke-dasharray: 0 14 26 12 36 12;
+  }
+
+  .a10 .a10__label--mane {
+    --ring-y: calc(0.2222 * var(--hw));
+    --label-y: calc(100svh - var(--space-48));
+
+    left: 83.2%;
+  }
+
+  .a10 .a10__label--glimpse {
+    --ring-y: calc(0.2697 * var(--hw));
+    --label-y: calc(100svh - var(--space-32));
+
+    left: 64.9%;
+  }
+
+  /*
+   * Up to 1100px. The hands are --hw wide at --h-left; the title is --fs. The left fingertips land
+   * ~0.667 × --hw down and each title line is 0.9 × --fs, so starting the title 2.4 lines
+   * (2.16 × --fs) above that drops them into "i återvunnet".
+   */
+  @media (max-width: 1100px) {
+    /* Wide screens: the title is set by height, the hands fill the height and sit against the right edge. */
+    .a10 .a10__hero {
+      --hands-top: 0px;
+      --hw: min(100svh, 80vw);
+      --h-left: calc(100vw - var(--hw));
+      --fs: 15svh;
+
+      padding-top: calc(0.667 * var(--hw) - 2.16 * var(--fs));
+    }
+
+    .a10 .a10__hero h1 {
+      font-size: var(--fs);
+    }
+
+    .a10 .a10__hands {
+      left: var(--h-left);
+      width: var(--hw);
+    }
+  }
+
+  /* Tall screens: the title is set by width; the hands grow (up to 110vw, capped by height) and sit left. */
+  @media (max-width: 1100px) and (orientation: portrait) {
+    .a10 .a10__hero {
+      --hw: min(110vw, 90svh);
+      --h-left: calc(48vw - 0.5 * var(--hw));
+      --fs: 15vw;
+    }
+  }
+
+  /*
+   * ═══ Letter-by-letter layering ════════════════════════════════════════════════
+   * The headline letters are numbered 1–36 (Handgjorda 1–10, smycken 11–17, "i återvunnet" 18–29
+   * with the space as 19, silver. 30–36). Letters are behind the fingers unless listed here.
+   * The lists were tuned in the Supreme theme; the geometry is the same in every theme.
+   */
+  /* The letters are only a picture of the headline (the h1's aria-label carries the text), so clicks
+     pass through them: the ones layered in front of the fingers would otherwise cover the ring names. */
+  .a10--jost .a10__l {
+    position: relative;
+    pointer-events: none;
+  }
+
+  /*
+   * The desktop composition holds down to 820px: headline, hands and spacing all in one width
+   * unit (desktop's --u is 1vw below 1500px), so the letters meet the same fingers at every width.
+   */
+  @media (820px <= width <= 1100px) {
+    .a10--jost .a10__hero {
+      --u: 1vw;
+      --hw: calc(80 * var(--u));
+      --h-left: calc(13 * var(--u));
+      --fs: calc(12 * var(--u));
+
+      padding-top: calc(15 * var(--u));
+    }
+  }
+
+  /* 820px and up: 1–7 "Handgjo", 18–25 "i återvu", 29 "t", 35–36 "r.". */
+  @media (width >= 820px) {
+    .a10--jost :is(.a10__l1, .a10__l2, .a10__l3, .a10__l4, .a10__l5, .a10__l6, .a10__l7, .a10__l18, .a10__l19, .a10__l20, .a10__l21, .a10__l22, .a10__l23, .a10__l24, .a10__l25, .a10__l29, .a10__l35, .a10__l36) {
+      z-index: var(--z-raised);
+    }
+  }
+
+  /* Below 820px: 6–10 "jorda", 11–17 "smycken", 20 "å". */
+  @media (width < 820px) {
+    .a10--jost :is(.a10__l6, .a10__l7, .a10__l8, .a10__l9, .a10__l10, .a10__l11, .a10__l12, .a10__l13, .a10__l14, .a10__l15, .a10__l16, .a10__l17, .a10__l20) {
+      z-index: var(--z-raised);
+    }
+  }
+
+  /* The hands let clicks through to the logo behind them (the ring names stay clickable). */
+  .a10--jost .a10__hands {
+    pointer-events: none;
+  }
+
+  .a10--jost .a10__label {
+    pointer-events: auto;
+  }
+
+  /*
+   * ═══ Type lab: everything over the hero in the headline colour ═══════════════════
+   * Ring lines, dots, loops and names; the header's nav, menu button and logo (white variant).
+   * Scoped to the lab through [data-typlab] on its frame, so the site's header is untouched.
+   */
+  .a10.a10 .a10__hero :is(.a10__line, .a10__label) {
+    --t-accent: var(--hero-color);
+
+    color: var(--hero-color);
+  }
+
+  /* Hovering a name fills its loop with the (white) accent, so the name turns dark to stay readable. */
+  .a10.a10 .a10__hero .a10__label:is(:hover, :focus-visible) .a10__label-name {
+    color: var(--pure-black);
+  }
+
+  .a10.a10[data-typlab] :global(.a10__header) {
+    color: var(--hero-color);
+  }
+
+  .a10.a10[data-typlab] :global(.a10__header :is(nav, .a10__burger)),
+  .a10.a10 .a10__hero .a10__label {
+    filter: var(--hero-lift);
+  }
+
+  /* A step heavier, so the small white nav words carry their edge. */
+  .a10.a10[data-typlab] :global(.a10__header nav a) {
+    font-weight: var(--font-weight-medium);
+  }
+
+  /*
+   * The logo is one image (cheetah picture + lettering), so a CSS shadow would catch the cheetah too.
+   * The lab shows a copy of the white logo with the same lift built into the lettering only
+   * (logo-white-relief.svg): the header's own image keeps its size but is hidden, and the copy is
+   * painted in its place.
+   */
+  .a10.a10[data-typlab] :global(.a10__header .logo-light) {
+    display: block;
+    visibility: hidden;
+  }
+
+  .a10.a10[data-typlab] :global(.a10__header .a10__wordmark) {
+    background: url("../../assets/img/brand/logo-white-relief.svg") left center / contain no-repeat;
+  }
+
+  .a10.a10[data-typlab] :global(.a10__header .logo-pink) {
+    display: none;
+  }
+
+  /* With the mobile menu open the header sits on the menu's off-white panel: back to dark. */
+  .a10.a10[data-typlab] :global(.a10__header:has(.a10__burger[aria-expanded="true"])) {
+    color: var(--t-fg);
+  }
+</style>

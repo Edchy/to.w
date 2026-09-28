@@ -1,0 +1,115 @@
+---
+// Type lab: a copy of the homepage for trying out typography. It renders its own copies of the
+// homepage sections (src/components/typlab/), so edits there never touch the real homepage.
+// The header and footer are still the shared SiteFrame and Footer: edit those files and the whole
+// site changes. Not indexed, not in the sitemap.
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Home from "../components/typlab/Home.astro";
+
+const jewelry = (await getCollection("jewelry")).sort((a, b) =>
+  b.data.date.localeCompare(a.data.date),
+);
+---
+
+<BaseLayout bare title="Typlab" noindex>
+  <Home items={jewelry} />
+</BaseLayout>
+
+<style is:global>
+  /* Nyght Serif (Tunera, OFL), declared here only: nothing outside the lab loads it. */
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-Light.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-LightItalic.woff2") format("woff2");
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-RegularItalic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-MediumItalic.woff2") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-BoldItalic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-Dark.woff2") format("woff2");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Nyght Serif";
+    src: url("../assets/fonts/NyghtSerif-DarkItalic.woff2") format("woff2");
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /*
+   * Token overrides for this page only: anything set here replaces the value from tokens.css inside
+   * the lab (header and footer included), and nowhere else. Uncomment and change to try things out.
+   * Override the role tokens (--font-size-display, not --step-3): the roles are resolved once on
+   * :root, so changing a step here would not reach them.
+   */
+  [data-typlab] {
+    /* --font-display: "Jost", Futura, sans-serif; */
+    /* --font-text: "EB Garamond", Georgia, serif; */
+    /* --font-size-display: clamp(2rem, 4vw, 4.5rem); */
+    /* --font-size-base: clamp(0.95rem, calc(0.91rem + 0.16vw), 1.06rem); */
+    /* --font-leading-display: 0.9; */
+    /* --font-tracking-tight: -0.02em; */
+  }
+</style>
