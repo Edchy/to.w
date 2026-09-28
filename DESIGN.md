@@ -3,7 +3,7 @@ schemaVersion: 2
 name: TO.W Frame
 tokens:
   colors:
-    ren: "white page, black type and buttons, logo pink accents"
+    ren: "warm off-white page, black type and buttons, logo pink accents"
     supreme: "rgb(237, 28, 36) page, white type; white courses band, black Instagram and footer"
     bla: "oklch(46.7% 0.121 248) page, paper type, oklch(78% 0.15 350) pink accent"
   typography:
@@ -26,9 +26,9 @@ Every value lives in `src/styles/tokens.css`. Components never hardcode a repeat
 
 ## Themes
 
-`SiteFrame.astro` wraps every page and carries three colour themes, which visitors switch between with the swatches in the header. The choice is saved in `localStorage` under `tow-theme`.
+`SiteFrame.astro` wraps every page and carries three colour themes, which visitors switch between with the swatches in the footer. The choice is saved in `localStorage` under `tow-theme`.
 
-- **Ren** is the default. It has a white page with black type, lines and buttons. The ring annotations use the logo's pink.
+- **Ren** is the default. It has a warm off-white page with black type, lines and buttons. Its ring annotations are black and invert to white text on a black fill when interactive.
 - **Supreme** has a red page with white type. The courses band is white with red type, and the Instagram section and footer are black. Ring annotations use the logo's blue.
 - **Blå** has a blue page with paper-coloured type and a pink accent.
 
@@ -95,13 +95,14 @@ Breakpoints:
 ## Components
 
 - **Site frame:**
-  - The header has the logo, the theme swatches and the nav, with a burger menu at 700px and below.
-  - The footer has the logo, the nav and contact details.
+  - The header has the logo and nav, with a burger menu at 700px and below.
+  - The footer has the logo, nav, contact details and theme swatches.
 - **Hero:** the four-line headline, with the photo of hands hanging into it. Two rings are annotated with hand-drawn loops that link to their product pages.
 - **Product carousel:** ring renders on the page colour.
   - On hover, the name grows into the photo and a drawn floral frame appears.
-  - `/smycken` shows the same cards as a grid.
+- `/smycken` shows the same cards as a grid.
 - **Courses teaser:** a photo slider on one half and the course text, dates and booking button on the other.
+- **Course signup:** a full-width black form band with white fields and controls, distinct from the surrounding editorial page.
 - **Instagram:** four photos. The handle sticks beside them as you scroll.
 - **Content pages** (`pages.css`): `.pg` page padding, a heading, a ledger of facts, one filled button, and `.pg__band` for full-bleed bands.
 

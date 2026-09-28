@@ -17,7 +17,7 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 
 // Annotated rings on the right hand: "glimpse" is the band on the middle finger (confirmed);
-// "måne" is the signet on the little finger (placeholder pairing — confirm with Tove).
+// "lyra" is the signet on the little finger; it has no product link yet.
 const bySlug = (slug: string) => items.find((item) => getProductSlug(item.id) === slug);
 const mane = bySlug("måne");
 const glimpse = bySlug("glimpse");
@@ -68,8 +68,8 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
       </svg>
 
       {mane && (
-        <a class="a10__label a10__label--mane" href={withBase(`/smycken/${getProductSlug(mane.id)}`)}>
-          <span class="a10__label-name">{mane.data.title}</span>
+        <span class="a10__label a10__label--mane">
+          <s class="a10__label-name">lyra</s>
           <svg class="a10__stem" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
             <path class="a10__stem-base" d={stemMane} />
             <path class="a10__stem-press" d={stemMane} pathLength="100" />
@@ -79,7 +79,7 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
             <path class="a10__loop-press" d={loopMane} pathLength="100" />
             <path class="a10__loop-peak" d={loopMane} pathLength="100" />
           </svg>
-        </a>
+        </span>
       )}
 
       {glimpse && (
@@ -99,7 +99,7 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
     </div>
   </section>
 
-  <ProductCarousel items={items} />
+  <ProductCarousel items={items} homepage />
 
   <CoursesTeaser />
   <InstaFeed />
@@ -265,13 +265,10 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
    * The palettes live in the site frame; the homepage only adjusts its own parts per theme.
    */
 
-  /*
-   * Ren's ring annotations use the logo's pink (with the cheetah blue, the complements to its black and
-   * white): pink lines, dots and loops, black names. On hover the loop fills pink behind the name.
-   */
+  /* Ren's ring annotations use black lines, dots and loops. On hover the loop fills black and the name turns white. */
   .a10--ren .a10__line,
   .a10--ren .a10__label {
-    --t-accent: var(--logo-pink);
+    --t-accent: var(--pure-black);
   }
 
   .a10--ren .a10__label {
@@ -281,6 +278,7 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
   .a10--ren .a10__label-name {
     position: relative;
     z-index: var(--z-raised);
+    transition: color var(--transition-fast);
   }
 
   .a10--ren .a10__loop-base {
@@ -291,6 +289,11 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
     fill: var(--t-accent);
   }
 
+  .a10--ren .a10__label:is(:hover, :focus-visible) .a10__label-name {
+    color: var(--pure-white);
+    text-decoration: none;
+  }
+
   .a10.a10--ren :global(:is(.ct__book, .ct__slider-nav button):is(:hover, :focus-visible)) {
     background: var(--t-btn-bg);
     opacity: var(--opacity-muted);
@@ -299,6 +302,29 @@ const rowStarts = titleRows.map((_, i) => titleRows.slice(0, i).join("").length 
   .a10.a10--ren :global(.pc__controls button:hover:not(:disabled)) {
     color: var(--pure-white);
     background: var(--pure-black);
+  }
+
+  /*
+   * Relief (Ren with white type over the hero): the headline, ring lines, dots, loops and names in
+   * white. Doubled classes outrank Ren's rules above, which Relief also carries.
+   */
+  .a10.a10--relief .a10__hero h1 {
+    color: var(--t-hero-fg);
+  }
+
+  .a10.a10--relief .a10__hero .a10__accent {
+    color: inherit;
+  }
+
+  .a10.a10--relief :is(.a10__line, .a10__label) {
+    --t-accent: var(--t-hero-fg);
+
+    color: var(--t-hero-fg);
+  }
+
+  /* Hovering a name fills its loop white, so the name turns dark to stay readable. */
+  .a10.a10--relief .a10__label:is(:hover, :focus-visible) .a10__label-name {
+    color: var(--pure-black);
   }
 
   /*

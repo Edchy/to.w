@@ -1,17 +1,23 @@
 ---
-// The homepage footer: the logo, the site links, contact, and a small credit line.
-// Both logos are rendered; the page theme shows one (see .logo-light / .logo-pink in Home.astro).
-import logoLight from "../../assets/img/brand/logo-white.svg";
-import logoPink from "../../assets/img/brand/logo-pink.svg";
+// The footer: the TO·W wordmark, the site links, contact, a small credit line and the theme
+// swatches, with the cheetah from the old logo standing on the wordmark as a decoration.
+import { Image } from "astro:assets";
+import Wordmark from "./Wordmark.astro";
+import cheetah from "../../assets/img/illustrations/cheetah.webp";
 
+type Props = {
+  themes: { id: string; label: string }[];
+};
+
+const { themes } = Astro.props;
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 ---
 
 <footer class="f10">
   <a class="f10__logo" href={baseUrl}>
-    <img class="logo-light" src={logoLight.src} width={logoLight.width} height={logoLight.height} alt="to.w – till startsidan" loading="lazy" />
-    <img class="logo-pink" src={logoPink.src} width={logoPink.width} height={logoPink.height} alt="to.w – till startsidan" loading="lazy" />
+    <Image class="f10__cheetah" src={cheetah} alt="" aria-hidden="true" widths={[240, 480]} sizes="10rem" loading="lazy" />
+    <Wordmark label="To.W – till startsidan" />
   </a>
 
   <nav class="f10__nav" aria-label="Sidfot">
@@ -26,6 +32,12 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
   </div>
 
   <p class="f10__small">Tove Wätte · © {new Date().getFullYear()}</p>
+
+  <div class="f10__themes" role="group" aria-label="Färgtema">
+    {themes.map((theme) => (
+      <button class={`f10__theme f10__theme--${theme.id}`} type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label}></button>
+    ))}
+  </div>
 </footer>
 
 <style>
@@ -54,10 +66,30 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
     text-decoration: underline;
   }
 
-  .f10__logo img {
+  /* Sized from the heading scale, like the header's wordmark is from its link. */
+  .f10__logo {
+    position: relative;
+    justify-self: start;
+    font-size: var(--font-size-display);
+    line-height: 0;
+  }
+
+  .f10__logo svg {
     display: block;
     width: auto;
-    height: var(--size-footer-logo);
+    height: 0.65em;
+  }
+
+  /* The cheetah stands on the wordmark's letters, as wide as the word. The drawing has transparent
+     margins (2.2% on the left, 8.3% below its paws), so it is shifted by those. */
+  .f10__logo :global(img.f10__cheetah) {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: auto;
+    translate: -2.2% 8.3%;
+    pointer-events: none;
   }
 
   .f10__nav,
@@ -67,12 +99,53 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
   }
 
   .f10__small {
-    grid-column: 1 / -1;
+    grid-column: 1;
     margin: 0;
     font-size: var(--font-size-xs);
     letter-spacing: var(--font-tracking-wider);
     text-transform: uppercase;
     opacity: var(--opacity-muted);
+  }
+
+  .f10__themes {
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: var(--space-2);
+  }
+
+  .f10__theme {
+    flex: 0 0 var(--space-4);
+    width: var(--space-4);
+    height: var(--space-4);
+    padding: 0;
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius-full);
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .f10__theme[aria-pressed="true"] {
+    outline: var(--border-width) solid currentColor;
+    outline-offset: var(--space-1);
+  }
+
+  .f10__theme--ren {
+    background: var(--off-white);
+  }
+
+  /* Relief: white on the paper, like the type it stands for. */
+  .f10__theme--relief {
+    background: var(--pure-white);
+  }
+
+  .f10__theme--supreme {
+    background: var(--supreme-red);
+  }
+
+  .f10__theme--bla {
+    background: var(--study-blue);
   }
 
   @media (max-width: 700px) {
@@ -82,6 +155,10 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 
     .f10__logo {
       grid-column: 1 / -1;
+    }
+
+    .f10__themes {
+      grid-column: 2;
     }
   }
 </style>

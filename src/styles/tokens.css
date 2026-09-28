@@ -167,7 +167,4 @@
 
   /* Square icon buttons (carousel and slider arrows, the menu button): the minimum touch target. */
   --size-control: 44px;
-
-  /* The footer's logo */
-  --size-footer-logo: 5rem;
 }

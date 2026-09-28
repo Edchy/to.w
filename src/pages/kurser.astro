@@ -261,7 +261,7 @@ const successUrl = `${baseUrl}kurser/tack/`;
     border-top: var(--border-width) solid var(--color-rule);
   }
 
-  /* Supreme's white form band already ends right above, so the rule would double it. */
+  /* Supreme's contrasting form band already creates the section break, so the rule would double it. */
   .a10--supreme .private {
     padding-top: 0;
     border-top: none;
@@ -271,7 +271,15 @@ const successUrl = `${baseUrl}kurser/tack/`;
     white-space: nowrap;
   }
 
-  /* The signup form sits on the courses colours, like the courses section on the homepage. */
+  /* A dark, full-width working surface makes the signup unmistakably read as a form. */
+  .a10 .signup {
+    --t-courses-bg: var(--pure-black);
+    --t-courses-fg: var(--pure-white);
+    --t-accent: var(--pure-white);
+    --t-btn-bg: var(--pure-white);
+    --t-btn-fg: var(--pure-black);
+  }
+
   .signup {
     position: relative;
     display: grid;

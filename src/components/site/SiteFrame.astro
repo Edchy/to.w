@@ -1,20 +1,24 @@
 ---
-// The site frame shared by every page: the theme article (three colour themes, switched from the
-// header and remembered per visitor), header, mobile menu and footer. Pages go in the slot.
+// The site frame shared by every page: the theme article (four colour themes, switched from the
+// footer and remembered per visitor), header, mobile menu and footer. Pages go in the slot.
 // Extra attributes land on the article, so a page's scoped styles can reach it (and its theme).
-import logoLight from "../../assets/img/brand/logo-white.svg";
-import logoPink from "../../assets/img/brand/logo-pink.svg";
 import Footer from "./Footer.astro";
+import Wordmark from "./Wordmark.astro";
 
 const { ...rest } = Astro.props;
 
 // Colour themes: each is a class on the article (palettes in <style>). Ren is the default; the
-// visitor's pick is remembered in localStorage and applied before the page paints.
+// visitor's pick is remembered in localStorage and applied before the page paints. A theme can be
+// built on another: Relief is Ren (all its rules apply) with white type over the homepage hero.
 const themes = [
   { id: "ren", label: "Ren" },
+  { id: "relief", label: "Relief", base: "ren" },
   { id: "supreme", label: "Supreme" },
   { id: "bla", label: "Blå" },
 ];
+const themeClasses = Object.fromEntries(
+  themes.map((t) => [t.id, ["base" in t ? `a10--${t.base}` : "", `a10--${t.id}`].filter(Boolean)]),
+);
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 const navLinks = [
@@ -25,29 +29,25 @@ const navLinks = [
 const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href)) ? "page" : undefined);
 ---
 
-<article class="a10 a10--jost a10--ren" data-themes={themes.map((t) => t.id).join(" ")} {...rest}>
+<article class="a10 a10--jost a10--ren" data-theme="ren" data-themes={JSON.stringify(themeClasses)} {...rest}>
   <script is:inline>
     // Apply the remembered theme before the page paints (no flash of the default).
     (() => {
       const article = document.currentScript.parentElement;
+      const themes = JSON.parse(article.dataset.themes);
       let saved = null;
       try { saved = localStorage.getItem("tow-theme"); } catch {}
-      if (saved && article.dataset.themes.split(" ").includes(saved)) {
+      if (saved && themes[saved]) {
         article.classList.remove("a10--ren");
-        article.classList.add(`a10--${saved}`);
+        article.classList.add(...themes[saved]);
+        article.dataset.theme = saved;
       }
     })();
   </script>
   <header class="a10__header">
     <a class="a10__wordmark" href={baseUrl}>
-      <img class="a10__logo logo-light" src={logoLight.src} width={logoLight.width} height={logoLight.height} alt="to.w" />
-      <img class="a10__logo logo-pink" src={logoPink.src} width={logoPink.width} height={logoPink.height} alt="to.w" />
+      <Wordmark class="a10__logo" />
     </a>
-    <div class="a10__themes" role="group" aria-label="Färgtema">
-      {themes.map((theme) => (
-        <button class={`a10__theme a10__theme--${theme.id}`} type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label}></button>
-      ))}
-    </div>
     <nav aria-label="Huvudnavigering">
       {navLinks.map(({ href, label }) => <a href={withBase(href)} aria-current={current(href)}>{label}</a>)}
     </nav>
@@ -69,7 +69,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
 
   <slot />
 
-  <Footer />
+  <Footer {themes} />
 </article>
 
 <script>
@@ -109,18 +109,21 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     });
   }
 
-  // Theme switcher: swaps the theme class on the article and remembers the pick.
+  // Theme switcher: swaps the theme's classes on the article and remembers the pick.
   for (const article of document.querySelectorAll<HTMLElement>(".a10[data-themes]")) {
-    const ids = (article.dataset.themes ?? "").split(" ");
-    const buttons = [...article.querySelectorAll<HTMLButtonElement>("[data-theme]")];
+    const themes: Record<string, string[]> = JSON.parse(article.dataset.themes ?? "{}");
+    const buttons = [...article.querySelectorAll<HTMLButtonElement>("button[data-theme]")];
     const mark = () => {
-      for (const b of buttons) b.setAttribute("aria-pressed", String(article.classList.contains(`a10--${b.dataset.theme}`)));
+      for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset.theme === article.dataset.theme));
     };
     for (const b of buttons) {
       b.addEventListener("click", () => {
-        for (const id of ids) article.classList.remove(`a10--${id}`);
-        article.classList.add(`a10--${b.dataset.theme}`);
-        try { localStorage.setItem("tow-theme", b.dataset.theme ?? ""); } catch {}
+        const id = b.dataset.theme ?? "";
+        if (!themes[id]) return;
+        for (const classes of Object.values(themes)) article.classList.remove(...classes);
+        article.classList.add(...themes[id]);
+        article.dataset.theme = id;
+        try { localStorage.setItem("tow-theme", id); } catch {}
         mark();
       });
     }
@@ -173,58 +176,19 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     text-decoration: none;
   }
 
-  /* Logo test: the "to.w" + cheetah SVG (vector text, embedded drawing), sized as the live version was. */
+  /* Shared header wordmark. */
   .a10__wordmark {
     display: inline-block;
     font-size: var(--font-size-xl);
     line-height: 0;
   }
 
+  /* Sized from the wordmark link's (fluid) font size: about 14px tall on phones, 17px on desktop. */
   .a10__logo {
+    display: block;
     width: auto;
-    height: 2.6em;
+    height: 0.65em;
   }
-
-  /* Header and footer carry both logos; Ren (all white) shows the pink one, the others the white one.
-     Only the unwanted one is hidden (outranking the footer's own logo rule), so each keeps its display. */
-  .a10:not(.a10--ren) :global(.logo-pink),
-  .a10.a10--ren :global(.logo-light) {
-    display: none;
-  }
-
-  /* Theme switcher: three small swatches beside the nav; the active one gets a ring. */
-  .a10__themes {
-    display: flex;
-    gap: var(--space-2);
-    margin-left: auto;
-  }
-
-  .a10__theme {
-    width: var(--space-4);
-    height: var(--space-4);
-    padding: 0;
-    border: var(--border-width) solid currentColor;
-    border-radius: var(--radius-full);
-    cursor: pointer;
-  }
-
-  .a10__theme[aria-pressed="true"] {
-    outline: var(--border-width) solid currentColor;
-    outline-offset: var(--space-1);
-  }
-
-  .a10__theme--ren {
-    background: var(--pure-white);
-  }
-
-  .a10__theme--supreme {
-    background: var(--supreme-red);
-  }
-
-  .a10__theme--bla {
-    background: var(--study-blue);
-  }
-
 
   .a10__header nav {
     display: flex;
@@ -372,24 +336,32 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
    * it. The palette colours are primitives in tokens.css.
    */
 
-  /* Ren — clean: white page and sections throughout, black type, lines and buttons. */
+  /* Ren — warm paper page and sections throughout, black type, lines and buttons. */
   .a10--ren {
-    --t-page: var(--pure-white);
+    --t-page: var(--off-white);
     --t-fg: var(--pure-black);
     --t-accent: var(--pure-black);
     --t-btn-bg: var(--pure-black);
     --t-btn-fg: var(--pure-white);
-    --t-courses-bg: var(--pure-white);
+    --t-courses-bg: var(--off-white);
     --t-courses-fg: var(--pure-black);
-    --t-insta-bg: var(--pure-white);
+    --t-insta-bg: var(--off-white);
     --t-insta-fg: var(--pure-black);
-    --t-footer-bg: var(--pure-white);
+    --t-footer-bg: var(--off-white);
     --t-footer-fg: var(--pure-black);
   }
 
   /* Ren's accent is black like its type, so hovers underline, fade or invert instead of recolouring. */
   .a10--ren .a10__menu-link:hover {
     text-decoration: underline;
+  }
+
+  /*
+   * Relief — Ren (it carries Ren's class too), with the homepage hero's headline and ring
+   * annotations in white, pressed into the paper. The header keeps Ren's black.
+   */
+  .a10--relief {
+    --t-hero-fg: var(--pure-white);
   }
 
   /*
@@ -431,7 +403,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     z-index: auto;
   }
 
-  .a10--jost .a10__header :is(nav, .a10__themes, .a10__burger) {
+  .a10--jost .a10__header :is(nav, .a10__burger) {
     position: relative;
     z-index: var(--z-raised);
   }
