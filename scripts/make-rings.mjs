@@ -9,10 +9,11 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 // ─── Materials ───────────────────────────────────────────────────────────────
 const MAT = {
-  polished: { name: "silver-polished", pbrMetallicRoughness: { baseColorFactor: [0.95, 0.95, 0.93, 1], metallicFactor: 1, roughnessFactor: 0.14 } },
-  cast: { name: "silver-cast", pbrMetallicRoughness: { baseColorFactor: [0.93, 0.93, 0.91, 1], metallicFactor: 1, roughnessFactor: 0.32 } },
-  satin: { name: "silver-satin", pbrMetallicRoughness: { baseColorFactor: [0.9, 0.9, 0.88, 1], metallicFactor: 1, roughnessFactor: 0.3 } },
-  gold: { name: "gold-18k", pbrMetallicRoughness: { baseColorFactor: [1, 0.77, 0.36, 1], metallicFactor: 1, roughnessFactor: 0.2 } },
+  polished: { name: "silver-polished", pbrMetallicRoughness: { baseColorFactor: [0.82, 0.81, 0.78, 1], metallicFactor: 1, roughnessFactor: 0.2 } },
+  cast: { name: "silver-cast", pbrMetallicRoughness: { baseColorFactor: [0.74, 0.73, 0.7, 1], metallicFactor: 1, roughnessFactor: 0.48 } },
+  satin: { name: "silver-satin", pbrMetallicRoughness: { baseColorFactor: [0.78, 0.77, 0.74, 1], metallicFactor: 1, roughnessFactor: 0.38 } },
+  face: { name: "silver-worn-face", pbrMetallicRoughness: { baseColorFactor: [0.69, 0.68, 0.65, 1], metallicFactor: 1, roughnessFactor: 0.56 } },
+  gold: { name: "gold-18k", pbrMetallicRoughness: { baseColorFactor: [0.9, 0.58, 0.2, 1], metallicFactor: 1, roughnessFactor: 0.24 } },
 };
 
 // ─── Mesh helpers (mm; y is the finger axis, the ring's top faces +z) ────────────
@@ -84,6 +85,23 @@ const wire = ({ R, r, U = 160, V = 20, wobble = () => 0 }) =>
     return [rad * Math.cos(a), rr * Math.sin(v), rad * Math.sin(a)];
   });
 
+// A wire loop in the x/y plane. Used for the two hand-shaped oval links on the Måne pendant.
+function ovalLoop({ center = [0, 0, 0], rx, ry, r, angle = 0, lean = 0, U = 96, V = 16 }) {
+  const ca = Math.cos(angle), sa = Math.sin(angle), cl = Math.cos(lean), sl = Math.sin(lean);
+  const rotate = ([x, y, z]) => {
+    const px = x * ca - y * sa, py = x * sa + y * ca;
+    return [px, py * cl - z * sl, py * sl + z * cl];
+  };
+  return sweep(U, V, (a, v) => {
+    const c = [rx * Math.cos(a), ry * Math.sin(a), 0];
+    if (v < 0) { const p = rotate(c); return p.map((x, i) => x + center[i]); }
+    const normal = [Math.cos(a), Math.sin(a), 0];
+    const p = [c[0] + r * Math.cos(v) * normal[0], c[1] + r * Math.cos(v) * normal[1], r * Math.sin(v)];
+    const q = rotate(p);
+    return q.map((x, i) => x + center[i]);
+  });
+}
+
 function sphere(c, r, seg = 24) {
   const m = mesh();
   for (let i = 0; i <= seg; i++) for (let j = 0; j <= seg; j++) {
@@ -131,7 +149,7 @@ function plate(outline, depth, place, edge = 0.35, faceTris) {
   const pts = reversed ? [...outline].reverse() : outline;
   const N = pts.length;
   // Outward 2D normal at each outline point (averaged from its two edges).
-  const n2 = pts.map((p, i) => {
+  const n2 = pts.map((_, i) => {
     const a = pts[(i + N - 1) % N], b = pts[(i + 1) % N];
     const d = [b[0] - a[0], b[1] - a[1]], l = Math.hypot(...d) || 1;
     return [d[1] / l, -d[0] / l];
@@ -182,14 +200,22 @@ function plate(outline, depth, place, edge = 0.35, faceTris) {
 const topPlate = (outline, depth, z0) => plate(outline, depth, (u, v, h) => [u, v, z0 + h]);
 
 // ─── Outlines ───────────────────────────────────────────────────────────────────
-function heartOutline(width, S = 96) {
-  const pts = [];
-  for (let i = 0; i < S; i++) {
-    const t = (i / S) * TAU;
-    pts.push([16 * Math.sin(t) ** 3, 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)]);
+function heartCrownOutline() {
+  let pts = [
+    [-5.35, -2.3], [-4.4, -3.25], [-2.2, -3.65], [0, -3.75], [2.2, -3.65], [4.4, -3.25], [5.35, -2.3],
+    [5.5, 0.2], [4.9, 2.25], [3.35, 3.35], [1.65, 3.4], [0, 2.45], [-1.65, 3.4],
+    [-3.35, 3.35], [-4.9, 2.25], [-5.5, 0.2],
+  ];
+  for (let pass = 0; pass < 2; pass++) {
+    const smooth = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length];
+      smooth.push([lerp(a[0], b[0], 0.25), lerp(a[1], b[1], 0.25)]);
+      smooth.push([lerp(a[0], b[0], 0.75), lerp(a[1], b[1], 0.75)]);
+    }
+    pts = smooth;
   }
-  const s = width / 32;
-  return pts.map(([x, y]) => [x * s, (y + 2.5) * s]);
+  return pts;
 }
 
 function roundedRect(w, h, r, S = 10) {
@@ -257,59 +283,77 @@ function noise2(cellsA, cellsB, seed) {
 const topness = (a) => (1 + Math.sin(a)) / 2;
 
 // ─── The pieces ─────────────────────────────────────────────────────────────────
-const barkNoise = noise2(26, 5, 1), barkFine = noise2(61, 9, 2);
-const frostWave = noise2(9, 3, 3);
+const barkAround = noise2(17, 3, 1), barkFace = noise2(31, 7, 2);
+const frostWave = noise2(7, 3, 3);
 
 const pieces = {
-  // Narrow cast band, craggy all round.
-  bark: [[MAT.cast, band({ n: 2.6, U: 260, V: 36, shape: () => ({
-    w: 3.2, t: 2.2,
-    bump: (a, v) => 0.75 * barkNoise(a, v) ** 1.6 + 0.25 * barkFine(a, v) - 0.35,
-  }) })]],
-
-  // Domed band: wide and thick on top, slim underneath, with soft flowing lines; satin.
-  frost: [[MAT.satin, band({ n: 2.4, shape: (a) => {
-    const t = topness(a) ** 1.4;
-    return { w: lerp(3, 7.2, t), t: lerp(1.5, 3.4, t), bump: (a2, v) => 0.4 * t * (frostWave(a2, v) - 0.5) };
+  // Bark: a low, wide cast band with an irregular hammered perimeter and softened planes.
+  bark: [[MAT.cast, band({ n: 2.2, U: 96, V: 18, shape: (a) => {
+    const around = barkAround(a, 0);
+    return {
+      w: 3.55 + 0.95 * (around - 0.5) + 0.2 * Math.sin(9 * a + 0.4),
+      t: 1.95 + 0.55 * (barkAround(a + 0.7, 1.3) - 0.5),
+      dy: 0.14 * Math.sin(5 * a),
+      bump: (a2, v) => 0.55 * (barkFace(a2, v) - 0.46) + 0.16 * Math.cos(3 * v + 5 * a2),
+    };
   } })]],
 
-  // Polished and smooth; broader and heavier on top, with a slight asymmetry.
-  glimpse: [[MAT.polished, band({ n: 2.2, shape: (a) => {
-    const t = topness(a) ** 2;
-    return { w: lerp(2.4, 5.4, t), t: lerp(1.4, 3.8, t), dy: 0.5 * t * Math.cos(a) };
+  // Frost: a substantial, softly flattened organic band rather than a narrow ring with one swollen point.
+  frost: [[MAT.satin, band({ n: 2.15, U: 220, V: 36, shape: (a) => {
+    const top = topness(a);
+    return {
+      w: 5.8 + 0.8 * top + 0.18 * Math.sin(3 * a + 0.8),
+      t: 2.65 + 0.35 * top + 0.14 * Math.sin(5 * a),
+      dy: 0.14 * Math.sin(2 * a + 0.6),
+      bump: (a2, v) => 0.16 * (frostWave(a2, v) - 0.5),
+    };
+  } })]],
+
+  // Glimpse: a continuous pear-shaped crest, broad at the crown and fine at the palm side.
+  glimpse: [[MAT.polished, band({ n: 2.1, U: 240, V: 36, shape: (a) => {
+    const crown = topness(a) ** 2.8;
+    return {
+      w: lerp(2.45, 6.7, crown),
+      t: lerp(1.45, 3.45, crown),
+      dy: 0.34 * crown * Math.cos(a + 0.35),
+      bump: (_a, _v, yc) => 0.34 * crown * Math.max(0, 1 - (yc / 3.35) ** 2),
+    };
   } })]],
 
   // 1.5 mm silver wire with a bead of melted gold.
   golden: [
-    [MAT.polished, wire({ R: 9.65, r: 0.75, wobble: (a) => 0.03 * Math.sin(7 * a) })],
-    [MAT.gold, sphere([Math.cos(0.3) * 10.9, 0, Math.sin(0.3) * 10.9], 1.05)],
+    [MAT.polished, wire({ R: 9.64, r: 0.74, U: 192, V: 22, wobble: (a, v) => 0.025 * Math.sin(5 * a) + 0.018 * Math.sin(9 * a + v) })],
+    [MAT.gold, sphere([Math.cos(0.28) * 10.72, 0.06, Math.sin(0.28) * 10.72], 1.12, 28)],
   ],
 
-  // Slim band rising to a flat heart on top.
+  // Hjärter: tapered shoulders merge into one shallow crown with a restrained heart notch.
   hjarter: [
-    [MAT.polished, band({ n: 2.4, shape: (a) => { const t = topness(a) ** 3; return { w: lerp(2.2, 4, t), t: lerp(1.4, 2.6, t) }; } })],
-    [MAT.polished, topPlate(heartOutline(9.5).map(([u, v]) => [v, u]), 2.2, 10.6)],
+    [MAT.cast, band({ n: 2.25, U: 220, V: 36, shape: (a) => {
+      const shoulder = topness(a) ** 3.8;
+      return { w: lerp(2.45, 6.7, shoulder), t: lerp(1.65, 3.15, shoulder), dy: -0.1 * shoulder };
+    } })],
+    [MAT.cast, topPlate(heartCrownOutline(), 1.5, 11.65, 0.5)],
   ],
 
   // Crescent pendant on a jump ring; no chain.
   mane: [
-    (() => { const { outline, tris } = crescentOutline(); return [MAT.polished, plate(outline, 1.8, (u, v, h) => [u, v, h - 0.9], 0.25, tris)]; })(),
-    [MAT.polished, sweep(64, 14, (a, v) => {
-      const R = 1.5, r = 0.35, c = [0.2, 5.1, 0];
-      if (v < 0) return [c[0], c[1] + R * Math.sin(a), c[2] + R * Math.cos(a)];
-      const rad = R + r * Math.cos(v);
-      return [c[0] + r * Math.sin(v), c[1] + rad * Math.sin(a), c[2] + rad * Math.cos(a)];
-    })],
+    (() => { const { outline, tris } = crescentOutline(5.25, [2.75, 0.45], 4.85); return [MAT.satin, plate(outline, 2.15, (u, v, h) => [u, v - 3.05, h - 1.08], 0.38, tris)]; })(),
+    [MAT.cast, ovalLoop({ center: [-0.45, 2.8, 0.12], rx: 1.5, ry: 2.0, r: 0.46, angle: -0.34, lean: 0.18 })],
+    [MAT.cast, ovalLoop({ center: [0.35, 5.2, 0.18], rx: 1.85, ry: 2.55, r: 0.5, angle: 0.42, lean: -0.2 })],
   ],
 
-  // Signet: the band widens into a flat rectangular top.
-  rutger: [
-    [MAT.cast, band({ n: 2.6, shape: (a) => { const t = topness(a) ** 3; return { w: lerp(3, 8, t), t: lerp(1.6, 3, t) }; } })],
-    [MAT.cast, topPlate(roundedRect(11, 8.5, 0.8), 2.4, 10.4)],
+  // Kaiser: a chunky integrated signet with tapered shoulders and a worn inset face.
+  kaiser: [
+    [MAT.cast, band({ n: 2.35, U: 220, V: 36, shape: (a) => {
+      const shoulder = topness(a) ** 3.6;
+      return { w: lerp(3.35, 8.8, shoulder), t: lerp(1.8, 4.8, shoulder), dy: 0.12 * shoulder * Math.cos(a) };
+    } })],
+    [MAT.cast, topPlate(roundedRect(11.6, 8.7, 1.1, 14), 1.35, 12.45, 0.5)],
+    [MAT.face, topPlate(roundedRect(10.1, 7.2, 0.72, 14), 0.22, 13.76, 0.18)],
   ],
 
-  // Plain 1.5 mm wire, faintly uneven from the hand.
-  tunnis: [[MAT.polished, wire({ R: 9.65, r: 0.75, wobble: (a, v) => 0.05 * Math.sin(5 * a + 1) + 0.03 * Math.sin(11 * a + v) })]],
+  // Tunnis: a nearly round 1.5 mm wire with only the small deviations visible in the handmade band.
+  tunnis: [[MAT.polished, wire({ R: 9.66, r: 0.76, U: 192, V: 22, wobble: (a, v) => 0.035 * Math.sin(4 * a + 1) + 0.018 * Math.sin(9 * a + v) })]],
 };
 
 // ─── GLB writer ────────────────────────────────────────────────────────────────

@@ -5,5 +5,6 @@
   "sizes": ["one size"],
   "description": "Månhänget är tillverkad av spill som blivit över efter andra smycken. Silvret smälts ner för att sen bankas och slipas och tillslut bli ett nytt smycke. Obs. Hänget säljs utan kedja",
   "images": ["./mane-photo.webp"],
+  "productImage": "./mane-cutout.png",
   "date": "2026-04-19"
 }

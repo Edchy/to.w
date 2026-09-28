@@ -9,6 +9,7 @@
   "technique": "Vaxmodellering med handgjorda strukturer",
   "design": "Rund form med skulpterade mönster",
   "images": ["./bark-photo.webp"],
+  "productImage": "./bark-cutout.png",
   "imagesHd": ["./bark-photo.webp"],
   "date": "2026-04-15"
 }
