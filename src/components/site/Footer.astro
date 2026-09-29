@@ -7,7 +7,7 @@ import Wordmark from "./Wordmark.astro";
 import cheetah from "../../assets/img/illustrations/cheetah.webp";
 
 type Props = {
-  themes: { id: string; label: string }[];
+  themes: { id: string; label: string; swatch: string }[];
 };
 
 const { themes } = Astro.props;
@@ -16,8 +16,8 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 ---
 
 <footer class="f10">
-  <a class="f10__logo" href={baseUrl}>
-    <Image class="f10__cheetah" src={cheetah} alt="" aria-hidden="true" widths={[240, 480]} sizes="10rem" loading="lazy" />
+  <a class="f10__logo" href={baseUrl} aria-label="To.W – till startsidan">
+    <Image class="f10__cheetah" src={cheetah} alt="" aria-hidden="true" widths={[240, 480, 960]} sizes="(max-width: 700px) 80vw, 10rem" loading="lazy" />
     <Wordmark label="To.W – till startsidan" />
   </a>
 
@@ -38,13 +38,28 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
     <button class="f10__picker-toggle" type="button" aria-expanded="false" aria-controls="f10-themes">tema</button>
     <div class="f10__themes" id="f10-themes" role="group" aria-label="Färgtema" hidden>
       {themes.map((theme) => (
-        <button class={`f10__theme f10__theme--${theme.id}`} type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label}></button>
+        <button class="f10__theme" type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label} style={`--theme-swatch: var(${theme.swatch})`}></button>
       ))}
     </div>
   </div>
+
+  <a class="f10__top" href="#" aria-label="Till toppen">
+    <Wordmark aria-hidden="true" />
+  </a>
 </footer>
 
 <script>
+  // The phone footer's wordmark glides back to the top (a plain jump for visitors who ask for less motion) and hands
+  // focus to the header's wordmark, so keyboard users land at the top too.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>(".f10__top")) {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+      document.querySelector<HTMLElement>(".a10__wordmark")?.focus({ preventScroll: true });
+    });
+  }
+
   // "tema" shows and hides the swatches; picking one is handled by the site frame.
   for (const toggle of document.querySelectorAll<HTMLButtonElement>(".f10__picker-toggle")) {
     const swatches = document.getElementById(toggle.getAttribute("aria-controls") ?? "");
@@ -181,123 +196,44 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
     outline-offset: var(--space-1);
   }
 
-  .f10__theme--ren {
-    --theme-swatch: var(--off-white);
+  .f10__theme {
     background: var(--theme-swatch);
   }
 
-  /* Relief: white on the paper, like the type it stands for. */
-  .f10__theme--relief {
-    --theme-swatch: var(--pure-white);
-    background: var(--theme-swatch);
+  /* Only phones show the wordmark that leads back to the top. */
+  .f10__top {
+    display: none;
   }
 
-  .f10__theme--nature {
-    --theme-swatch: var(--nature-moss);
-    background: var(--theme-swatch);
-  }
-
-  .f10__theme--sand {
-    --theme-swatch: var(--sand);
-    background: var(--theme-swatch);
-  }
-
-  .f10__theme--bark {
-    --theme-swatch: var(--bark);
-    background: var(--theme-swatch);
-  }
-
-  .f10__theme--fjord {
-    --theme-swatch: var(--fjord);
-    background: var(--theme-swatch);
-  }
-
-  .f10__theme--supreme {
-    --theme-swatch: var(--supreme-red);
-    background: var(--theme-swatch);
-  }
-
-  .f10__theme--bla {
-    --theme-swatch: var(--study-blue);
-    background: var(--theme-swatch);
-  }
-
+  /*
+   * Phones: nothing but the TO·W wordmark, centred; it glides back to the top. The pages, the theme
+   * swatches and the contact links are in the menu.
+   */
   @media (max-width: 700px) {
     .f10 {
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      justify-content: center;
+      padding-block: var(--space-16) var(--space-12);
     }
 
-    .f10__logo {
-      grid-column: 1 / -1;
-      display: flex;
-      align-items: center;
+    .f10 :is(.f10__logo, .f10__nav, .f10__contact, .f10__small, .f10__picker) {
+      display: none;
+    }
+
+    /* Outranks `.f10 a`, so the wordmark takes the theme's footer-logo colour (white in Relief). */
+    .f10 .f10__top {
+      display: grid;
+      place-items: center;
       min-width: var(--size-control);
       min-height: var(--size-control);
+      font-size: var(--font-size-display);
+      line-height: 0;
+      color: var(--t-footer-logo, inherit);
     }
 
-    .f10__nav,
-    .f10__contact {
-      gap: 0;
-    }
-
-    .f10__nav a,
-    .f10__contact a {
-      display: flex;
-      align-items: center;
-      min-height: var(--size-control);
-    }
-
-    /* Phones: the button first, the swatches on their own row beneath, each a full tap target. */
-    .f10__picker {
-      grid-column: 1 / -1;
-      justify-self: start;
-    }
-
-    .f10__picker-toggle {
-      min-height: var(--size-control);
-    }
-
-    .f10__themes {
-      position: static;
-      flex-wrap: wrap;
-      gap: 0;
-      translate: none;
-    }
-
-    .f10__theme {
-      position: relative;
-      flex-basis: var(--size-control);
-      width: var(--size-control);
-      height: var(--size-control);
-      background: transparent;
-      border: 0;
-    }
-
-    .f10__theme::before {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: var(--space-4);
-      height: var(--space-4);
-      content: "";
-      background: var(--theme-swatch);
-      border: var(--border-width) solid currentColor;
-      border-radius: var(--radius-full);
-      translate: -50% -50%;
-    }
-
-    .f10__theme[aria-pressed="true"] {
-      outline: none;
-    }
-
-    .f10__theme[aria-pressed="true"]::before {
-      outline: var(--border-width) solid currentColor;
-      outline-offset: var(--space-1);
-    }
-
-    .f10__theme:focus-visible {
-      outline: var(--border-width-thick) solid currentColor;
-      outline-offset: 0;
+    .f10__top :global(svg) {
+      width: auto;
+      height: 0.65em;
     }
   }
 </style>

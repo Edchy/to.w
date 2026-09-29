@@ -642,29 +642,56 @@ const stemLeft = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800
     }
   }
 
-  /* Phone composition: a larger poster title, compact callouts and a shorter route to the products. */
-  @media (width <= 500px) and (orientation: portrait) {
+  /*
+   * Phones (550px and below): two halves. The hands fill the top half of the screen, cropped to it
+   * at the wrists; the headline fills the bottom half on the plain page, in the theme's text colour
+   * (Relief's white would vanish on paper). No ring callouts at this size.
+   */
+  @media (width <= 550px) {
+    /* The headline's longest line (HANDGJORDA) is ~6.6 × its size wide: fit it between the gutters. */
     .a10 .a10__hero {
-      --hw: min(125vw, 90svh);
-      --fs: 14vw;
-      min-height: calc(1.45 * var(--hw));
-      padding-top: calc(0.4 * var(--hw) - 1.5 * var(--fs));
+      --fs: calc((100vw - 2 * var(--layout-gutter)) / 6.6);
+
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: 50svh 1fr;
+      min-height: 100svh;
+      padding: 0;
     }
 
-    .a10 .a10__label--right {
-      --label-y: calc(1 * var(--hw));
+    .a10 .a10__hands {
+      position: relative;
+      grid-row: 1;
+      top: 0;
+      left: 0;
+      width: 100%;
     }
 
-    .a10 .a10__label--left {
-      --label-y: calc(1.14 * var(--hw));
+    /* Cropped from the wrists, never the fingertips, whatever the screen's shape. */
+    .a10 .a10__hands :global(img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center bottom;
+    }
+
+    .a10.a10 .a10__hero h1 {
+      grid-row: 2;
+      align-self: center;
+      padding-inline: var(--layout-gutter);
+      color: var(--t-fg);
+    }
+
+    .a10 :is(.a10__line, .a10__label) {
+      display: none;
     }
 
     .a10--jost .a10__l {
       z-index: var(--z-raised);
     }
 
-    .a10--jost :is(.a10__l5, .a10__l6, .a10__l7, .a10__l8, .a10__l9, .a10__l10, .a10__l11, .a10__l12, .a10__l13, .a10__l14, .a10__l15, .a10__l25) {
-      z-index: calc(var(--z-base) - 1);
+    .a10 .a10__hero + :global(.pc) {
+      margin-top: 0;
     }
   }
 

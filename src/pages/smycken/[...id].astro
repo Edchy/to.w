@@ -127,8 +127,11 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
         <button class="pd__toggle" type="button" data-model-toggle aria-pressed="false">Vrid i 3D</button>
       )}
 
+      <a class="pd__back" href={`${baseUrl}smycken/`} aria-label="Tillbaka till alla smycken">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6" /></svg>
+      </a>
+
       <div class="pd__info">
-        <a class="pd__back" href={`${baseUrl}smycken/`}>← alla smycken</a>
 
         <div class="pd__name">
           <h1 class="pg__heading pd__title" style={`view-transition-name: ${ringTransitionName(getProductSlug(entry.id))}; view-transition-class: ${RING_TRANSITION_CLASS}`}>{title}</h1>
@@ -193,15 +196,17 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 <style>
   /*
    * The photo leads, large, on the left; everything about the piece sits beside it in one column
-   * that stays in view while the photo scrolls. Nothing is folded away.
+   * that stays in view while the photo scrolls. Nothing is folded away. The way back comes first,
+   * above the photo.
    */
   .pd {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     grid-template-areas:
+      "back ."
       "media info"
       "toggle info";
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr;
     gap: var(--space-4) var(--grid-gutter);
     padding-bottom: 0;
   }
@@ -286,14 +291,33 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     max-width: var(--layout-content-width);
   }
 
+  /* A round arrow button, a full tap target; it fills with the button colour on hover. */
   .pd__back {
+    grid-area: back;
     justify-self: start;
-    font-size: var(--font-size-sm);
-    text-decoration: none;
+    display: grid;
+    place-items: center;
+    width: var(--size-control);
+    height: var(--size-control);
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius-full);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
   }
 
-  .pd__back:is(:hover, :focus-visible) {
-    text-decoration: underline;
+  .pd__back svg {
+    width: var(--space-6);
+    height: var(--space-6);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .pg .pd__back:is(:hover, :focus-visible) {
+    color: var(--t-btn-fg);
+    background: var(--t-btn-bg);
+    border-color: var(--t-btn-bg);
   }
 
   .pd__name {
@@ -327,7 +351,6 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   .pd__note {
-    max-width: var(--measure);
     font-family: var(--font-text);
     font-size: var(--font-size-sm);
     font-size-adjust: var(--font-text-adjust);
@@ -350,6 +373,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     .pd {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
+        "back"
         "media"
         "toggle"
         "info";
@@ -365,10 +389,6 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       position: static;
       max-width: none;
       gap: var(--space-6);
-    }
-
-    .pd__back {
-      order: 1;
     }
 
     .pd__name {

@@ -4,6 +4,8 @@
 // Extra attributes land on the article, so a page's scoped styles can reach it (and its theme).
 import Footer from "./Footer.astro";
 import Wordmark from "./Wordmark.astro";
+import floralFrame from "../../assets/img/illustrations/floral-frame.webp";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
 
 const { ...rest } = Astro.props;
 
@@ -11,15 +13,16 @@ const { ...rest } = Astro.props;
 // visitor's pick is remembered in localStorage and applied before the page paints. A theme can be
 // built on others: Relief is Ren (all its rules apply) with white type over the homepage hero,
 // Nature is Relief in moss greens, and Sand, Bark and Fjord are Nature in other earth colours.
-const themes: { id: string; label: string; base?: string[] }[] = [
-  { id: "ren", label: "Ren" },
-  { id: "relief", label: "Relief", base: ["ren"] },
-  { id: "nature", label: "Nature", base: ["ren", "relief"] },
-  { id: "sand", label: "Sand", base: ["ren", "relief", "nature"] },
-  { id: "bark", label: "Bark", base: ["ren", "relief", "nature"] },
-  { id: "fjord", label: "Fjord", base: ["ren", "relief", "nature"] },
-  { id: "supreme", label: "Supreme" },
-  { id: "bla", label: "Blå" },
+// Each theme's swatch (in the footer and the phone menu) is the colour token named by `swatch`.
+const themes: { id: string; label: string; swatch: string; base?: string[] }[] = [
+  { id: "ren", label: "Ren", swatch: "--off-white" },
+  { id: "relief", label: "Relief", swatch: "--pure-white", base: ["ren"] },
+  { id: "nature", label: "Nature", swatch: "--nature-moss", base: ["ren", "relief"] },
+  { id: "sand", label: "Sand", swatch: "--sand", base: ["ren", "relief", "nature"] },
+  { id: "bark", label: "Bark", swatch: "--bark", base: ["ren", "relief", "nature"] },
+  { id: "fjord", label: "Fjord", swatch: "--fjord", base: ["ren", "relief", "nature"] },
+  { id: "supreme", label: "Supreme", swatch: "--supreme-red" },
+  { id: "bla", label: "Blå", swatch: "--study-blue" },
 ];
 const themeClasses = Object.fromEntries(
   themes.map((t) => [t.id, [...(t.base ?? []), t.id].map((id) => `a10--${id}`)]),
@@ -62,14 +65,28 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     </button>
   </header>
 
-  <!-- Mobile menu, as on the live site: a full-screen panel in the theme's colours. -->
-  <div class="a10__menu" id="a10-menu" role="dialog" aria-label="Meny" aria-modal="true">
+  <!--
+    Phone menu: a full-screen panel in the theme's button colours, inside the hand-drawn floral frame.
+    The pages, then the theme swatches and the contact links at the foot.
+  -->
+  <div class="a10__menu" id="a10-menu" role="dialog" aria-label="Meny" aria-modal="true" style={`--menu-frame: url("${floralFrame.src}")`}>
+    <span class="a10__menu-frame" aria-hidden="true"></span>
     <ul class="a10__menu-list" role="list">
       {navLinks.map(({ href, label }) => (
         <li><a class="a10__menu-link" href={withBase(href)} aria-current={current(href)}>{label}</a></li>
       ))}
     </ul>
-    <a class="a10__menu-social" href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
+    <div class="a10__menu-foot">
+      <div class="a10__menu-themes" role="group" aria-label="Färgtema">
+        {themes.map((theme) => (
+          <button class="a10__menu-swatch" type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label} style={`--theme-swatch: var(${theme.swatch})`}></button>
+        ))}
+      </div>
+      <div class="a10__menu-contact">
+        <a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
+        <a href="https://instagram.com/tovewatte" target="_blank" rel="noopener noreferrer">instagram</a>
+      </div>
+    </div>
   </div>
 
   <slot />
@@ -268,21 +285,29 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   /* Outranks the header layering further down (the header drops its own layer). */
   .a10 .a10__header:has(.a10__burger[aria-expanded="true"]) {
     position: fixed;
-    z-index: var(--z-modal);
+    z-index: calc(var(--z-modal) + 1);
+    color: var(--t-btn-fg);
   }
 
+  /* Over the open menu the logo and close button keep the panel's type colour, whatever a theme's
+     hover does (a tap leaves the button "hovered" on phones). */
+  .a10 .a10__header:has(.a10__burger[aria-expanded="true"]) :is(a, button) {
+    color: inherit;
+  }
+
+  /* On the modal layer: page overlays (the product cards' hover names use --z-overlay) stay beneath. */
   .a10__menu {
     position: fixed;
-    z-index: var(--z-overlay);
+    z-index: var(--z-modal);
     inset: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
-    overflow-y: auto;
-    padding: calc(var(--nav-height) + var(--space-12)) var(--layout-gutter) var(--space-12);
-    color: var(--t-fg);
-    background-color: var(--t-page);
+    overflow: hidden auto;
+    padding: calc(var(--nav-height) + var(--space-4)) calc(var(--layout-gutter) + var(--space-4)) var(--space-12);
+    color: var(--t-btn-fg);
+    background-color: var(--t-btn-bg);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-normal);
@@ -298,7 +323,25 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     overflow: hidden;
   }
 
+  /*
+   * The hand-drawn floral frame around the panel, drawn in the panel's type colour: the drawing is
+   * a mask over a block of currentColor, so it follows every theme. Its pencil rectangle spans
+   * roughly 11–88% across and 9–95% down, so the box reaches past the panel's sides (117% wide)
+   * to seat the lines close to the screen edges; the outermost leaves are clipped.
+   */
+  .a10__menu-frame {
+    position: absolute;
+    top: calc(var(--nav-height) - var(--space-8));
+    right: -9%;
+    bottom: 0;
+    left: -8%;
+    background-color: currentColor;
+    mask: var(--menu-frame) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
   .a10__menu-list {
+    position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -320,17 +363,71 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     transition: color var(--transition-fast);
   }
 
-  .a10__menu-link:hover {
-    color: var(--t-accent);
+  /* Focus (the menu opens with it on the first link) underlines like hover instead of boxing. */
+  .a10__menu-link:is(:hover, :focus-visible) {
+    outline: none;
+    text-decoration: underline;
   }
 
-  .a10__menu-social {
-    padding-top: var(--space-8);
-    border-top: var(--border-width) solid var(--color-rule);
-    font-size: var(--font-size-lg);
-    letter-spacing: var(--font-tracking-wide);
+  /* The foot of the menu: theme swatches, then email and Instagram. */
+  .a10__menu-foot {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  /* Two even rows of four, so no swatch is left on a row of its own. */
+  .a10__menu-themes {
+    display: grid;
+    grid-template-columns: repeat(4, var(--size-control));
+    margin-inline: calc(0px - var(--space-2));
+  }
+
+  /* A full tap target around a large dot in the theme's own colour. */
+  .a10__menu-swatch {
+    position: relative;
+    width: var(--size-control);
+    height: var(--size-control);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .a10__menu-swatch::before {
+    position: absolute;
+    inset: var(--space-2);
+    content: "";
+    background: var(--theme-swatch);
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius-full);
+  }
+
+  .a10__menu-swatch[aria-pressed="true"]::before {
+    outline: var(--border-width) solid currentColor;
+    outline-offset: var(--space-1);
+  }
+
+  .a10__menu-swatch:focus-visible {
+    outline: var(--border-width-thick) solid currentColor;
+    outline-offset: 0;
+  }
+
+  .a10__menu-contact {
+    display: grid;
+    font-size: var(--font-size-xl);
+  }
+
+  .a10__menu-contact a {
+    display: flex;
+    align-items: center;
+    min-height: var(--size-control);
     color: inherit;
     text-decoration: none;
+  }
+
+  .a10__menu-contact a:is(:hover, :focus-visible) {
+    text-decoration: underline;
   }
 
   @media (max-width: 1100px) {
@@ -344,8 +441,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
       padding-block: var(--space-4);
     }
 
-    .a10__wordmark,
-    .a10__menu-social {
+    .a10__wordmark {
       display: flex;
       align-items: center;
       min-width: var(--size-control);
@@ -419,10 +515,18 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     transition: filter var(--transition-normal), color var(--transition-normal);
   }
 
-  /* On hover the shadow fades and the white darkens to ink, as if pressed flat. */
-  .a10--relief .a10__header :is(a, button):is(:hover, :focus-visible) {
+  /* On hover the shadow fades and the white darkens to ink, as if pressed flat (keyboard focus too;
+     not on touch screens, where a tap would leave it stuck). */
+  .a10--relief .a10__header :is(a, button):focus-visible {
     color: var(--t-relief-press);
     filter: none;
+  }
+
+  @media (hover: hover) {
+    .a10--relief .a10__header :is(a, button):hover {
+      color: var(--t-relief-press);
+      filter: none;
+    }
   }
 
   /*
