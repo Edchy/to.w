@@ -16,19 +16,12 @@
   font-display: swap;
 }
 
+/* Nyght Serif, only the weight the homepage hero uses (bold italic). */
 @font-face {
-  font-family: "Jost";
-  src: url("../assets/fonts/Jost-Variable.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Jost";
-  src: url("../assets/fonts/Jost-Italic-Variable.woff2") format("woff2");
+  font-family: "Nyght Serif";
+  src: url("../assets/fonts/NyghtSerif-BoldItalic.woff2") format("woff2");
   font-style: italic;
-  font-weight: 100 900;
+  font-weight: 700;
   font-display: swap;
 }
 
@@ -101,8 +94,7 @@ main {
   flex: 1;
 }
 
-/* Sentences on the content pages are set in the text serif, size-matched to Jost's lowercase
-   (0.405 vs 0.46 of the size). The homepage (body.prototype-body) sets its own. */
+/* Sentences on the content pages use the text serif. The homepage (body.prototype-body) sets its own. */
 body:not(.prototype-body) main p {
   font-family: var(--font-text);
   font-size-adjust: var(--font-text-adjust);
@@ -224,5 +216,14 @@ textarea {
   .reset-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .reset-wordmark,
+  .reset-nav a,
+  .reset-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-width: var(--size-control);
+    min-height: var(--size-control);
   }
 }

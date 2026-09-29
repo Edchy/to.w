@@ -25,7 +25,8 @@ export type Course = {
   price: string;
   /** Number of places per occasion. Display strings are derived from this — see `spotsLabel` / `spotsWord`. */
   spots: number;
-  place: string;
+  /** Where the next occasion is held. Leave out while no dates are planned: the place varies. */
+  place?: string;
   body: string[];
   includes: string[];
 };
@@ -38,37 +39,19 @@ export const courses: Course[] = [
       "Välkommen till en kväll där vi skapar tillsammans. Under min guidning får du designa och forma din egen unika ring.",
     image: silverringImg,
     imageAlt: "Två händer som bär flera handgjorda silverringar",
-    dates: [
-      {
-        slug: "12-sep",
-        date: "12 september",
-        time: "18.00–20.00",
-        day: "12",
-        month: "september",
-        open: false,
-      },
-      {
-        slug: "26-sep",
-        date: "26 september",
-        time: "18.00–20.00",
-        day: "26",
-        month: "september",
-        open: true,
-      },
-    ],
+    // No dates planned right now: the homepage shows the empty state and the form takes interest
+    // in the next one. Add occasions here when there are new dates.
+    dates: [],
     price: "1 800 kr per deltagare",
     spots: 5,
-    place: "Åsgatan 2, Järna",
     body: [
       "Under kursens två(ish) timmar kommer ni få arbeta med hårt vax och forma er egen ring. Under tiden serveras dryck och tilltugg.",
       "Efter kursen tar jag hand om samtliga vaxmodeller och gjuter dem i återvunnet sterling silver, så att varje deltagares design blir till ett färdigt, hållbart smycke.",
-      "Vi kommer hålla till i en keramikkällare under kaféet på Åsgatan i Järna där det även kommer att finnas keramik att köpa med sig hem efter att kvällen är slut.",
     ],
     includes: [
       "Allt material för vaxmodellering",
       "Gjutning i återvunnet sterling silver",
       "Tilltugg och dryck",
-      "Keramikskål att förvara det färdiga smycket i",
     ],
   },
 ];

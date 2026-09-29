@@ -1,14 +1,15 @@
 ---
 // The homepage product strip: each ring sits on the section colour in a sideways-scrolling row.
-// With `grid`, the same cards are laid out in rows instead (the smycken page).
+// With `grid`, the same cards are laid out in rows instead (the smycken page). With `photos`, each
+// card shows the piece's real photo, cropped to fill the card, and the hover stays quiet.
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { RING_TRANSITION_CLASS, getProductSlug, ringTransitionName } from "../../config/site";
 import floralFrame from "../../assets/img/illustrations/floral-frame.webp";
 
-type Props = { items: CollectionEntry<"jewelry">[]; grid?: boolean; homepage?: boolean };
+type Props = { items: CollectionEntry<"jewelry">[]; grid?: boolean; homepage?: boolean; photos?: boolean };
 
-const { items, grid = false, homepage = false } = Astro.props;
+const { items, grid = false, homepage = false, photos = false } = Astro.props;
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const fmt = new Intl.NumberFormat("sv-SE").format;
 
@@ -21,26 +22,27 @@ const products = items
     price: fmt(entry.data.price),
     href: `${baseUrl}smycken/${getProductSlug(entry.id)}/`,
     kind: entry.data.kind,
-    image: entry.data.images[0],
+    // The transparent cutout on the section colour; the first photo if a piece has none.
+    image: photos ? entry.data.images[0] : (entry.data.productImage ?? entry.data.images[0]),
   }))
   .reverse();
 
 if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title === "måne"));
 ---
 
-<section class:list={["pc", grid && "pc--grid", homepage && "pc--homepage"]} aria-label="Smycken" data-carousel={grid ? undefined : ""}>
+<section class:list={["pc", grid && "pc--grid", homepage && "pc--homepage", photos && "pc--photos"]} aria-label="Smycken" data-carousel={grid ? undefined : ""}>
   <ul class="pc__track" data-carousel-track>
     {products.map((product, index) => (
       <li class="pc__card">
         <a href={product.href}>
           <span class="pc__frame">
             <span class="pc__stage"></span>
-            <Image class="pc__drawn-frame" src={floralFrame} alt="" widths={[480, 960]} sizes="(max-width: 700px) 95vw, 29rem" loading="lazy" />
+            {!photos && <Image class="pc__drawn-frame" src={floralFrame} alt="" widths={[480, 960]} sizes="(max-width: 700px) 95vw, 29rem" loading="lazy" />}
             <Image
               class="pc__ring"
               src={product.image}
               alt={`${product.title}, ${product.kind ?? "smycke"} i återvunnet silver`}
-              widths={[320, 640]}
+              widths={photos ? [480, 960] : [320, 640]}
               sizes="(max-width: 700px) 50vw, 15rem"
               loading={index < 4 ? "eager" : "lazy"}
             />
@@ -56,8 +58,6 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
 
   {!grid && <div class="pc__foot">
     <div class="pc__controls">
-      <button type="button" data-carousel-prev aria-label="Föregående smycken">←</button>
-      <button type="button" data-carousel-next aria-label="Fler smycken">→</button>
       <a href={`${baseUrl}smycken/`}>alla smycken →</a>
     </div>
   </div>}
@@ -110,7 +110,7 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
 </script>
 
 <style>
-  /* Theme hooks: a page can give this section its own background, text and accent colour. */
+  /* Theme hooks: a page can give this section its own background, text, accent and hover-name colour. */
   .pc {
     --pc-surface: var(--t-products-bg, var(--t-page, var(--study-blue)));
 
@@ -119,6 +119,18 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
     --pc-pad: var(--layout-edge);
 
     padding-block: var(--space-4) var(--space-section);
+  }
+
+  .pc--homepage {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .pc--homepage .pc__track {
+    gap: var(--space-16);
+    margin-top: 0;
   }
 
   /* Controls sit under the strip, so nothing but the photos peeks into the hero. */
@@ -137,34 +149,20 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
     gap: var(--space-2);
   }
 
-  .pc__controls button {
-    display: grid;
-    place-items: center;
-    width: var(--size-control);
-    height: var(--size-control);
-    padding: 0;
-    color: inherit;
-    background: transparent;
-    border: var(--border-width) solid currentColor;
-    border-radius: var(--radius);
-    font: inherit;
-    cursor: pointer;
-    transition: background-color var(--transition-fast), color var(--transition-fast), opacity var(--transition-fast);
-  }
-
-  .pc__controls button:hover:not(:disabled) {
-    color: var(--pc-surface);
-    background: var(--study-paper-bright);
-  }
-
-  .pc__controls button:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: default;
-  }
-
   .pc__controls a {
-    margin-left: var(--space-4);
-    color: inherit;
+    display: inline-block;
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius);
+    color: var(--t-btn-fg, var(--study-ink));
+    background: var(--t-btn-bg, var(--study-paper-bright));
+    text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .pc__controls a:hover,
+  .pc__controls a:focus-visible {
+    color: var(--t-btn-fg, var(--study-ink));
+    background: var(--t-accent, var(--study-pink));
   }
 
   /* The strip: one row that scrolls sideways and snaps to each card; the next card peeks in at the edge. */
@@ -270,9 +268,7 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
     z-index: var(--z-overlay);
     font-family: var(--t-display, var(--font-display));
     font-size: var(--font-size-xl);
-    /* Heavy italic, like the name's heading on the product page. */
     font-weight: var(--font-weight-bold);
-    font-style: italic;
     line-height: var(--font-leading-tight);
     white-space: nowrap;
     pointer-events: none;
@@ -298,36 +294,63 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
    * a thin pink frame appears, and the other cards step back.
    */
   @media (hover: hover) {
-    .pc__card:hover,
-    .pc__card:focus-within {
+    .pc:not(.pc--photos) .pc__card:hover,
+    .pc:not(.pc--photos) .pc__card:focus-within {
       z-index: var(--z-overlay);
     }
 
-    .pc__card a:is(:hover, :focus-visible) .pc__title {
-      color: var(--t-accent, var(--study-pink));
+    .pc:not(.pc--photos) .pc__card a:is(:hover, :focus-visible) .pc__title {
+      color: var(--t-products-hover, var(--t-accent, var(--study-pink)));
       transform:
         translate(calc(var(--card-w) * 0.2), calc(var(--card-w) * -1.25 * 0.88 - var(--space-12)))
         scale(4);
     }
 
-    .pc__card a:is(:hover, :focus-visible) .pc__price {
-      color: var(--t-accent, var(--study-pink));
+    .pc:not(.pc--photos) .pc__card a:is(:hover, :focus-visible) .pc__price {
+      color: var(--t-products-hover, var(--t-accent, var(--study-pink)));
       transform:
         translate(calc(0px - var(--space-6)), calc(0px - var(--space-6) - var(--space-4) - 1lh))
         scale(2.5);
     }
 
-    .pc__card a:is(:hover, :focus-visible) :global(img.pc__drawn-frame) {
+    .pc:not(.pc--photos) .pc__card a:is(:hover, :focus-visible) :global(img.pc__drawn-frame) {
       opacity: 1;
     }
 
-    .pc__card a:is(:hover, :focus-visible) :global(img.pc__ring) {
+    .pc:not(.pc--photos) .pc__card a:is(:hover, :focus-visible) :global(img.pc__ring) {
       scale: 1.04;
       rotate: -2deg;
     }
 
-    .pc__track:has(.pc__card:hover) .pc__card:not(:hover) {
+    .pc:not(.pc--photos) .pc__track:has(.pc__card:hover) .pc__card:not(:hover) {
       opacity: var(--opacity-subdued);
+    }
+  }
+
+  /* Photos: the real photo fills the card; on hover it only comes a little closer. */
+  .pc--photos .pc__frame :global(img.pc__ring) {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius);
+    translate: none;
+    filter: none;
+  }
+
+  .pc--photos .pc__frame {
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  @media (hover: hover) {
+    .pc--photos .pc__card a:is(:hover, :focus-visible) :global(img.pc__ring) {
+      scale: 1.04;
+    }
+
+    .pc--photos .pc__card a:is(:hover, :focus-visible) .pc__title {
+      text-decoration: underline;
+      text-underline-offset: var(--underline-offset);
     }
   }
 
@@ -370,6 +393,11 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
   }
 
   @media (max-width: 700px) {
+    .pc--homepage {
+      min-height: auto;
+      justify-content: flex-start;
+    }
+
     .pc__foot {
       flex-wrap: wrap;
     }

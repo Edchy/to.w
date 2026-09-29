@@ -85,8 +85,8 @@ const titleId = "courses-teaser";
           sizes="(max-width: 900px) 100vw, 50vw"
           loading="lazy"
           hidden={i !== 0}
-          data-ct-slide
-        />
+        data-ct-slide
+      />
       ))}
       {photos.length > 1 && (
         <div class="ct__slider-nav">
@@ -102,7 +102,6 @@ const titleId = "courses-teaser";
 </section>
 
 <script>
-  // Previous/next swap which photo is shown, wrapping round at either end.
   for (const media of document.querySelectorAll<HTMLElement>("[data-ct-slider]")) {
     const slides = [...media.querySelectorAll<HTMLElement>("[data-ct-slide]")];
     if (slides.length < 2) continue;
@@ -148,7 +147,7 @@ const titleId = "courses-teaser";
     justify-items: start;
     gap: var(--space-6);
     order: 2;
-    padding: var(--space-section) var(--layout-edge) var(--space-section) var(--space-16);
+    padding: var(--space-32) var(--layout-edge);
   }
 
   .ct__title {
@@ -345,7 +344,6 @@ const titleId = "courses-teaser";
   }
 
   .ct__private a {
-    color: var(--t-accent, var(--study-pink));
     white-space: nowrap;
   }
 
@@ -376,7 +374,7 @@ const titleId = "courses-teaser";
     }
 
     .ct__text {
-      padding: var(--space-section) var(--layout-gutter) 0;
+      padding: var(--space-24) var(--layout-gutter) var(--space-24);
     }
 
   }

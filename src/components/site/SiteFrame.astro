@@ -1,5 +1,5 @@
 ---
-// The site frame shared by every page: the theme article (four colour themes, switched from the
+// The site frame shared by every page: the theme article (the colour themes, switched from the
 // footer and remembered per visitor), header, mobile menu and footer. Pages go in the slot.
 // Extra attributes land on the article, so a page's scoped styles can reach it (and its theme).
 import Footer from "./Footer.astro";
@@ -7,17 +7,22 @@ import Wordmark from "./Wordmark.astro";
 
 const { ...rest } = Astro.props;
 
-// Colour themes: each is a class on the article (palettes in <style>). Ren is the default; the
+// Colour themes: each is a class on the article (palettes in <style>). Relief is the default; the
 // visitor's pick is remembered in localStorage and applied before the page paints. A theme can be
-// built on another: Relief is Ren (all its rules apply) with white type over the homepage hero.
-const themes = [
+// built on others: Relief is Ren (all its rules apply) with white type over the homepage hero,
+// Nature is Relief in moss greens, and Sand, Bark and Fjord are Nature in other earth colours.
+const themes: { id: string; label: string; base?: string[] }[] = [
   { id: "ren", label: "Ren" },
-  { id: "relief", label: "Relief", base: "ren" },
+  { id: "relief", label: "Relief", base: ["ren"] },
+  { id: "nature", label: "Nature", base: ["ren", "relief"] },
+  { id: "sand", label: "Sand", base: ["ren", "relief", "nature"] },
+  { id: "bark", label: "Bark", base: ["ren", "relief", "nature"] },
+  { id: "fjord", label: "Fjord", base: ["ren", "relief", "nature"] },
   { id: "supreme", label: "Supreme" },
   { id: "bla", label: "Blå" },
 ];
 const themeClasses = Object.fromEntries(
-  themes.map((t) => [t.id, ["base" in t ? `a10--${t.base}` : "", `a10--${t.id}`].filter(Boolean)]),
+  themes.map((t) => [t.id, [...(t.base ?? []), t.id].map((id) => `a10--${id}`)]),
 );
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
@@ -29,7 +34,7 @@ const navLinks = [
 const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href)) ? "page" : undefined);
 ---
 
-<article class="a10 a10--jost a10--ren" data-theme="ren" data-themes={JSON.stringify(themeClasses)} {...rest}>
+<article class="a10 a10--jost a10--ren a10--relief" data-theme="relief" data-themes={JSON.stringify(themeClasses)} {...rest}>
   <script is:inline>
     // Apply the remembered theme before the page paints (no flash of the default).
     (() => {
@@ -38,7 +43,7 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
       let saved = null;
       try { saved = localStorage.getItem("tow-theme"); } catch {}
       if (saved && themes[saved]) {
-        article.classList.remove("a10--ren");
+        article.classList.remove(...themes[article.dataset.theme]);
         article.classList.add(...themes[saved]);
         article.dataset.theme = saved;
       }
@@ -193,12 +198,33 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   .a10__header nav {
     display: flex;
     gap: var(--space-6);
-    padding-right: var(--space-32);
   }
 
-  /* The page you're on is underlined in the nav and the menu. */
+  /* The page you're on gets a hand-drawn oval in the nav and the menu. */
   .a10 [aria-current="page"] {
-    text-decoration: underline;
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+  }
+
+  .a10 [aria-current="page"]::before,
+  .a10 [aria-current="page"]::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius-full);
+  }
+
+  .a10 [aria-current="page"]::before {
+    inset: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
+    rotate: -3deg;
+  }
+
+  .a10 [aria-current="page"]::after {
+    inset: calc(-1 * var(--space-1)) calc(-1 * var(--space-1)) calc(-1 * var(--space-2)) calc(-1 * var(--space-2));
+    opacity: var(--opacity-muted);
+    rotate: 2deg;
   }
 
   /*
@@ -318,6 +344,14 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
       padding-block: var(--space-4);
     }
 
+    .a10__wordmark,
+    .a10__menu-social {
+      display: flex;
+      align-items: center;
+      min-width: var(--size-control);
+      min-height: var(--size-control);
+    }
+
     .a10__header nav {
       display: none;
     }
@@ -357,16 +391,94 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   }
 
   /*
-   * Relief — Ren (it carries Ren's class too), with the homepage hero's headline and ring
-   * annotations in white, pressed into the paper. The header keeps Ren's black.
+   * Relief — Ren (it carries Ren's class too) on a slightly darker paper, with the homepage hero's
+   * headline and ring annotations in white, pressed into the paper. The header (wordmark, nav and
+   * menu button) is white too. --t-relief-fg is that light type and --t-relief-press the colour
+   * it darkens to on hover, so a theme built on Relief can recolour both.
    */
   .a10--relief {
-    --t-hero-fg: var(--pure-white);
+    --t-relief-fg: var(--pure-white);
+    --t-relief-press: var(--study-ink);
+    --t-hero-fg: var(--t-relief-fg);
+    --t-page: var(--relief-paper);
+    --t-courses-bg: var(--relief-paper);
+    --t-insta-bg: var(--relief-paper);
+    --t-footer-bg: var(--relief-paper);
+    --t-products-hover: var(--t-relief-fg);
+    --t-insta-heading: var(--t-relief-fg);
+    --t-footer-logo: var(--t-relief-fg);
+  }
+
+  .a10--relief .a10__header {
+    color: var(--t-relief-fg);
+  }
+
+  /* A slight shadow lifts the white off the paper; drop-shadow so the SVG wordmark gets it too. */
+  .a10--relief .a10__header :is(a, button) {
+    filter: drop-shadow(var(--shadow-text));
+    transition: filter var(--transition-normal), color var(--transition-normal);
+  }
+
+  /* On hover the shadow fades and the white darkens to ink, as if pressed flat. */
+  .a10--relief .a10__header :is(a, button):is(:hover, :focus-visible) {
+    color: var(--t-relief-press);
+    filter: none;
   }
 
   /*
-   * Supreme — box-logo red page, white type in heavy slanted Jost (a Futura revival, self-hosted
-   * so the letters sit the same everywhere) for titles and interface, EB Garamond for sentences;
+   * Nature — Relief (it carries Ren's and Relief's classes too) on moss: the light type is a pale
+   * moss, and sentences, lines and buttons a deep one, instead of white and black. The three shades
+   * are --t-nature-bg / -light / -dark, so the earth themes below only swap those. --t-nature-text
+   * is the colour of all other type: Nature's own is the pale moss; the earth themes use their dark.
+   */
+  .a10--nature {
+    --t-nature-bg: var(--nature-moss);
+    --t-nature-light: var(--nature-moss-light);
+    --t-nature-dark: var(--nature-moss-dark);
+    --t-nature-text: var(--t-nature-light);
+    --t-relief-fg: var(--t-nature-light);
+    --t-relief-press: var(--t-nature-dark);
+    --t-page: var(--t-nature-bg);
+    --t-fg: var(--t-nature-text);
+    --t-accent: var(--t-nature-text);
+    --t-btn-bg: var(--t-nature-dark);
+    --t-btn-fg: var(--t-nature-light);
+    --t-courses-bg: var(--t-nature-bg);
+    --t-courses-fg: var(--t-nature-text);
+    --t-insta-bg: var(--t-nature-bg);
+    --t-insta-fg: var(--t-nature-text);
+    --t-footer-bg: var(--t-nature-bg);
+    --t-footer-fg: var(--t-nature-text);
+    --t-annotation: var(--t-nature-text);
+  }
+
+  /* Sand — beige, with near-white type and a deep brown. */
+  .a10--sand {
+    --t-nature-bg: var(--sand);
+    --t-nature-light: var(--sand-light);
+    --t-nature-dark: var(--sand-dark);
+    --t-nature-text: var(--t-nature-dark);
+  }
+
+  /* Bark — warm brown, with pale clay type and a near-black brown. */
+  .a10--bark {
+    --t-nature-bg: var(--bark);
+    --t-nature-light: var(--bark-light);
+    --t-nature-dark: var(--bark-dark);
+    --t-nature-text: var(--t-nature-dark);
+  }
+
+  /* Fjord — grey-blue water, with pale blue type and a deep navy. */
+  .a10--fjord {
+    --t-nature-bg: var(--fjord);
+    --t-nature-light: var(--fjord-light);
+    --t-nature-dark: var(--fjord-dark);
+    --t-nature-text: var(--t-nature-dark);
+  }
+
+  /*
+   * Supreme — box-logo red page, white type in a heavy slanted display face for titles and
+   * interface, EB Garamond for sentences;
    * white courses with red type, black Instagram and footer.
    */
   .a10--supreme {
@@ -392,7 +504,6 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
   .a10--jost .a10__menu-link,
   .a10.a10--jost :global(:is(h1, h2, h3)) {
     font-weight: var(--font-weight-bold);
-    font-style: italic;
   }
 
   /*

@@ -1,6 +1,7 @@
 ---
 // The footer: the TO·W wordmark, the site links, contact, a small credit line and the theme
-// swatches, with the cheetah from the old logo standing on the wordmark as a decoration.
+// swatches (folded behind a "tema" button), with the cheetah from the old logo standing on the
+// wordmark as a decoration.
 import { Image } from "astro:assets";
 import Wordmark from "./Wordmark.astro";
 import cheetah from "../../assets/img/illustrations/cheetah.webp";
@@ -33,12 +34,27 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 
   <p class="f10__small">Tove Wätte · © {new Date().getFullYear()}</p>
 
-  <div class="f10__themes" role="group" aria-label="Färgtema">
-    {themes.map((theme) => (
-      <button class={`f10__theme f10__theme--${theme.id}`} type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label}></button>
-    ))}
+  <div class="f10__picker">
+    <button class="f10__picker-toggle" type="button" aria-expanded="false" aria-controls="f10-themes">tema</button>
+    <div class="f10__themes" id="f10-themes" role="group" aria-label="Färgtema" hidden>
+      {themes.map((theme) => (
+        <button class={`f10__theme f10__theme--${theme.id}`} type="button" data-theme={theme.id} aria-label={theme.label} title={theme.label}></button>
+      ))}
+    </div>
   </div>
 </footer>
+
+<script>
+  // "tema" shows and hides the swatches; picking one is handled by the site frame.
+  for (const toggle of document.querySelectorAll<HTMLButtonElement>(".f10__picker-toggle")) {
+    const swatches = document.getElementById(toggle.getAttribute("aria-controls") ?? "");
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(open));
+      if (swatches) swatches.hidden = !open;
+    });
+  }
+</script>
 
 <style>
   .f10 {
@@ -47,7 +63,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
     gap: var(--space-8) var(--space-16);
     align-items: start;
     margin-inline: var(--layout-edge);
-    padding-block: var(--space-section) var(--space-12);
+    padding-block: var(--space-32) var(--space-24);
     color: var(--t-footer-fg, inherit);
     background: var(--t-footer-bg, transparent);
     /* Full-bleed background while the content keeps its margins. */
@@ -76,6 +92,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 
   .f10__logo svg {
     display: block;
+    color: var(--t-footer-logo, inherit);
     width: auto;
     height: 0.65em;
   }
@@ -107,12 +124,45 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
     opacity: var(--opacity-muted);
   }
 
-  .f10__themes {
+  /* The button sits at the row's end; the swatches open to its left, out of the grid's flow so the
+     columns above don't shift when they appear. */
+  .f10__picker {
+    position: relative;
     grid-column: 3;
+    justify-self: end;
+  }
+
+  /* Set like the credit line it shares the row with. */
+  .f10__picker-toggle {
+    padding: 0;
+    color: inherit;
+    background: none;
+    border: 0;
+    font: inherit;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-tracking-wider);
+    text-transform: uppercase;
+    opacity: var(--opacity-muted);
+    cursor: pointer;
+  }
+
+  .f10__picker-toggle:is(:hover, :focus-visible),
+  .f10__picker-toggle[aria-expanded="true"] {
+    text-decoration: underline;
+  }
+
+  .f10__themes {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + var(--space-4));
     display: flex;
     align-items: center;
-    justify-self: end;
     gap: var(--space-2);
+    translate: 0 -50%;
+  }
+
+  .f10__themes[hidden] {
+    display: none;
   }
 
   .f10__theme {
@@ -132,20 +182,44 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
   }
 
   .f10__theme--ren {
-    background: var(--off-white);
+    --theme-swatch: var(--off-white);
+    background: var(--theme-swatch);
   }
 
   /* Relief: white on the paper, like the type it stands for. */
   .f10__theme--relief {
-    background: var(--pure-white);
+    --theme-swatch: var(--pure-white);
+    background: var(--theme-swatch);
+  }
+
+  .f10__theme--nature {
+    --theme-swatch: var(--nature-moss);
+    background: var(--theme-swatch);
+  }
+
+  .f10__theme--sand {
+    --theme-swatch: var(--sand);
+    background: var(--theme-swatch);
+  }
+
+  .f10__theme--bark {
+    --theme-swatch: var(--bark);
+    background: var(--theme-swatch);
+  }
+
+  .f10__theme--fjord {
+    --theme-swatch: var(--fjord);
+    background: var(--theme-swatch);
   }
 
   .f10__theme--supreme {
-    background: var(--supreme-red);
+    --theme-swatch: var(--supreme-red);
+    background: var(--theme-swatch);
   }
 
   .f10__theme--bla {
-    background: var(--study-blue);
+    --theme-swatch: var(--study-blue);
+    background: var(--theme-swatch);
   }
 
   @media (max-width: 700px) {
@@ -155,10 +229,75 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 
     .f10__logo {
       grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      min-width: var(--size-control);
+      min-height: var(--size-control);
+    }
+
+    .f10__nav,
+    .f10__contact {
+      gap: 0;
+    }
+
+    .f10__nav a,
+    .f10__contact a {
+      display: flex;
+      align-items: center;
+      min-height: var(--size-control);
+    }
+
+    /* Phones: the button first, the swatches on their own row beneath, each a full tap target. */
+    .f10__picker {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+
+    .f10__picker-toggle {
+      min-height: var(--size-control);
     }
 
     .f10__themes {
-      grid-column: 2;
+      position: static;
+      flex-wrap: wrap;
+      gap: 0;
+      translate: none;
+    }
+
+    .f10__theme {
+      position: relative;
+      flex-basis: var(--size-control);
+      width: var(--size-control);
+      height: var(--size-control);
+      background: transparent;
+      border: 0;
+    }
+
+    .f10__theme::before {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--space-4);
+      height: var(--space-4);
+      content: "";
+      background: var(--theme-swatch);
+      border: var(--border-width) solid currentColor;
+      border-radius: var(--radius-full);
+      translate: -50% -50%;
+    }
+
+    .f10__theme[aria-pressed="true"] {
+      outline: none;
+    }
+
+    .f10__theme[aria-pressed="true"]::before {
+      outline: var(--border-width) solid currentColor;
+      outline-offset: var(--space-1);
+    }
+
+    .f10__theme:focus-visible {
+      outline: var(--border-width-thick) solid currentColor;
+      outline-offset: 0;
     }
   }
 </style>

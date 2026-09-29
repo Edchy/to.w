@@ -45,6 +45,7 @@ const successUrl = `${baseUrl}kurser/tack/`;
       {courses.map((course, index) => {
         const [titleStart, titleAccent] = splitTitle(course.title);
         const allFull = course.dates.every((date) => !date.open);
+        const planned = course.dates.length > 0;
         const Heading = index === 0 ? "h1" : "h2";
         return (
           <article class="course" aria-labelledby={`course-${course.slug}`}>
@@ -64,10 +65,15 @@ const successUrl = `${baseUrl}kurser/tack/`;
                     </dd>
                   </div>
                 ))}
+                {!planned && <div><dt>Datum</dt><dd>Inga inplanerade just nu</dd></div>}
                 <div><dt>Pris</dt><dd>{course.price}</dd></div>
                 <div><dt>Platser</dt><dd>{spotsLabel(course.spots, course.dates.length > 1)}</dd></div>
-                <div><dt>Plats</dt><dd>{course.place}</dd></div>
+                {course.place && <div><dt>Plats</dt><dd>{course.place}</dd></div>}
               </dl>
+
+              {!planned && (
+                <p class="pg__text">Skicka gärna en intresseanmälan nedan, så hör jag av mig när nästa kurs blir av.</p>
+              )}
 
               <a class="pg__btn" href="#anmalan">{allFull ? "Anmäl intresse för nästa ↓" : "Anmäl intresse ↓"}</a>
             </div>
@@ -108,10 +114,16 @@ const successUrl = `${baseUrl}kurser/tack/`;
         <div class="signup__intro">
           <h2 class="pg__heading" id="signup-title">Anmäl <span class="pg__accent">intresse</span></h2>
           <p class="pg__text">
-            Det här är en intresseanmälan, inte en bokning. {sharedSpots
-              ? `De ${spotsWord(sharedSpots)} platserna`
-              : "Platserna"} fördelas i tur och ordning, och platsen är din när jag har svarat med
-            bekräftelse och praktiska detaljer.
+            {openOccasions.length === 0 ? (
+              "Det finns inga inplanerade datum just nu. Fyll i formuläret, så hör jag av mig när nästa kurs är bestämd."
+            ) : (
+              <>
+                Det här är en intresseanmälan, inte en bokning. {sharedSpots
+                  ? `De ${spotsWord(sharedSpots)} platserna`
+                  : "Platserna"} fördelas i tur och ordning, och platsen är din när jag har svarat med
+                bekräftelse och praktiska detaljer.
+              </>
+            )}
           </p>
         </div>
 

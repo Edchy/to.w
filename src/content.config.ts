@@ -25,9 +25,4 @@ const jewelry = defineCollection({
   schema: productSchema,
 });
 
-const knitting = defineCollection({
-  loader: glob({ pattern: "**/data.json", base: "./src/content/knitting" }),
-  schema: productSchema,
-});
-
-export const collections = { jewelry, knitting };
+export const collections = { jewelry };

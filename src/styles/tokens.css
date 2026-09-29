@@ -25,6 +25,23 @@
 
   /* Paper and ink (the plain pages outside the site frame) */
   --off-white: oklch(96% 0.011 88);
+  --relief-paper: oklch(93% 0.013 88); /* Relief theme: off-white, a step darker */
+
+  /* Nature theme palette: a moss page, pale moss display type, deep moss sentences and buttons */
+  --nature-moss: oklch(60% 0.06 140);
+  --nature-moss-light: oklch(82% 0.05 140);
+  --nature-moss-dark: oklch(20% 0.03 140);
+
+  /* Sand, Bark and Fjord themes: the same three roles in beige, brown and grey-blue */
+  --sand: oklch(82% 0.04 80);
+  --sand-light: oklch(94% 0.02 85);
+  --sand-dark: oklch(32% 0.04 70);
+  --bark: oklch(61% 0.06 55);
+  --bark-light: oklch(82% 0.045 60);
+  --bark-dark: oklch(20% 0.03 50);
+  --fjord: oklch(62% 0.05 235);
+  --fjord-light: oklch(84% 0.035 235);
+  --fjord-dark: oklch(20% 0.035 240);
   --neutral-950: oklch(20% 0.020 75);
 
   /* Blå theme palette */
@@ -71,9 +88,9 @@
   --space-page-top: clamp(var(--space-32), 16vw, var(--space-48)); /* clears the floating header: 128 → 192 */
 
   /* Typography — families */
-  --font-display: "Jost", Futura, sans-serif;  /* titles and interface */
+  --font-display: "EB Garamond", Georgia, serif;  /* titles and interface */
   --font-text: "EB Garamond", Georgia, serif;   /* sentences */
-  /* EB Garamond's lowercase is shorter than Jost's (0.405 vs 0.46); this matches their x-heights. */
+  /* Keep the text-size adjustment explicit for content pages. */
   --font-text-adjust: 0.46;
 
   /* Typography — sizes */
@@ -127,6 +144,7 @@
   /* Shadows — cast by the ring renders onto the page colour */
   --shadow-object: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 40%, transparent);
   --shadow-object-soft: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 20%, transparent);
+  --shadow-text: 0 1px 2px color-mix(in oklch, var(--study-ink) 30%, transparent);
 
   /* Layout */
   --layout-site-width: 1500px;

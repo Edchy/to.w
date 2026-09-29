@@ -25,11 +25,6 @@ const formattedPrice = new Intl.NumberFormat("sv-SE").format(price);
 // A loose 3D model of the piece (scripts/make-rings.mjs), named by slug without diacritics.
 const modelName = getProductSlug(entry.id).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const hasModel = existsSync(`public/models/${modelName}.glb`);
-const gallerySize = 6;
-const realImages = images.slice(0, gallerySize);
-const placeholderIndexes = Array.from({ length: Math.max(0, gallerySize - realImages.length) }, (_, index) => realImages.length + index);
-const galleryCount = gallerySize + (hasModel ? 1 : 0);
-const galleryId = `product-gallery-${modelName}`;
 
 // Facts with a real value (the data has some blanks and "tba"s).
 const clean = (value?: string) => (value?.trim() && value.trim() !== "tba" ? value.trim() : undefined);
@@ -93,88 +88,59 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 <BaseLayout bare title={pageTitle} description={metaDescription} image={photo?.src} imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`} jsonLd={jsonLd}>
   <SiteFrame>
     <div class="pg pd">
-      <div class="pd__head">
-        <a class="pd__back" href={`${baseUrl}smycken/`}>← alla smycken</a>
+      <div class="pd__media" data-product-media>
+        {images[0] && (
+          <Image
+            class="pd__photo"
+            src={images[0]}
+            alt={`${title}, ${kind ?? "smycke"} i återvunnet silver`}
+            widths={[640, 960, 1440, 1920]}
+            sizes="(max-width: 900px) 100vw, 58vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        )}
 
-        <h1 class="pg__heading pd__title" style={`view-transition-name: ${ringTransitionName(getProductSlug(entry.id))}; view-transition-class: ${RING_TRANSITION_CLASS}`}>{title}</h1>
-        <p class="pd__price">{formattedPrice} kr</p>
+        {hasModel && (
+          <div class="pd__model-view">
+            <model-viewer
+              class="pd__model"
+              src={`${baseUrl}models/${modelName}.glb`}
+              alt={`3D-test av ${title}, ${kind ?? "smycke"} i återvunnet silver. Dra för att vrida.`}
+              camera-controls
+              disable-zoom
+              touch-action="pan-y"
+              min-camera-orbit="auto 0deg 120%"
+              max-camera-orbit="auto 180deg 120%"
+              camera-orbit="30deg 70deg 120%"
+              environment-image="neutral"
+              auto-rotate
+              auto-rotate-delay="0"
+              rotation-per-second="20deg"
+            ></model-viewer>
+            <p class="pd__model-note"><strong>3D-test.</strong> Återger inte smyckets exakta form eller yta.</p>
+          </div>
+        )}
       </div>
 
-      <div class="pd__stage">
-        <div class="pd__gallery" data-product-gallery aria-label={`Bilder av ${title}`}>
-          <div class="pd__viewport" id={galleryId} data-gallery-viewport tabindex="0">
-            {realImages.map((image, index) => (
-              <figure class="pd__slide pd__photo" data-gallery-slide hidden={index !== 0}>
-                <Image
-                  src={image}
-                  alt={`${title}, ${kind ?? "smycke"} i återvunnet silver, bild ${index + 1}`}
-                  widths={[640, 960, 1280]}
-                  sizes="(max-width: 900px) 92vw, 48vw"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchpriority={index === 0 ? "high" : "auto"}
-                />
-              </figure>
-            ))}
-
-            {placeholderIndexes.map((index) => (
-              <div class="pd__slide pd__placeholder" data-gallery-slide hidden>
-                <span>bild {index + 1}<br />kommer snart</span>
-              </div>
-            ))}
-
-            {hasModel && (
-              <div class="pd__slide pd__model-slide" data-gallery-slide hidden>
-                <model-viewer
-                  class="pd__model"
-                  src={`${baseUrl}models/${modelName}.glb`}
-                  alt={`3D-test av ${title}, ${kind ?? "smycke"} i återvunnet silver. Dra för att vrida.`}
-                  camera-controls
-                  disable-zoom
-                  touch-action="pan-y"
-                  min-camera-orbit="auto 0deg 130%"
-                  max-camera-orbit="auto 180deg 130%"
-                  camera-orbit="30deg 70deg 130%"
-                  environment-image="neutral"
-                  auto-rotate
-                  auto-rotate-delay="0"
-                  rotation-per-second="20deg"
-                ></model-viewer>
-                <p class="pd__model-note"><strong>3D-test.</strong> Vyn är ett pågående test och återger inte smyckets exakta form eller yta.</p>
-              </div>
-            )}
-          </div>
-
-          <div class="pd__gallery-nav">
-            <div class="pd__gallery-arrows">
-              <button type="button" data-gallery-prev aria-label="Föregående bild">←</button>
-              <button type="button" data-gallery-next aria-label="Nästa bild">→</button>
-            </div>
-            <span data-gallery-counter>1 / {galleryCount}</span>
-          </div>
-
-          <div class="pd__thumbs" aria-label="Välj produktvy">
-            {realImages.map((image, index) => (
-              <button type="button" data-gallery-thumb={index} aria-label={`Visa bild ${index + 1}`} aria-current={index === 0 ? "true" : undefined}>
-                <Image src={image} alt="" widths={[96, 192]} sizes="72px" loading="lazy" />
-              </button>
-            ))}
-            {placeholderIndexes.map((index) => (
-              <button class="pd__thumb-placeholder" type="button" data-gallery-thumb={index} aria-label={`Visa platshållare för bild ${index + 1}`}>
-                {index + 1}
-              </button>
-            ))}
-            {hasModel && (
-              <button class="pd__thumb-model" type="button" data-gallery-thumb={gallerySize} aria-label="Visa 3D-test">
-                3D
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      {hasModel && (
+        <button class="pd__toggle" type="button" data-model-toggle aria-pressed="false">Vrid i 3D</button>
+      )}
 
       <div class="pd__info">
-        {clean(description) && <p class="pg__text">{clean(description)}</p>}
-        {clean(body) && <p class="pg__text">{clean(body)}</p>}
+        <a class="pd__back" href={`${baseUrl}smycken/`}>← alla smycken</a>
+
+        <div class="pd__name">
+          <h1 class="pg__heading pd__title" style={`view-transition-name: ${ringTransitionName(getProductSlug(entry.id))}; view-transition-class: ${RING_TRANSITION_CLASS}`}>{title}</h1>
+          <p class="pd__price">{formattedPrice} kr</p>
+        </div>
+
+        {(clean(description) || clean(body)) && (
+          <div class="pd__copy">
+            {clean(description) && <p>{clean(description)}</p>}
+            {clean(body) && <p>{clean(body)}</p>}
+          </div>
+        )}
 
         {facts.length > 0 && (
           <dl class="pg__ledger pd__facts">
@@ -187,17 +153,19 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
           </dl>
         )}
 
-        <a class="pg__btn" href={orderHref}>Beställ via mejl →</a>
-        <p class="pd__note">
-          Smycket görs för hand efter din beställning. Jag återkommer med bekräftelse, betalningsinfo och
-          ungefärlig leveranstid.
-        </p>
+        <div class="pd__order">
+          <a class="pg__btn" href={orderHref}>Beställ via mejl →</a>
+          <p class="pd__note">
+            Smycket görs för hand efter din beställning. Jag återkommer med bekräftelse, betalningsinfo och
+            ungefärlig leveranstid.
+          </p>
+        </div>
       </div>
     </div>
 
     <section class="pd__more" aria-labelledby="more-title">
       <h2 class="pg__heading pd__more-title" id="more-title">Fler smycken</h2>
-      <ProductCarousel items={others} />
+      <ProductCarousel items={others} photos />
     </section>
   </SiteFrame>
 </BaseLayout>
@@ -205,31 +173,14 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 <script>
   import "@google/model-viewer";
 
-  document.querySelectorAll<HTMLElement>("[data-product-gallery]").forEach((gallery) => {
-    const slides = [...gallery.querySelectorAll<HTMLElement>("[data-gallery-slide]")];
-    const thumbs = [...gallery.querySelectorAll<HTMLButtonElement>("[data-gallery-thumb]")];
-    const counter = gallery.querySelector<HTMLElement>("[data-gallery-counter]");
-    const viewport = gallery.querySelector<HTMLElement>("[data-gallery-viewport]");
-    const previous = gallery.querySelector<HTMLButtonElement>("[data-gallery-prev]");
-    const next = gallery.querySelector<HTMLButtonElement>("[data-gallery-next]");
-    let current = 0;
-
-    const show = (index: number) => {
-      current = (index + slides.length) % slides.length;
-      slides.forEach((slide, slideIndex) => { slide.hidden = slideIndex !== current; });
-      thumbs.forEach((thumb, thumbIndex) => {
-        if (thumbIndex === current) thumb.setAttribute("aria-current", "true");
-        else thumb.removeAttribute("aria-current");
-      });
-      if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
-    };
-
-    thumbs.forEach((thumb, index) => thumb.addEventListener("click", () => show(index)));
-    previous?.addEventListener("click", () => show(current - 1));
-    next?.addEventListener("click", () => show(current + 1));
-    viewport?.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowLeft") { event.preventDefault(); show(current - 1); }
-      if (event.key === "ArrowRight") { event.preventDefault(); show(current + 1); }
+  // "Vrid i 3D" swaps the photo for the model, in the same frame, and back.
+  document.querySelectorAll<HTMLButtonElement>("[data-model-toggle]").forEach((toggle) => {
+    const media = document.querySelector<HTMLElement>("[data-product-media]");
+    toggle.addEventListener("click", () => {
+      const on = toggle.getAttribute("aria-pressed") !== "true";
+      toggle.setAttribute("aria-pressed", String(on));
+      toggle.textContent = on ? "Visa foto" : "Vrid i 3D";
+      media?.toggleAttribute("data-model", on);
     });
   });
 
@@ -237,103 +188,52 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
     for (const model of document.querySelectorAll("model-viewer[auto-rotate]")) model.removeAttribute("auto-rotate");
   }
-
-  // In the one-column layout the frame is square and the ring comes closer to fill it.
-  const oneColumn = matchMedia("(max-width: 900px)");
-  const frame = () => {
-    const radius = oneColumn.matches ? "105%" : "130%";
-    for (const model of document.querySelectorAll("model-viewer")) {
-      model.setAttribute("min-camera-orbit", `auto 0deg ${radius}`);
-      model.setAttribute("max-camera-orbit", `auto 180deg ${radius}`);
-      model.setAttribute("camera-orbit", `30deg 70deg ${radius}`);
-    }
-  };
-  frame();
-  oneColumn.addEventListener("change", frame);
 </script>
 
 <style>
-  /* The name comes first in the page; on wide screens it sits in the right column above the text,
-     with the ring beside both. */
+  /*
+   * The photo leads, large, on the left; everything about the piece sits beside it in one column
+   * that stays in view while the photo scrolls. Nothing is folded away.
+   */
   .pd {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     grid-template-areas:
-      "stage head"
-      "stage info";
+      "media info"
+      "toggle info";
     grid-template-rows: auto 1fr;
-    gap: var(--space-6) var(--grid-gutter);
-    align-items: start;
+    gap: var(--space-4) var(--grid-gutter);
     padding-bottom: 0;
   }
 
-  .pd__head {
-    grid-area: head;
-    display: grid;
-    justify-items: start;
-    gap: var(--space-6);
-    padding-top: var(--space-16);
-  }
-
-  /* The ring alone on the page colour, like the product cards, a little larger. */
-  .pd__stage {
-    grid-area: stage;
-    position: sticky;
-    top: var(--space-8);
-    min-width: 0;
-  }
-
-  .pd__gallery {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  .pd__viewport {
+  .pd__media {
+    grid-area: media;
     position: relative;
-    aspect-ratio: var(--ratio-product);
     overflow: hidden;
-    background: color-mix(in oklch, currentColor 4%, transparent);
+    border-radius: var(--radius);
   }
 
-  .pd__viewport:focus-visible {
-    outline: var(--border-width-thick) solid currentColor;
-    outline-offset: var(--space-1);
+  .pd__media :global(img.pd__photo) {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
-  .pd__slide {
+  /* The model takes the photo's frame; the photo keeps the frame's size while hidden. */
+  .pd__model-view {
     position: absolute;
     inset: 0;
-    margin: 0;
-  }
-
-  .pd__slide[hidden] {
     display: none;
-  }
-
-  .pd__photo :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .pd__placeholder {
-    display: grid;
-    place-items: center;
-    color: color-mix(in oklch, currentColor 65%, transparent);
-    background:
-      linear-gradient(to bottom right, transparent calc(50% - 0.5px), var(--color-rule-subtle) 50%, transparent calc(50% + 0.5px)),
-      color-mix(in oklch, currentColor 3%, transparent);
-    border: var(--border-width) solid var(--color-rule-subtle);
-    font-family: var(--font-text);
-    font-size: var(--font-size-sm);
-    font-style: italic;
-    line-height: var(--font-leading-normal);
-    text-align: center;
-  }
-
-  .pd__model-slide {
-    display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
+    padding: var(--space-4);
+  }
+
+  .pd__media[data-model] :global(img.pd__photo) {
+    visibility: hidden;
+  }
+
+  .pd__media[data-model] .pd__model-view {
+    display: grid;
   }
 
   .pd__model {
@@ -349,119 +249,81 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
   }
 
   .pd__model-note {
-    margin: 0;
-    padding: var(--space-4);
-    border-top: var(--border-width) solid var(--color-rule);
     font-family: var(--font-text);
     font-size: var(--font-size-sm);
     font-size-adjust: var(--font-text-adjust);
     line-height: var(--font-leading-normal);
+    opacity: var(--opacity-muted);
   }
 
-  .pd__gallery-nav,
-  .pd__gallery-arrows {
-    display: flex;
-    align-items: center;
-  }
-
-  .pd__gallery-nav {
-    justify-content: space-between;
-    gap: var(--space-4);
-    font-size: var(--font-size-sm);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .pd__gallery-arrows {
-    gap: var(--space-2);
-  }
-
-  .pd__gallery-arrows button,
-  .pd__thumbs button {
+  .pd__toggle {
+    grid-area: toggle;
+    justify-self: start;
+    align-self: start;
+    min-height: var(--size-control);
     padding: 0;
     color: inherit;
-    background: transparent;
-    border: var(--border-width) solid var(--color-rule);
-    border-radius: var(--radius);
+    background: none;
+    border: none;
     font: inherit;
+    font-size: var(--font-size-sm);
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
     cursor: pointer;
   }
 
-  .pd__gallery-arrows button {
-    display: grid;
-    place-items: center;
-    width: var(--size-control);
-    height: var(--size-control);
-  }
-
-  .pd__gallery-arrows button:is(:hover, :focus-visible),
-  .pd__thumbs button:is(:hover, :focus-visible),
-  .pd__thumbs button[aria-current="true"] {
-    color: var(--t-page, var(--off-white));
-    background: var(--t-fg, var(--neutral-950));
-    outline: none;
-  }
-
-  .pd__thumbs {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: var(--space-2);
-  }
-
-  .pd__thumbs button {
-    aspect-ratio: 1;
-    overflow: hidden;
-    font-size: var(--font-size-xs);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .pd__thumbs button[aria-current="true"] {
-    border-color: currentColor;
-    border-width: var(--border-width-thick);
-  }
-
-  .pd__thumbs :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .pd__thumb-placeholder,
-  .pd__thumb-model {
-    display: grid;
-    place-items: center;
+  .pd__toggle:is(:hover, :focus-visible) {
+    color: var(--t-accent);
   }
 
   .pd__info {
     grid-area: info;
+    position: sticky;
+    top: var(--space-8);
+    align-self: start;
     display: grid;
-    justify-items: start;
-    gap: var(--space-6);
+    gap: var(--space-8);
+    max-width: var(--layout-content-width);
   }
 
   .pd__back {
+    justify-self: start;
     font-size: var(--font-size-sm);
     text-decoration: none;
   }
 
-  .pd__back:hover,
-  .pd__back:focus-visible {
+  .pd__back:is(:hover, :focus-visible) {
     text-decoration: underline;
   }
 
-  .pd__title {
-    margin-top: var(--space-6);
+  .pd__name {
+    display: grid;
+    gap: var(--space-2);
   }
 
   .pd__price {
-    margin-top: calc(0px - var(--space-2));
     font-size: var(--font-size-xl);
     font-variant-numeric: tabular-nums;
   }
 
+  .pd__copy {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+    font-family: var(--font-text);
+    font-size: var(--font-size-base);
+    font-size-adjust: var(--font-text-adjust);
+    line-height: var(--font-leading-normal);
+  }
+
   .pd__facts {
-    justify-self: stretch;
-    max-width: var(--layout-content-width);
     border-top: var(--border-width) solid var(--color-rule);
+  }
+
+  .pd__order {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
   }
 
   .pd__note {
@@ -470,6 +332,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     font-size: var(--font-size-sm);
     font-size-adjust: var(--font-text-adjust);
     line-height: var(--font-leading-normal);
+    opacity: var(--opacity-muted);
   }
 
   .pd__more {
@@ -482,40 +345,38 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
     padding-inline: var(--layout-gutter);
   }
 
+  /* One column: the photo edge to edge, then name and price on one line, the rest below. */
   @media (max-width: 900px) {
-    /* One column: name and price, then the ring, then the text. */
     .pd {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
-        "head"
-        "stage"
+        "media"
+        "toggle"
         "info";
       grid-template-rows: auto;
     }
 
-    .pd__head {
-      padding-top: 0;
+    .pd__media {
+      margin-inline: calc(0px - var(--layout-gutter));
+      border-radius: 0;
     }
 
-    /* A flat ring needs no tall frame: square, so the text starts sooner. */
-    .pd__stage {
+    .pd__info {
       position: static;
-      width: min(100%, 28rem);
-      justify-self: center;
+      max-width: none;
+      gap: var(--space-6);
     }
 
-    .pd__viewport {
-      aspect-ratio: 1;
+    .pd__back {
+      order: 1;
     }
 
-    .pd__thumbs {
+    .pd__name {
       display: flex;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .pd__thumbs button {
-      flex: 0 0 var(--size-control);
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-2) var(--space-6);
     }
   }
 </style>

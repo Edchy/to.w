@@ -62,3 +62,16 @@ change, and restoring the previous page's offset fights it.
 - Astro 6's CLI entrypoint is `node_modules/astro/bin/astro.mjs`, not `node_modules/astro/astro.js`; use the package script or the `.mjs` path when pinning Node 22.
 - When a rule needs extra specificity to beat another (e.g. `.a10.a10 .a10__hero h1` over the frame's heading rule), put only the properties that need winning in it. A `font-size` in that rule also outranked the hero's per-breakpoint `--fs` sizes, so the headline shrank on every screen up to 1100px while desktop looked fine. Compare computed sizes against the reference page at several widths, not just desktop.
 - The footer's full-bleed background is a 100vmax box-shadow trimmed by `clip-path: inset(0 -100vmax)`, which also clips anything positioned outside the footer's own height. A decoration standing on its top rule (the cheetah) measured correctly but never showed. Keep such decorations inside the footer's box (e.g. in its top padding) or on a wrapper outside the clipped element.
+
+# 2026-09-28
+
+- Decorative divider comments are brittle `apply_patch` anchors. Match the functional selector and declarations when changing a scoped CSS block.
+- When hero annotation copy changes, preserve the annotation's visual grammar unless the user explicitly asks to redesign it: the dot, wiggly stem, and hand-drawn loop are the feature. Replacing them with detached editorial text changes the concept, not just the wording.
+- A breakpoint used only for per-letter z-index weaving must not also introduce a different headline size or vertical-position formula. Keep geometry continuous across that boundary and switch only the layer map, otherwise a one-pixel viewport change visibly jumps the entire hero.
+- Do not use `orientation` to select the 501–819px hero composition: resizing a desktop browser crosses portrait/landscape when width happens to exceed the available height, creating a phantom breakpoint unrelated to the design. Keep that range width-driven; reserve orientation-specific rules for compact phone landscape only.
+- Multi-file `apply_patch` changes fail atomically when one file's anchor is stale. Inspect the exact target blocks first and split unrelated file edits when one selector has moved.
+- Repeated full-page Chrome screenshots can exhaust the temporary volume during responsive QA. Reuse one capture or run later viewport audits as DOM measurements without writing another image.
+
+# 2026-09-29
+
+- `<model-viewer loading="lazy">` inside a `display: none` container never loads after it's shown, so the "Vrid i 3D" view stayed blank. Leave `loading` at its default when the model starts hidden. Also, the automation Chrome window reports `visibilityState: hidden`, so WebGL never paints in its screenshots. Check `mv.loaded` instead of trusting an empty frame.

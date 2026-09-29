@@ -35,7 +35,7 @@
   color: var(--t-accent);
 }
 
-/* Sentences in EB Garamond, scaled up to Jost's x-height. */
+/* Sentences in EB Garamond, using the shared text scale. */
 .pg__text {
   max-width: var(--layout-content-width);
   font-family: var(--font-text);

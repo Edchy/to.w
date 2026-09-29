@@ -13,6 +13,8 @@ import "../styles/pages.css";
 >
   <SiteFrame>
     <div class="pg about">
+      <h1 class="visually-hidden">Om Tove Wätte</h1>
+
       <section class="about__intro">
         <div class="about__portrait">
           <Image
@@ -24,18 +26,13 @@ import "../styles/pages.css";
             fetchpriority="high"
           />
         </div>
-
-        <div class="about__text">
-          <h1 class="pg__heading">Tove Wätte</h1>
-          <p class="pg__text">Lorem ipsum</p>
-        </div>
       </section>
     </div>
   </SiteFrame>
 </BaseLayout>
 
 <style>
-  /* The portrait takes the larger share; the name and text sit beside it, from the top. */
+  /* The portrait keeps the larger share of the row; the text beside it is gone for now. */
   .about__intro {
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -47,11 +44,6 @@ import "../styles/pages.css";
     width: 100%;
     height: auto;
     border-radius: var(--radius);
-  }
-
-  .about__text {
-    display: grid;
-    gap: var(--space-6);
   }
 
   @media (max-width: 900px) {
