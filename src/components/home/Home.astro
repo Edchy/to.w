@@ -33,7 +33,9 @@ const stemLeft = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800
             {[...row].map((char, i) => {
               const n = rowStarts[r] + i;
               const accent = r === 2 && i >= 2 && char !== "." ? " a10__accent" : "";
-              return <span class={`a10__l a10__l${n}${accent}`} data-n={n}>{char}</span>;
+              // Phones read "I ÅTERVUNNET / SILVER.": the extra word sits before S, and only shows there.
+              const phoneWord = r === 2 && i === 2 && <span class="a10__phone-word">ÅTERVUNNET</span>;
+              return <>{phoneWord}<span class={`a10__l a10__l${n}${accent}`} data-n={n}>{char}</span></>;
             })}
           </span>
         ))}
@@ -141,6 +143,10 @@ const stemLeft = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800
 
   .a10__hero h1 > span {
     display: block;
+  }
+
+  .a10__phone-word {
+    display: none;
   }
 
   /* Test: "silver" picked out in pink. */
@@ -644,13 +650,14 @@ const stemLeft = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800
 
   /*
    * Phones (550px and below): two halves. The hands fill the top half of the screen, cropped to it
-   * at the wrists; the headline fills the bottom half on the plain page, in the theme's text colour
-   * (Relief's white would vanish on paper). No ring callouts at this size.
+   * at the wrists; the headline sits at the foot of the bottom half on the plain page, in the
+   * theme's text colour (Relief keeps its white). No ring callouts at this size.
    */
   @media (width <= 550px) {
-    /* The headline's longest line (HANDGJORDA) is ~6.6 × its size wide: fit it between the gutters. */
+    /* The longest line (I ÅTERVUNNET, a touch wider than HANDGJORDA) is ~6.7 × the headline size
+       wide: fit it between the gutters. */
     .a10 .a10__hero {
-      --fs: calc((100vw - 2 * var(--layout-gutter)) / 6.6);
+      --fs: calc((100vw - 2 * var(--layout-gutter)) / 6.7);
 
       display: grid;
       grid-template-columns: minmax(0, 1fr);
@@ -675,11 +682,27 @@ const stemLeft = "M 10 0 C 14 110 5 210 6.5 340 C 8 470 16 560 14.5 690 C 13 800
       object-position: center bottom;
     }
 
+    /* At the foot of the screen-high hero, a little clear of the bottom edge. */
     .a10.a10 .a10__hero h1 {
       grid-row: 2;
-      align-self: center;
-      padding-inline: var(--layout-gutter);
+      align-self: end;
+      padding: 0 var(--layout-gutter) var(--space-8);
       color: var(--t-fg);
+    }
+
+    /* Relief keeps its white headline (not the earth themes built on Relief, which carry its class too). */
+    .a10.a10--relief:not(.a10--nature) .a10__hero h1 {
+      color: var(--t-hero-fg);
+    }
+
+    /* "I ÅTERVUNNET", then SILVER. on a line of its own. */
+    .a10__phone-word {
+      display: inline;
+    }
+
+    .a10__phone-word::after {
+      content: "\A";
+      white-space: pre;
     }
 
     .a10 :is(.a10__line, .a10__label) {

@@ -27,7 +27,7 @@ const {
 } = Astro.props;
 
 // Page name first so tabs stay distinct; the homepage carries the tagline.
-const pageTitle = title ? `${title} | To.W` : "To.W | Silversmycken";
+const pageTitle = title ? `${title} | TO·W` : "TO·W | Silversmycken";
 const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const withBase = (path: string) => {
   const url = `${baseUrl}${path.replace(/^\//, "")}`;
@@ -64,7 +64,7 @@ const navLinks = [
     <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="sv_SE" />
-    <meta property="og:site_name" content="To.W" />
+    <meta property="og:site_name" content="TO·W" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />

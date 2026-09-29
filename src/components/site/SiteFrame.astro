@@ -529,6 +529,13 @@ const current = (href: string) => (Astro.url.pathname.startsWith(withBase(href))
     }
   }
 
+  /* Phones (the menu button's breakpoint): the wordmark and menu button without the shadow. */
+  @media (max-width: 700px) {
+    .a10--relief .a10__header :is(a, button) {
+      filter: none;
+    }
+  }
+
   /*
    * Nature — Relief (it carries Ren's and Relief's classes too) on moss: the light type is a pale
    * moss, and sentences, lines and buttons a deep one, instead of white and black. The three shades
