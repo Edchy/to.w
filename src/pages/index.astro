@@ -1,11 +1,15 @@
 ---
-import { getCollection } from "astro:content";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Home from "../components/home/Home.astro";
+// The live homepage: the study named by LIVE (components/v/catalog.ts), with its links at the root.
+import VFrame from "../components/v/VFrame.astro";
+import Home1 from "../components/v/Home1.astro";
+import Home2 from "../components/v/Home2.astro";
+import Home4 from "../components/v/Home4.astro";
+import Home5 from "../components/v/Home5.astro";
+import { getPieces, getVariant } from "../components/v/catalog";
 
-const jewelry = (await getCollection("jewelry")).sort((a, b) =>
-  b.data.date.localeCompare(a.data.date),
-);
+const pieces = await getPieces();
+const { look, hero } = getVariant("live");
+const Home = { "1": Home1, "2": Home2, "4": Home4, "5": Home5 }[look];
 
 const site = Astro.site?.href;
 const jsonLd = {
@@ -23,10 +27,10 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout
-  bare
+<VFrame
+  v="live"
   description="Handgjorda smycken i återvunnet sterling silver av Tove Wätte i Järna. Ringar och hängen efter beställning, och kurser där du formar din egen ring."
   jsonLd={jsonLd}
 >
-  <Home items={jewelry} />
-</BaseLayout>
+  <Home v="live" pieces={pieces} hero={hero} />
+</VFrame>

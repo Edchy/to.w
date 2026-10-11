@@ -1,0 +1,98 @@
+---
+// A piece's page in every direction: all its photos, the facts, the order mail, and more pieces.
+import { Image, getImage } from "astro:assets";
+import { type Piece, getVariant, vHref } from "./catalog";
+import PieceCard from "./PieceCard.astro";
+
+type Props = { v: string; piece: Piece; others: Piece[] };
+const { v, piece, others } = Astro.props;
+const [first] = piece.images;
+// With more than one photo: a row of thumbnails under the large photo; choosing one shows it in the
+// large spot (without JS, a thumbnail links to that photo's large file). The magazine look (2 and 7)
+// instead lays the other photos out in a grid under the large one.
+const spread = getVariant(v).look === "2";
+const gallery = piece.images.length > 1 && !spread;
+const LEAD_WIDTHS = [640, 960, 1440, 1920];
+const LEAD_SIZES = "(max-width: 900px) 100vw, 60vw";
+const leads = await Promise.all(piece.images.map((image) => getImage({ src: image, widths: LEAD_WIDTHS, sizes: LEAD_SIZES })));
+const alt = (i: number) => (i === 0 ? `${piece.title}, ${piece.kind} i återvunnet silver` : `${piece.title}, bild ${i + 1}`);
+---
+
+<article class="v-pd v-wrap">
+  <div class="v-pd__media">
+    <Image
+      class="v-pd__lead"
+      src={first}
+      alt={alt(0)}
+      widths={LEAD_WIDTHS}
+      sizes={LEAD_SIZES}
+      loading="eager"
+      fetchpriority="high"
+      data-gallery-lead
+    />
+    {spread && piece.images.length > 1 && (
+      <ul class="v-pd__more">
+        {piece.images.slice(1).map((image, i) => (
+          <li>
+            <Image src={image} alt={alt(i + 1)} widths={[480, 960]} sizes="(max-width: 900px) 50vw, 30vw" loading="lazy" />
+          </li>
+        ))}
+      </ul>
+    )}
+    {gallery && (
+      <ul class="v-pd__thumbs" aria-label="Fler bilder">
+        {piece.images.map((image, i) => (
+          <li>
+            <a
+              class="v-pd__thumb"
+              href={leads[i].src}
+              aria-label={`Visa bild ${i + 1}`}
+              aria-current={i === 0 ? "true" : undefined}
+              data-src={leads[i].src}
+              data-srcset={leads[i].srcSet.attribute}
+              data-alt={alt(i)}
+            >
+              <Image src={image} alt="" widths={[160, 320]} sizes="var(--v-thumb)" loading="lazy" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+
+  <div class="v-pd__info">
+    <h1 class="v-pd__title">{piece.title}</h1>
+    <p class="v-pd__price">{piece.price}</p>
+    {piece.description && <p class="v-pd__text">{piece.description}</p>}
+    {piece.body && <p class="v-pd__text">{piece.body}</p>}
+    <dl class="v-pd__facts">
+      {piece.facts.map((fact) => <div><dt>{fact.term}</dt><dd>{fact.value}</dd></div>)}
+    </dl>
+    <a class="v-btn v-pd__order" href={piece.orderHref}>Beställ via mejl →</a>
+    <a class="v-pd__back" href={vHref(v, "smycken")}>← Alla smycken</a>
+  </div>
+</article>
+
+<section class="v-wrap v-pd__others" aria-labelledby="v-others">
+  <h2 class="v-pd__others-title" id="v-others">Fler smycken</h2>
+  <ul class="v-grid v-grid--small">
+    {others.slice(0, 4).map((other) => <li><PieceCard piece={other} v={v} /></li>)}
+  </ul>
+</section>
+
+<script>
+  // The gallery: choosing a thumbnail shows that photo in the large spot and marks the thumbnail.
+  const lead = document.querySelector<HTMLImageElement>("[data-gallery-lead]");
+  const thumbs = document.querySelectorAll<HTMLAnchorElement>(".v-pd__thumb");
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener("click", (event) => {
+      if (!lead) return;
+      event.preventDefault();
+      lead.srcset = thumb.dataset.srcset ?? "";
+      lead.src = thumb.dataset.src ?? lead.src;
+      lead.alt = thumb.dataset.alt ?? lead.alt;
+      thumbs.forEach((other) => other.removeAttribute("aria-current"));
+      thumb.setAttribute("aria-current", "true");
+    });
+  });
+</script>

@@ -1,0 +1,495 @@
+/*
+ * Direction 1 · Spec — grey spec-sheet bands and white working space, a tight grotesk for display,
+ * DM Mono for every label, and crosshair marks.
+ */
+
+[data-v="1"] {
+  --s1-rule: var(--border-width) solid var(--color-rule-subtle);
+  font-feature-settings: "ss01";
+}
+
+[data-v="1"] :is(.v-head__nav, .v-card__price, .v-pd__facts dt, .v-cc__facts dt, .v-cc__label, .v-about__facts dt, .v-form span, .v-foot__links) {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--v-tracking-label);
+  text-transform: uppercase;
+}
+
+[data-v="1"] .v-head__mark {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--font-tracking-tight);
+}
+
+[data-v="1"] .v-head__nav a[aria-current="page"] {
+  text-decoration: none;
+  box-shadow: inset 0 calc(0px - var(--border-width-thick)) 0 var(--v-accent);
+}
+
+/* Buttons are hard black slabs, like the reference's "Playground" */
+[data-v="1"] .v-btn {
+  min-height: calc(var(--size-control) + var(--space-4));
+  padding-inline: var(--space-8);
+  font-size: var(--font-size-lg);
+  border-radius: var(--border-width-thick);
+}
+
+/* Crosshair mark */
+.s1-cross {
+  display: inline-block;
+  width: var(--space-6);
+  height: var(--space-6);
+  border: var(--border-width-thick) solid currentColor;
+  border-radius: var(--radius-full);
+  background:
+    linear-gradient(currentColor, currentColor) center / var(--border-width-thick) 140% no-repeat,
+    linear-gradient(currentColor, currentColor) center / 140% var(--border-width-thick) no-repeat;
+  vertical-align: middle;
+}
+
+/* ── The grey band: hero plus one spec sheet per new piece ── */
+.s1-band {
+  overflow-x: clip;
+  background: var(--v-paper);
+}
+
+.s1-band__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) repeat(2, minmax(0, 1fr));
+  gap: var(--space-12);
+  max-width: var(--layout-site-width);
+  margin-inline: auto;
+  padding: var(--space-8) var(--layout-gutter) var(--space-16);
+}
+
+.s1-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.s1-hero .s1-cross {
+  align-self: flex-end;
+}
+
+/* With the hands hero above, the band holds only the new pieces. */
+.s1-band--sheets .s1-band__inner {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.s1-band--sheets .s1-sheet:first-of-type {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.s1-hero__title {
+  font-size: clamp(2.25rem, 5vw, 5.5rem);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--v-leading-hero);
+  letter-spacing: var(--v-tracking-hero);
+  text-wrap: balance;
+}
+
+.s1-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: var(--space-6);
+  border-left: var(--s1-rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.s1-sheet__name {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--font-leading-display);
+  letter-spacing: var(--v-tracking-hero);
+  text-transform: uppercase;
+}
+
+.s1-sheet__price {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xl);
+}
+
+.s1-sheet__photo {
+  position: relative;
+  isolation: isolate;
+  max-width: var(--v-new-photo);
+  margin-block: var(--space-4);
+}
+
+.s1-sheet__photo img {
+  aspect-ratio: var(--v-ratio-photo);
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.s1-sheet:hover .s1-sheet__photo img {
+  transform: scale(var(--v-hover-zoom));
+}
+
+/* ── Homepage sections: white working space under the grey band ── */
+[data-v="1"] :is(.v-sel, .v-ct, .v-ig) {
+  background: var(--v-white);
+}
+
+[data-v="1"] .v-sel {
+  border-top: var(--s1-rule);
+}
+
+[data-v="1"] :is(.v-sel__title, .v-ct__title, .v-ig__title) {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--font-leading-tight);
+  letter-spacing: var(--v-tracking-hero);
+}
+
+[data-v="1"] :is(.v-sel__all, .v-ig__handle, .v-ig__line) {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+}
+
+[data-v="1"] .v-ct__inner {
+  padding-top: var(--space-8);
+  border-top: var(--s1-rule);
+}
+
+[data-v="1"] .v-ig__handle {
+  color: var(--v-accent);
+}
+
+/* The band on tablets: the headline across the top, the two sheets side by side under it. */
+@media (max-width: 1100px) {
+  .s1-band__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s1-hero {
+    grid-column: 1 / -1;
+  }
+
+  .s1-sheet:first-of-type {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .s1-band__inner {
+    gap: var(--space-8) var(--space-4);
+  }
+
+  .s1-sheet:nth-of-type(n) {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .s1-sheet__name {
+    font-size: var(--font-size-xl);
+  }
+
+  .s1-sheet__price {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* ── Shared parts, the Spec way ── */
+[data-v="1"] .v-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-12) var(--space-8);
+  margin-top: var(--space-8);
+}
+
+[data-v="1"] .v-grid--small {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+}
+
+[data-v="1"] .v-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  color: inherit;
+  text-decoration: none;
+}
+
+[data-v="1"] .v-card__photo {
+  position: relative;
+  grid-column: 1 / -1;
+  margin-bottom: var(--space-2);
+  overflow: hidden;
+  background: var(--v-paper);
+}
+
+[data-v="1"] .v-card__photo img {
+  aspect-ratio: var(--v-ratio-photo);
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+[data-v="1"] .v-card:hover .v-card__photo img {
+  transform: scale(var(--v-hover-zoom));
+}
+[data-v="1"] .v-card__title {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+[data-v="1"] .v-card__price { grid-column: 2; }
+
+[data-v="1"] .v-order {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: start;
+  padding: var(--space-6);
+  border: var(--s1-rule);
+  background: var(--v-paper);
+}
+
+[data-v="1"] .v-order__title {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  text-transform: uppercase;
+  letter-spacing: var(--v-tracking-label);
+}
+
+[data-v="1"] .v-order__steps {
+  display: grid;
+  gap: var(--space-4);
+}
+
+[data-v="1"] .v-order__steps li {
+  display: grid;
+  grid-template-columns: var(--space-8) minmax(0, 1fr);
+}
+
+[data-v="1"] .v-order__nr {
+  grid-row: span 2;
+  font-family: var(--v-mono);
+  font-size: var(--font-size-sm);
+  color: var(--v-accent);
+}
+
+[data-v="1"] :is(.v-order__term, .v-order__text) {
+  grid-column: 2;
+}
+
+[data-v="1"] .v-order__term {
+  font-weight: var(--font-weight-semibold);
+}
+
+[data-v="1"] .v-order__text {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--font-leading-normal);
+}
+
+[data-v="1"] .v-order .v-btn {
+  justify-self: end;
+  margin-right: calc(0px - var(--space-6));
+  margin-bottom: calc(0px - var(--space-6));
+  font-size: var(--font-size-base);
+}
+
+[data-v="1"] .v-shop {
+  display: grid;
+  gap: var(--v-section);
+  padding-block: var(--space-8);
+}
+
+[data-v="1"] .v-shop .v-order {
+  max-width: var(--layout-content-width);
+}
+
+/* Product page */
+[data-v="1"] .v-pd {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--space-12);
+  padding-block: var(--space-8);
+}
+
+[data-v="1"] .v-pd__lead {
+  aspect-ratio: var(--v-ratio-wide);
+  object-fit: cover;
+}
+
+[data-v="1"] .v-pd__info {
+  position: sticky;
+  top: var(--space-6);
+  align-self: start;
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+}
+
+[data-v="1"] .v-pd__title {
+  font-size: var(--v-size-hero);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--v-leading-hero);
+  letter-spacing: var(--v-tracking-hero);
+}
+
+[data-v="1"] .v-pd__price {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xl);
+}
+
+[data-v="1"] .v-pd__text {
+  max-width: var(--measure);
+}
+
+[data-v="1"] .v-pd__facts,
+[data-v="1"] .v-cc__facts,
+[data-v="1"] .v-about__facts {
+  width: 100%;
+}
+
+[data-v="1"] :is(.v-pd__facts, .v-cc__facts, .v-about__facts) > div {
+  display: grid;
+  grid-template-columns: var(--v-col-label) 1fr;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-width) dashed var(--color-rule-subtle);
+}
+
+[data-v="1"] .v-pd__back {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+}
+
+[data-v="1"] .v-pd__others {
+  margin-top: var(--v-section);
+  padding-top: var(--space-8);
+  border-top: var(--s1-rule);
+}
+
+[data-v="1"] .v-pd__others-title {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--v-tracking-hero);
+}
+
+/* Course and about pages */
+[data-v="1"] .v-courses {
+  padding-block: var(--space-8);
+}
+
+[data-v="1"] .v-cc__title,
+[data-v="1"] .v-signup__title {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--font-leading-display);
+  letter-spacing: var(--v-tracking-hero);
+  text-transform: uppercase;
+}
+
+[data-v="1"] .v-cc__intro {
+  font-size: var(--font-size-lg);
+}
+
+[data-v="1"] .v-cc__includes li::before {
+  content: "→ ";
+  color: var(--v-accent);
+}
+
+[data-v="1"] .v-signup {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--v-section);
+  padding: var(--space-12) var(--space-8);
+  background: var(--v-white);
+}
+
+[data-v="1"] .v-signup__privacy {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xs);
+}
+
+[data-v="1"] .v-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--space-12);
+  align-items: end;
+  padding-block: var(--space-8);
+}
+
+@media (max-width: 900px) {
+
+  [data-v="1"] :is(.v-pd, .v-about) {
+    grid-template-columns: 1fr;
+  }
+
+  [data-v="1"] .v-pd__info {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  [data-v="1"] .v-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-4);
+  }
+
+}
+
+/* ── Course page: each course a spec sheet; the form beside them on white ── */
+[data-v="1"] .v-cc {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: start;
+  padding: var(--space-6);
+  border: var(--s1-rule);
+  background: var(--v-white);
+}
+
+[data-v="1"] .v-cc__title {
+  font-size: var(--font-size-xl);
+}
+
+[data-v="1"] .v-cc__intro {
+  font-size: var(--font-size-base);
+}
+
+
+[data-v="1"] .v-cc__more summary {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--v-tracking-label);
+}
+
+[data-v="1"] .v-courses .v-signup {
+  padding: var(--space-8) var(--space-6);
+  border: var(--s1-rule);
+}
+
+[data-v="1"] .v-courses .v-signup__title {
+  font-size: var(--font-size-xl);
+}
+
+@media (max-width: 700px) {
+  [data-v="1"] .v-cc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+[data-v="1"] .v-menu-btn {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--v-tracking-label);
+}
+
+[data-v="1"] .v-menu__links a {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--v-tracking-hero);
+}

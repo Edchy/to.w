@@ -75,3 +75,14 @@ change, and restoring the previous page's offset fights it.
 # 2026-09-29
 
 - `<model-viewer loading="lazy">` inside a `display: none` container never loads after it's shown, so the "Vrid i 3D" view stayed blank. Leave `loading` at its default when the model starts hidden. Also, the automation Chrome window reports `visibilityState: hidden`, so WebGL never paints in its screenshots. Check `mv.loaded` instead of trusting an empty frame.
+
+# 2026-10-10
+
+- The Claude-in-Chrome window will not resize below desktop width, so a 390px `resize_window` still renders the desktop layout. For phone checks, replace a same-origin page's markup with 390px-wide iframes of the pages and read `scrollWidth` against `clientWidth` inside each one to find horizontal overflow.
+- Dev-server HMR reloads the page you injected test helpers into after any CSS edit, so functions set on `window` disappear. Inject on `/robots.txt` (no HMR client) instead.
+
+# 2026-10-10 (variant studies)
+
+- When pruning CSS rules for removed classes with a script, never delete a whole rule because a dead class appears inside `:is(...)` or a selector list next to live ones. It silently removed phone layout rules shared by the product and about pages (and Spec's tablet band) and only showed up as sideways scroll on phones. Remove the dead name from the list instead, and re-run the phone overflow check after any prune.
+- In OKLCH, `color-mix()` interpolates hue: mixing a near-white (hue ~95) with blue swung through yellow-green and produced an olive tint. Mix pale tints in `oklab`.
+- model-viewer sets its own `height: 150px` and a loading bar on `:host`; set `height: auto` with an `aspect-ratio`, and `--progress-bar-color: transparent`.

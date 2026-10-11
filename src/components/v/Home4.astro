@@ -1,0 +1,25 @@
+---
+// Direction 4 · Affisch: a poster. A shared hero (hands in a disc, or the headline alone), a running
+// ticker, then colour-blocked sections.
+import type { Piece } from "./catalog";
+import Hero, { type HeroKind } from "./Hero.astro";
+import NewPieces from "./NewPieces.astro";
+import Selection from "./Selection.astro";
+import CourseTeaser from "./CourseTeaser.astro";
+import Insta from "./Insta.astro";
+
+type Props = { v: string; pieces: Piece[]; hero?: HeroKind };
+const { v, pieces, hero } = Astro.props;
+const ticker = ["Handgjort", "Återvunnet silver", "Järna"];
+---
+
+<Hero v={v} kind={hero ?? "type"} />
+
+<div class="p4-ticker" aria-hidden="true">
+  <p>{[...ticker, ...ticker, ...ticker, ...ticker].map((word) => <span>{word} <i>✺</i></span>)}</p>
+</div>
+
+<NewPieces v={v} pieces={pieces} />
+<Selection v={v} pieces={pieces} mode="carousel" />
+<CourseTeaser v={v} />
+<Insta />

@@ -1,0 +1,70 @@
+---
+// A live product page (the LIVE study's product page), with the search details the site has always
+// had: a title saying what the piece is, a description cut at a sentence, the photo as link preview,
+// and Product structured data.
+import { getImage } from "astro:assets";
+import { getCollection } from "astro:content";
+import VFrame from "../../components/v/VFrame.astro";
+import Product from "../../components/v/Product.astro";
+import { getPieces } from "../../components/v/catalog";
+import { getProductSlug } from "../../config/site";
+
+export async function getStaticPaths() {
+  const pieces = await getPieces();
+  const entries = await getCollection("jewelry");
+  return pieces.map((piece) => ({
+    params: { id: piece.slug },
+    props: {
+      piece,
+      others: pieces.filter((p) => p !== piece),
+      entry: entries.find((entry) => getProductSlug(entry.id) === piece.slug)!,
+    },
+  }));
+}
+
+const { piece, others, entry } = Astro.props;
+const { title, kind, price, description, material, images } = entry.data;
+
+const clean = (value?: string) => (value?.trim() && value.trim() !== "tba" ? value.trim() : undefined);
+const pageTitle = kind ? `${title} – ${kind} i återvunnet silver` : title;
+const summary = (text: string, max = 155) => {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) ?? [text];
+  let out = "";
+  for (const sentence of sentences) {
+    if ((out + sentence).trim().length > max) break;
+    out += sentence;
+  }
+  return (out || text.slice(0, max)).trim();
+};
+const metaDescription = summary(clean(description) ?? `${title}, handgjort smycke i återvunnet silver av Tove Wätte.`);
+const photo = images[0] ? await getImage({ src: images[0], width: 1200, format: "jpg" }) : undefined;
+const productUrl = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: title,
+  description: clean(description),
+  image: photo ? new URL(photo.src, Astro.site).href : undefined,
+  material: clean(material),
+  brand: { "@type": "Brand", name: "TO·W" },
+  offers: price === undefined ? undefined : {
+    "@type": "Offer",
+    url: productUrl,
+    price,
+    priceCurrency: "SEK",
+    availability: "https://schema.org/MadeToOrder",
+  },
+};
+---
+
+<VFrame
+  v="live"
+  title={pageTitle}
+  page={`smycken/${piece.slug}`}
+  description={metaDescription}
+  image={photo?.src}
+  imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`}
+  jsonLd={jsonLd}
+>
+  <Product v="live" piece={piece} others={others} />
+</VFrame>

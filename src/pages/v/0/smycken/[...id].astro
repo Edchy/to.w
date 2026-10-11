@@ -2,11 +2,12 @@
 import { existsSync } from "node:fs";
 import { Image, getImage } from "astro:assets";
 import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import SiteFrame from "../../components/site/SiteFrame.astro";
-import ProductCarousel from "../../components/home/ProductCarousel.astro";
-import { CONTACT_EMAIL_HREF, RING_TRANSITION_CLASS, getProductSlug, ringTransitionName } from "../../config/site";
-import "../../styles/pages.css";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import VSwitch from "../../../../components/v/VSwitch.astro";
+import SiteFrame from "../../../../components/site/SiteFrame.astro";
+import ProductCarousel from "../../../../components/home/ProductCarousel.astro";
+import { CONTACT_EMAIL_HREF, RING_TRANSITION_CLASS, getProductSlug, linkBase, priceLabel, ringTransitionName } from "../../../../config/site";
+import "../../../../styles/pages.css";
 
 export async function getStaticPaths() {
   const items = (await getCollection("jewelry")).sort((a, b) => b.data.date.localeCompare(a.data.date));
@@ -19,8 +20,10 @@ export async function getStaticPaths() {
 const { entry, others } = Astro.props;
 const { title, kind, price, sizes, description, body, material, technique, design, images } = entry.data;
 
-const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const formattedPrice = new Intl.NumberFormat("sv-SE").format(price);
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`; // assets (the 3D models)
+const links = linkBase(Astro.url); // links stay inside /v/0/
+const slug = getProductSlug(entry.id);
+const formattedPrice = priceLabel(price);
 
 // A loose 3D model of the piece (scripts/make-rings.mjs), named by slug without diacritics.
 const modelName = getProductSlug(entry.id).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -58,7 +61,7 @@ const jsonLd = {
   image: photo ? new URL(photo.src, Astro.site).href : undefined,
   material: clean(material),
   brand: { "@type": "Brand", name: "TO·W" },
-  offers: {
+  offers: price === undefined ? undefined : {
     "@type": "Offer",
     url: productUrl,
     price,
@@ -72,7 +75,7 @@ const sizeLine =
   sizes.length === 1 ? `Storlek / variant: ${sizes[0]}` : `Storlek / variant (välj: ${sizes.join(", ")}):`;
 const orderBody = `Hej Tove,
 
-Jag vill gärna beställa ${title} (${formattedPrice} kr).
+Jag vill gärna beställa ${title} (${formattedPrice}).
 
 ${sizeLine}
 Antal:
@@ -85,7 +88,7 @@ Vänliga hälsningar,`;
 const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}&body=${encodeURIComponent(orderBody)}`;
 ---
 
-<BaseLayout bare title={pageTitle} description={metaDescription} image={photo?.src} imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`} jsonLd={jsonLd}>
+<BaseLayout noindex bare title={pageTitle} description={metaDescription} image={photo?.src} imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`} jsonLd={jsonLd}>
   <SiteFrame>
     <div class="pg pd">
       <div class="pd__media" data-product-media>
@@ -127,7 +130,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
         <button class="pd__toggle" type="button" data-model-toggle aria-pressed="false">Vrid i 3D</button>
       )}
 
-      <a class="pd__back" href={`${baseUrl}smycken/`} aria-label="Tillbaka till alla smycken">
+      <a class="pd__back" href={`${links}smycken/`} aria-label="Tillbaka till alla smycken">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6" /></svg>
       </a>
 
@@ -135,7 +138,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
 
         <div class="pd__name">
           <h1 class="pg__heading pd__title" style={`view-transition-name: ${ringTransitionName(getProductSlug(entry.id))}; view-transition-class: ${RING_TRANSITION_CLASS}`}>{title}</h1>
-          <p class="pd__price">{formattedPrice} kr</p>
+          <p class="pd__price">{formattedPrice}</p>
         </div>
 
         {(clean(description) || clean(body)) && (
@@ -171,6 +174,7 @@ const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställn
       <ProductCarousel items={others} photos />
     </section>
   </SiteFrame>
+  <VSwitch current="0" page={`smycken/${slug}`} />
 </BaseLayout>
 
 <script>

@@ -1,0 +1,39 @@
+---
+// Instagram on every homepage, after the original site's section: the heading, one line, the
+// handle, and four posts, each linking to the profile.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import trattoria from "../../assets/img/instagram/trattoria.jpg";
+import sheep from "../../assets/img/instagram/sheep.jpg";
+import flower from "../../assets/img/instagram/flower.jpg";
+import blur from "../../assets/img/instagram/blur.jpg";
+import Doodle from "./Doodle.astro";
+
+const profileUrl = "https://instagram.com/tovewatte";
+const posts: { src: ImageMetadata; alt: string }[] = [
+  { src: flower, alt: "En hand med silverring håller en gul blomma mot svart bakgrund." },
+  { src: trattoria, alt: "En gul bil framför en trattoria." },
+  { src: blur, alt: "En suddig hand håller upp en silverring mot en vit vägg." },
+  { src: sheep, alt: "Två får som betar hö." },
+];
+---
+
+<section class="v-ig" aria-labelledby="v-ig-title">
+  <Doodle name="chair" />
+  <div class="v-wrap">
+    <div class="v-ig__head">
+      <h2 class="v-ig__title" id="v-ig-title">Instagram</h2>
+      <p class="v-ig__line">Nya smycken, kursdatum och glimtar från livet runt omkring.</p>
+      <a class="v-ig__handle" href={profileUrl}>@tovewatte</a>
+    </div>
+    <ul class="v-ig__grid">
+      {posts.map((post) => (
+        <li>
+          <a href={profileUrl} tabindex="-1" aria-hidden="true">
+            <Image src={post.src} alt={post.alt} widths={[300, 600]} sizes="(max-width: 700px) 45vw, 18rem" loading="lazy" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

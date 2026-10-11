@@ -186,3 +186,163 @@
   /* Square icon buttons (carousel and slider arrows, the menu button): the minimum touch target. */
   --size-control: 44px;
 }
+
+/*
+ * ─────────────────────────────────────────────────────────
+ * 4. VARIANT STUDIES (/v/1 – /v/5)
+ * ─────────────────────────────────────────────────────────
+ * Five editorial directions, each mapped onto the same --v-* roles. The role tokens sit on the
+ * root while that direction's page is open, so the page background follows them too.
+ * Remove this block with src/pages/v and src/components/v once a direction is chosen.
+ */
+:root {
+  /* Primitives used only by the studies */
+  --v-grey-paper: oklch(92.5% 0.002 95);
+  --v-warm-paper: oklch(95.5% 0.016 85);
+  --v-forest: oklch(40% 0.075 158);       /* a deep forest green: palette "forest" (19) */
+  --v-cream: oklch(96% 0.03 95);
+  --v-white: oklch(99% 0.002 95);
+  --v-ink: oklch(16% 0.004 270);
+  --v-ink-warm: oklch(21% 0.02 60);
+  --v-sun: oklch(90% 0.17 100);
+
+
+  /* Families */
+  --v-font-familjen: "Familjen Grotesk Variable", "Helvetica Neue", sans-serif;
+  --v-font-dm-mono: "DM Mono", ui-monospace, monospace;
+  --v-font-instrument: "Instrument Serif", Georgia, serif;
+  --v-font-bricolage: "Bricolage Grotesque Variable", "Helvetica Neue", sans-serif;
+  --v-font-plex-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --v-font-nyght: "Nyght Serif", Georgia, serif;
+
+  /* Display sizes the studies share: large headline, and the poster's oversize wordmark */
+  --v-size-hero: clamp(3rem, 7vw, 8.5rem);
+  --v-wordmark-height: 0.75em;         /* the logo in the header, sized by its font-size */
+  --v-size-poster: clamp(4rem, 13vw, 13rem);    /* poster names, product titles */
+  --v-size-numeral: clamp(4rem, 10vw, 10rem);   /* magazine numerals and titles */
+  --v-size-title: clamp(2.5rem, 7vw, 7rem);     /* page titles, pull quotes, footer mail */
+  --v-size-hero-split: clamp(2.25rem, 5vw, 5rem); /* a two-line hero headline beside the ring (16, 18) */
+  --v-size-menu: clamp(3.25rem, 13vw, 6rem);     /* the links in 13's full-screen menu */
+  --v-size-statement: clamp(2.25rem, 5vw, 5.5rem); /* intro statements */
+  --v-weight-black: 800;
+  --v-leading-solid: 1;
+  --v-leading-crush: 0.8;
+  --v-hover-zoom: 1.04;
+  --v-col-label: 9rem; /* label column in fact lists */
+  --v-leading-hero: 0.84;
+  --v-tracking-hero: -0.045em;
+  --v-tracking-label: 0.06em;
+
+  /* Product photos */
+  --v-ratio-photo: 4 / 5;
+  --v-ratio-wide: 3 / 2;
+  --v-ratio-square: 1 / 1;
+  --v-rotate-sticker: -8deg;
+  --v-thumb: 4.5rem;
+  --v-photo-max-phone: 60svh; /* lead photos on phones stay under ~2/3 of the screen */
+  --v-site-width: 80rem;                     /* the studies' content width: content stops growing here */
+  --v-card-w: clamp(10rem, 18vw, 16rem);    /* one piece in a carousel or grid */
+  --v-new-photo: 18rem;                      /* a new piece's photo on the homepage */
+  --v-pd-lead-max: 28rem;                    /* the lead photo on a piece's page */
+  --v-ig-max: 56rem;                         /* the Instagram grid */
+  --v-tint: color-mix(in oklab, var(--v-accent) 8%, var(--v-paper)); /* a pale panel in the accent's hue */
+  --v-accent-deep: color-mix(in oklab, var(--v-accent) 82%, var(--v-ink)); /* the accent a shade deeper: hovered buttons */
+  --v-fg-muted: color-mix(in oklab, var(--v-fg) 55%, var(--v-paper)); /* small labels, secondary text */
+  --v-on-accent-soft: color-mix(in oklab, var(--v-on-accent) 70%, var(--v-accent)); /* hovered links on an accent band */
+  --v-gutter: clamp(1.5rem, 6vw, 7rem);      /* side margins in the studies: wider than the live site */
+  --v-section: clamp(6rem, 12vw, 12rem);     /* room between homepage sections */
+  --v-section-min: clamp(8rem, 18vw, 16rem); /* the same in the minimal studies */
+  --v-min-photo: clamp(9rem, 16vw, 14rem);   /* photos in the minimal studies */
+  --v-ring-3d: min(80vw, 62svh);             /* study 10: the turning 3D ring */
+  --v-doodle: clamp(4.5rem, 9vw, 8rem);      /* Tove's drawings as decorations */
+}
+
+:root:has([data-v="1"]) {
+  --wordmark-o: var(--logo-pink); /* the logo's "O·" in the splash colour */
+  --v-paper: var(--v-grey-paper);
+  --v-fg: var(--v-ink);
+  --v-accent: var(--logo-pink);
+  --v-accent-2: var(--logo-blue);
+  --v-on-accent: var(--pure-white);
+  --v-display: var(--v-font-familjen);
+  --v-text: var(--v-font-familjen);
+  --v-mono: var(--v-font-dm-mono);
+}
+
+:root:has([data-v="2"]) {
+  --v-paper: var(--v-warm-paper);
+  --v-fg: var(--v-ink-warm);
+  --v-accent: var(--logo-blue);
+  --v-accent-2: var(--logo-pink);
+  --v-on-accent: var(--v-warm-paper);
+  --v-display: var(--v-font-instrument);
+  --v-text: var(--font-text);
+  --v-mono: var(--v-font-instrument);
+}
+
+:root:has([data-v="4"]) {
+  --wordmark-o: var(--logo-pink); /* the logo's "O·" in the splash colour */
+  --v-paper: var(--v-cream);
+  --v-fg: var(--v-ink);
+  --v-accent: var(--logo-pink);
+  --v-accent-2: var(--logo-blue);
+  --v-accent-3: var(--supreme-red);
+  --v-accent-4: var(--v-sun);
+  --v-on-accent: var(--pure-white);
+  --v-display: var(--v-font-bricolage);
+  --v-text: var(--v-font-bricolage);
+  --v-mono: var(--v-font-bricolage);
+}
+
+:root:has([data-v="5"]) {
+  --v-paper: var(--v-white);
+  --v-fg: var(--v-ink);
+  --v-accent: var(--logo-blue);
+  --v-accent-2: var(--logo-blue);
+  --v-on-accent: var(--pure-white);
+  --v-display: var(--v-font-nyght);
+  --v-text: var(--v-font-plex-mono);
+  --v-mono: var(--v-font-plex-mono);
+}
+
+/* Palette "ink" (12): black on white, the accent black too; buttons black with white text. */
+:root:has([data-palette="ink"]) {
+  --wordmark-o: var(--v-ink);
+  --v-paper: var(--v-white);
+  --v-fg: var(--v-ink);
+  --v-accent: var(--v-ink);
+  --v-accent-2: var(--v-ink);
+  --v-on-accent: var(--v-white);
+}
+
+/* 16: the page on the same warm off-white paper as 19, the blue kept. */
+:root:has([data-id="16"]) {
+  --v-paper: var(--v-warm-paper);
+}
+
+/* Palette "forest" (19): soft black on warm paper, a deep forest green as the one colour. */
+:root:has([data-palette="forest"]) {
+  --wordmark-o: var(--v-ink);
+  --v-paper: var(--v-warm-paper);
+  --v-fg: var(--v-ink);
+  --v-accent: var(--v-forest);
+  --v-accent-2: var(--v-forest);
+  --v-on-accent: var(--v-warm-paper);
+}
+
+/* Palette "bw-blue" (14): black on white with the logo blue as the one colour. */
+:root:has([data-palette="bw-blue"]) {
+  --wordmark-o: var(--logo-blue);
+  --v-paper: var(--v-white);
+  --v-fg: var(--v-ink);
+  --v-accent: var(--logo-blue);
+  --v-accent-2: var(--v-ink);
+  --v-accent-3: var(--v-ink);
+  --v-accent-4: var(--v-white);
+  --v-on-accent: var(--v-white);
+}
+
+/* Font "serif" (13): the magazine serif for display type. */
+:root:has([data-font="serif"]) {
+  --v-display: var(--v-font-instrument);
+}

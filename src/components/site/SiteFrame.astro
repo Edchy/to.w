@@ -5,7 +5,7 @@
 import Footer from "./Footer.astro";
 import Wordmark from "./Wordmark.astro";
 import floralFrame from "../../assets/img/illustrations/floral-frame.webp";
-import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF, linkBase } from "../../config/site";
 
 const { ...rest } = Astro.props;
 
@@ -27,7 +27,7 @@ const themes: { id: string; label: string; swatch: string; base?: string[] }[] =
 const themeClasses = Object.fromEntries(
   themes.map((t) => [t.id, [...(t.base ?? []), t.id].map((id) => `a10--${id}`)]),
 );
-const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const baseUrl = linkBase(Astro.url); // the original site's links stay inside /v/0/ there
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 const navLinks = [
   { href: "/smycken", label: "smycken" },

@@ -1,0 +1,12 @@
+---
+// The live smycken page (the LIVE study, links at the root).
+import VFrame from "../../components/v/VFrame.astro";
+import Shop from "../../components/v/Shop.astro";
+import { getPieces } from "../../components/v/catalog";
+
+const pieces = await getPieces();
+---
+
+<VFrame v="live" title="Smycken" page="smycken" description="Handgjorda smycken i återvunnet silver av Tove Wätte, gjorda efter beställning.">
+  <Shop v="live" pieces={pieces} />
+</VFrame>

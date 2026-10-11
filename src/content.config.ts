@@ -7,7 +7,8 @@ const productSchema = ({ image }: SchemaContext) =>
     title: z.string(),
     /** What the piece is ("ring", "hänge"), used in the page title for search results. */
     kind: z.string().optional(),
-    price: z.number(),
+    /** Leave out while the price is not set; pages then say "pris kommer". */
+    price: z.number().optional(),
     sizes: z.array(z.string()),
     description: z.string().optional(),
     material: z.string().optional(),
@@ -18,6 +19,8 @@ const productSchema = ({ image }: SchemaContext) =>
     imagesHd: z.array(image()).optional(),
     date: z.string(),
     body: z.string().optional(),
+    /** Shown in the "Nytt" section. */
+    nytt: z.boolean().optional(),
   });
 
 const jewelry = defineCollection({

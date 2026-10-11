@@ -1,0 +1,770 @@
+/*
+ * Direction 5 · Arkiv — a museum catalogue. IBM Plex Mono at one small size for nearly everything,
+ * the brand's Nyght Serif italic for names, generous white, and colour only in the band of new
+ * pieces (logo blue).
+ */
+
+[data-v="5"] {
+  --a5-rule: var(--border-width) solid var(--color-rule-subtle);
+  font-size: var(--font-size-sm);
+  line-height: var(--font-leading-normal);
+}
+
+[data-v="5"] em,
+[data-v="5"] :is(.v-card__title, .v-pd__title, .v-head__mark, .v-cc__title, .v-signup__title) {
+  font-family: var(--v-display);
+  font-style: italic;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--font-tracking-tight);
+}
+
+[data-v="5"] :is(h2, .v-order__title, .v-pd__others-title) {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+[data-v="5"] .v-head {
+  padding-block: var(--space-8);
+}
+
+[data-v="5"] .v-head__mark {
+  font-size: var(--font-size-xl);
+}
+
+[data-v="5"] .v-head__nav a[aria-current="page"] {
+  text-decoration: none;
+  color: var(--v-accent);
+}
+
+[data-v="5"] .v-head__nav a[aria-current="page"]::before {
+  content: "→ ";
+}
+
+[data-v="5"] .v-btn {
+  min-height: auto;
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--v-fg);
+  background: transparent;
+  color: var(--v-fg);
+}
+
+[data-v="5"] .v-btn:hover {
+  border-color: var(--v-accent);
+}
+
+[data-v="5"] :is(.v-new__title, .v-sel__title, .v-ig__title) {
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid currentColor;
+}
+
+[data-v="5"] .v-sel__head {
+  display: block;
+}
+
+/* The one place with colour: the blue band of new pieces */
+[data-v="5"] .v-new {
+  padding-block: var(--space-6) var(--space-16);
+  background: var(--v-accent);
+  color: var(--v-on-accent);
+}
+
+[data-v="5"] .v-new__name {
+  font-family: var(--v-display);
+  font-size: var(--font-size-xl);
+  font-style: italic;
+  font-weight: var(--font-weight-bold);
+}
+
+[data-v="5"] .v-ct__title {
+  font-family: var(--v-display);
+  font-size: var(--font-size-display);
+  font-style: italic;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--font-leading-display);
+}
+
+/* ── Shared parts, the archive way ── */
+[data-v="5"] .v-order {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-6) var(--grid-gutter);
+  margin-top: var(--v-section);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--v-fg);
+}
+
+[data-v="5"] .v-order__title {
+  grid-column: 1 / 4;
+}
+
+[data-v="5"] .v-order__steps {
+  grid-column: 5 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6) var(--grid-gutter);
+}
+
+[data-v="5"] .v-order__steps li {
+  display: grid;
+}
+
+[data-v="5"] .v-order__nr {
+  font-family: var(--v-mono);
+  font-size: var(--font-size-sm);
+}
+
+[data-v="5"] .v-order__term {
+  font-family: var(--v-display);
+  font-style: italic;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+}
+
+[data-v="5"] .v-order .v-btn {
+  grid-column: 5 / -1;
+  justify-self: start;
+}
+
+[data-v="5"] .v-shop {
+  padding-top: var(--space-8);
+}
+
+[data-v="5"] .v-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-12) var(--space-6);
+}
+
+[data-v="5"] .v-card {
+  display: grid;
+  text-decoration: none;
+}
+
+[data-v="5"] .v-card__photo {
+  position: relative;
+  margin-bottom: var(--space-2);
+}
+
+[data-v="5"] .v-card__photo img {
+  aspect-ratio: var(--v-ratio-square);
+  object-fit: cover;
+}
+
+[data-v="5"] .v-card__title {
+  font-size: var(--font-size-xl);
+  line-height: var(--font-leading-tight);
+}
+
+[data-v="5"] .v-pd {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  padding-block: var(--space-8);
+}
+
+[data-v="5"] .v-pd__media {
+  grid-column: 1 / 8;
+  display: grid;
+  gap: var(--grid-gutter);
+}
+
+[data-v="5"] .v-pd__lead {
+  aspect-ratio: var(--v-ratio-photo);
+  object-fit: cover;
+}
+
+[data-v="5"] .v-pd__info {
+  grid-column: 9 / -1;
+  position: sticky;
+  top: var(--space-8);
+  align-self: start;
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+}
+
+[data-v="5"] .v-pd__title {
+  font-size: var(--v-size-title);
+  line-height: var(--font-leading-display);
+}
+
+[data-v="5"] :is(.v-pd__facts, .v-cc__facts, .v-about__facts) {
+  width: 100%;
+  border-top: var(--border-width) solid var(--v-fg);
+}
+
+[data-v="5"] :is(.v-pd__facts, .v-cc__facts, .v-about__facts) > div {
+  display: grid;
+  grid-template-columns: var(--v-col-label) 1fr;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  border-bottom: var(--a5-rule);
+}
+
+[data-v="5"] .v-pd__others {
+  margin-top: var(--v-section);
+}
+
+[data-v="5"] .v-pd__others-title {
+  margin-bottom: var(--space-6);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--v-fg);
+}
+
+[data-v="5"] .v-courses {
+  padding-top: var(--space-8);
+}
+
+[data-v="5"] .v-cc__title,
+[data-v="5"] .v-signup__title {
+  font-size: var(--v-size-statement);
+  line-height: var(--font-leading-display);
+}
+
+[data-v="5"] .v-cc__includes li::before {
+  content: "— ";
+}
+
+[data-v="5"] .v-signup {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--v-section);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--v-fg);
+}
+
+[data-v="5"] .v-about {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  align-items: end;
+  padding-top: var(--space-8);
+}
+
+[data-v="5"] .v-about__portrait {
+  grid-column: 1 / 8;
+}
+
+[data-v="5"] .v-about__facts {
+  grid-column: 9 / -1;
+}
+
+@media (max-width: 1100px) {
+  [data-v="5"] .v-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+
+  [data-v="5"] :is(.v-order__title, .v-order__steps, .v-order .v-btn, .v-pd__media, .v-pd__info, .v-about__portrait, .v-about__facts) {
+    grid-column: 1 / -1;
+  }
+
+  [data-v="5"] .v-pd__info {
+    position: static;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  [data-v="5"] .v-grid,
+  [data-v="5"] .v-order__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-v="5"] .v-order__steps {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* ── Course page (5): quiet index cards between thin lines, a small photo at the left ── */
+[data-v="5"] .v-courses__list {
+  gap: 0;
+}
+
+[data-v="5"] .v-cc {
+  grid-template-columns: var(--v-min-photo) minmax(0, 1fr);
+  align-items: start;
+  padding-block: var(--space-6);
+  border-top: var(--border-width) solid var(--v-fg);
+}
+
+[data-v="5"] .v-cc__media img {
+  aspect-ratio: var(--v-ratio-square);
+}
+
+
+[data-v="5"] .v-cc__more summary {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  [data-v="5"] .v-cc {
+    grid-template-columns: var(--v-thumb) minmax(0, 1fr);
+  }
+}
+
+/* 13 · Arkiv × Tidning: names and headings in the magazine serif, which has one weight. */
+[data-v="5"][data-font="serif"] em,
+[data-v="5"][data-font="serif"] :is(.v-card__title, .v-pd__title, .v-head__mark, .v-cc__title, .v-signup__title, .v-order__term, .v-new__name, .v-ct__title, .v-foot__mail) {
+  font-family: var(--v-display);
+  font-weight: var(--font-weight-regular);
+}
+
+/* 13: the order steps laid out like 9's: the heading above, four steps side by side with a large
+   number over each, the button under them. */
+.v[data-base="13"] .v-order {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: var(--space-8);
+}
+
+.v[data-base="13"] :is(.v-order__title, .v-order__steps, .v-order .v-btn) {
+  grid-column: 1;
+}
+
+.v[data-base="13"] .v-order__title {
+  font-family: var(--v-display);
+  font-size: var(--font-size-display);
+  line-height: var(--font-leading-tight);
+}
+
+.v[data-base="13"] .v-order__steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6) var(--grid-gutter);
+  width: 100%;
+}
+
+.v[data-base="13"] .v-order__steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-2);
+}
+
+/* The number and the step's name share a row, at one size; the text runs under both. */
+.v[data-base="13"] .v-order__nr {
+  font-family: var(--v-display);
+  font-size: var(--font-size-xl);
+  line-height: var(--v-leading-solid);
+  color: var(--v-accent);
+}
+
+.v[data-base="13"] .v-order__term {
+  font-size: var(--font-size-xl);
+  line-height: var(--v-leading-solid);
+}
+
+.v[data-base="13"] .v-order__text {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .v[data-base="13"] .v-order__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* On phones the steps are compact rows: the number in a narrow column, the name and text beside it. */
+@media (max-width: 700px) {
+  .v[data-base="13"] .v-order {
+    gap: var(--space-6);
+  }
+
+  .v[data-base="13"] .v-order__title {
+    font-size: var(--font-size-xl);
+  }
+
+  .v[data-base="13"] .v-order__steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .v[data-base="13"] .v-order__steps li {
+    display: grid;
+    grid-template-columns: var(--space-8) minmax(0, 1fr);
+    gap: 0 var(--space-2);
+  }
+
+  .v[data-base="13"] .v-order__nr {
+    grid-row: span 2;
+  }
+
+  .v[data-base="13"] .v-order__text {
+    grid-column: 2;
+  }
+}
+
+/* 13's course page: each course a framed card, built to scan: the title, a short intro, then the
+   facts between two thin lines as rows of a small muted label and its value (dates in the accent),
+   the details folded away, and the button last. The form in a pale panel beside them. */
+.v[data-base="13"] .v-courses__list {
+  gap: var(--space-8);
+}
+
+.v[data-base="13"] .v-cc {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: var(--space-8);
+  padding: var(--space-8);
+  border: var(--border-width) solid var(--v-fg);
+  box-shadow: var(--space-2) var(--space-2) 0 var(--v-fg); /* 14's offset shadow */
+}
+
+/* The photo whole, never cropped, tucked into the card's top-left corner against both borders. */
+.v[data-base="13"] .v-cc__media {
+  margin: calc(-1 * var(--space-8)) 0 0 calc(-1 * var(--space-8));
+}
+
+/* On desktop the photo spills out past the card's left border onto the page, up to twice its
+   column's width: as far as the page margin allows (never past the window's edge). Its top stays
+   on the card's top border and its right edge where the column ends. */
+@media (min-width: 901px) {
+  .v[data-base="13"] .v-cc__media {
+    position: relative;
+    z-index: var(--z-raised);
+    margin-left: calc(-1 * min(100% + var(--space-8), var(--space-8) + (100vw - min(100vw, var(--layout-site-width))) / 2 + var(--layout-gutter) - var(--space-4)));
+    translate: var(--space-8) 0; /* nudged right, into the gap before the text */
+  }
+}
+
+.v[data-base="13"] .v-cc__media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+.v[data-base="13"] .v-cc__body {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-4);
+}
+
+.v[data-base="13"] :is(.v-cc__title, .v-signup__title) {
+  font-size: var(--font-size-xl);
+  line-height: var(--font-leading-tight);
+}
+
+.v[data-base="13"] .v-cc__intro {
+  font-size: var(--font-size-sm);
+}
+
+.v[data-base="13"] .v-cc__facts {
+  display: grid;
+  gap: var(--space-2);
+  margin-block: var(--space-2);
+  padding-block: var(--space-4);
+  border: 0;
+  border-block: var(--border-width) solid var(--color-rule);
+  font-size: var(--font-size-sm);
+}
+
+.v[data-base="13"] .v-cc__facts > div {
+  display: grid;
+  grid-template-columns: var(--space-24) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: 0;
+  border: 0;
+}
+
+.v[data-base="13"] .v-cc__facts dt {
+  font-size: var(--font-size-xs);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--font-tracking-wide);
+  color: var(--v-fg-muted);
+}
+
+.v[data-base="13"] .v-cc__date dd {
+  color: var(--v-accent);
+}
+
+.v[data-base="13"] .v-cc__when--full {
+  color: var(--v-fg-muted);
+}
+
+.v[data-base="13"] .v-cc__when--full .v-cc__day {
+  text-decoration: line-through;
+}
+
+.v[data-base="13"] .v-cc__full {
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--font-tracking-wide);
+}
+
+.v[data-base="13"] .v-cc__more {
+  font-size: var(--font-size-sm);
+}
+
+.v[data-base="13"] .v-cc__pick {
+  align-self: start;
+  margin-top: var(--space-2);
+}
+
+.v[data-base="13"] .v-courses .v-signup {
+  margin-top: 0;
+  padding: var(--space-8);
+  border: 0;
+  background: var(--v-tint);
+}
+
+@media (max-width: 700px) {
+  .v[data-base="13"] .v-cc {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-6);
+  }
+
+  .v[data-base="13"] .v-cc__media {
+    width: min(75%, 18rem);
+    margin: calc(-1 * var(--space-6)) 0 0 calc(-1 * var(--space-6));
+  }
+
+  .v[data-base="13"] .v-cc__facts > div {
+    grid-template-columns: var(--space-16) minmax(0, 1fr);
+  }
+
+  .v[data-base="13"] .v-courses .v-signup {
+    padding: var(--space-6);
+  }
+}
+
+/* 13: text links in small capitals: the header, the menu, the footer and links in running text.
+   Buttons, product cards and the footer's email keep their own type. */
+.v[data-base="13"] :is(.v-head__nav, .v-menu, .v-foot__links, .v-foot__small, .v-about, .v-pd__text, .v-cc__body, .v-signup) a:not(.v-btn, .v-about__ig) {
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--font-tracking-wide);
+}
+
+/* 13: a smaller wordmark in the header. */
+.v[data-base="13"] .v-head__mark {
+  font-size: var(--font-size-base);
+}
+
+/* 13: the header's page links a touch larger than the text around them. */
+.v[data-base="13"] .v-head__nav {
+  font-size: var(--font-size-base);
+}
+
+/* 13 (and its copies): one hover system. Text links and outlined controls turn blue; blue buttons
+   go a shade deeper; all with the same short fade. A product card cross-fades to the piece's
+   second photo, and its name turns blue. */
+.v[data-base="13"] :is(a, summary, .v-btn) {
+  transition:
+    color var(--transition-normal),
+    background-color var(--transition-normal),
+    border-color var(--transition-normal);
+}
+
+.v[data-base="13"] :is(.v-head__nav, .v-menu, .v-foot, .v-about, .v-pd__text, .v-cc__body, .v-signup, .v-sel, .v-new) a:not(.v-btn, .v-ig__handle, .v-about__ig, .v-card):hover,
+.v[data-base="13"] .v-cc__more summary:hover {
+  color: var(--v-accent);
+}
+
+.v[data-base="13"] :is(.v-btn, .v-sel__all, .v-ig__handle, .v-about__ig) {
+  border-color: transparent;
+}
+
+.v[data-base="13"] :is(.v-btn, .v-sel__all, .v-ig__handle, .v-about__ig):hover {
+  background: var(--v-accent-deep);
+  color: var(--v-on-accent);
+}
+
+.v[data-base="13"] .v-card__photo img {
+  transition: opacity var(--transition-slow);
+}
+
+.v[data-base="13"] .v-card__alt {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.v[data-base="13"] .v-card:hover .v-card__alt {
+  opacity: 1;
+}
+
+.v[data-base="13"] .v-card:hover .v-card__title {
+  color: var(--v-accent);
+}
+
+.v[data-base="13"] .v-card__title {
+  transition: color var(--transition-normal);
+}
+
+/* The secondary button keeps its outline and stays unfilled; hovered, a pale blue fill. */
+.v[data-base="13"] .v-btn.v-btn--secondary {
+  border-color: var(--v-accent);
+  background: transparent;
+  color: var(--v-accent);
+}
+
+.v[data-base="13"] .v-btn.v-btn--secondary:hover {
+  background: var(--v-tint);
+  color: var(--v-accent);
+}
+
+/* On the blue Nyheter band, hovered links and names go a soft light blue instead of blue. */
+.v[data-base="13"] .v-new.v-new a:not(.v-btn):hover,
+.v[data-base="13"] .v-new.v-new .v-card:hover .v-card__title {
+  color: var(--v-on-accent-soft);
+}
+
+/* The footer's links without underlines; the hover colour marks them. */
+.v[data-base="13"] .v-foot a {
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v[data-base="13"] .v-card__photo img {
+    transition: none;
+  }
+}
+
+/* 13's menu: the whole screen blue; the links large and white, sharing the height as full-width
+   rows that are easy to tap; email and Instagram at the bottom. The header above it turns white
+   while it is open. */
+.v[data-base="13"] .v-menu {
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-content: stretch;
+  gap: var(--space-8);
+  padding-top: calc(var(--nav-height) + var(--space-4));
+  padding-bottom: calc(var(--space-24) + var(--space-8));
+  background: var(--v-accent);
+  color: var(--v-on-accent);
+}
+
+.v[data-base="13"] .v-menu nav {
+  display: grid;
+}
+
+.v[data-base="13"] .v-menu__links {
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 0;
+  border-bottom: var(--border-width) solid var(--v-on-accent-soft);
+}
+
+.v[data-base="13"] .v-menu__links li {
+  display: grid;
+  border-top: var(--border-width) solid var(--v-on-accent-soft);
+}
+
+.v[data-base="13"] .v-menu__links a {
+  display: flex;
+  align-items: center;
+}
+
+.v[data-base="13"] .v-menu.v-menu .v-menu__links a {
+  font-family: var(--v-display);
+  font-size: var(--v-size-menu);
+  font-variant-caps: normal;
+  line-height: var(--v-leading-solid);
+  letter-spacing: var(--font-tracking-tight);
+}
+
+.v[data-base="13"] .v-menu__links a[aria-current="page"] {
+  color: var(--v-on-accent-soft);
+}
+
+.v[data-base="13"] .v-menu.v-menu a:hover {
+  color: var(--v-on-accent-soft);
+}
+
+.v[data-base="13"] .v-menu__meta {
+  font-size: var(--font-size-base);
+}
+
+.v[data-base="13"]:has(.v-menu:not([hidden])) .v-head {
+  --wordmark-o: currentColor;
+  color: var(--v-on-accent);
+}
+
+/* 13 on phones: the course block gets more room above and below. */
+@media (max-width: 700px) {
+  .v[data-base="13"] .v-ct {
+    padding-block: var(--v-section-min) var(--space-12);
+  }
+}
+
+/* 13's footer on phones: everything easy to tap. The email a tall target; the page links as
+   full-width rows between thin lines; the credit link with room around it. */
+@media (max-width: 700px) {
+  .v[data-base="13"][data-footer] .v-foot {
+    justify-items: stretch;
+    gap: var(--space-8);
+  }
+
+  .v[data-base="13"][data-footer] .v-foot__mail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(var(--size-control) + var(--space-4));
+  }
+
+  .v[data-base="13"][data-footer] .v-foot__links {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    gap: 0;
+    border-bottom: var(--border-width) solid var(--color-rule);
+  }
+
+  .v[data-base="13"][data-footer] .v-foot__links li {
+    border-top: var(--border-width) solid var(--color-rule);
+  }
+
+  .v[data-base="13"][data-footer] .v-foot__links a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(var(--size-control) + var(--space-2) * 2);
+    font-size: var(--font-size-lg);
+  }
+
+  .v[data-base="13"][data-footer] .v-foot__small a {
+    display: inline-block;
+    padding: var(--space-2) var(--space-1);
+  }
+}
+
+/* 13: every action link is a solid button in the accent with white text, the @tovewatte links too. */
+.v[data-base="13"] :is(.v-btn, .v-sel__all),
+.v[data-base="13"] :is(.v-ig__handle, .v-about__ig) {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-control);
+  padding: var(--space-2) var(--space-6);
+  background: var(--v-accent);
+  color: var(--v-on-accent);
+  text-decoration: none;
+}
+
+.v[data-base="13"] :is(.v-ig__handle, .v-about__ig) {
+  font-family: var(--v-text);
+  font-size: var(--font-size-sm);
+  font-style: normal;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: normal;
+}
+
+/* 13 on desktop: Tove's bird perched on the footer's top line, at the right. */
+@media (min-width: 901px) {
+  .v[data-base="13"] .v-foot {
+    position: relative;
+  }
+
+  .v[data-base="13"] .v-foot .v-doodle--at-foot {
+    display: block;
+    top: 0;
+    right: var(--layout-gutter);
+    translate: 0 calc(var(--space-1) - 100%);
+  }
+}

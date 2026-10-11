@@ -1,10 +1,11 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SiteFrame from "../components/site/SiteFrame.astro";
-import ProductCarousel from "../components/home/ProductCarousel.astro";
-import { CONTACT_EMAIL_HREF } from "../config/site";
-import "../styles/pages.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import VSwitch from "../../../components/v/VSwitch.astro";
+import SiteFrame from "../../../components/site/SiteFrame.astro";
+import ProductCarousel from "../../../components/home/ProductCarousel.astro";
+import { CONTACT_EMAIL_HREF } from "../../../config/site";
+import "../../../styles/pages.css";
 
 const jewelry = (await getCollection("jewelry")).sort((a, b) => b.data.date.localeCompare(a.data.date));
 
@@ -16,7 +17,7 @@ const steps = [
 ];
 ---
 
-<BaseLayout bare title="Smycken" description="Handgjorda smycken i återvunnet silver av Tove Wätte, gjorda efter beställning.">
+<BaseLayout noindex bare title="Smycken" description="Handgjorda smycken i återvunnet silver av Tove Wätte, gjorda efter beställning.">
   <SiteFrame>
     <div class="pg">
       <h1 class="visually-hidden">Smycken</h1>
@@ -41,6 +42,7 @@ const steps = [
       </section>
     </div>
   </SiteFrame>
+  <VSwitch current="0" page="smycken" />
 </BaseLayout>
 
 <style>

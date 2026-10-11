@@ -1,0 +1,46 @@
+---
+// One course as a card on the course page: photo, title, intro, the practical facts, and the rest
+// folded away under "Så går det till". "Välj den här kursen" picks it in the form (see Courses.astro).
+// Each study lays the card out its own way.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { spotsLabel, type Course } from "../../data/courses";
+
+type Props = { course: Course; image: ImageMetadata; imageAlt: string; pick: string };
+const { course, image, imageAlt, pick } = Astro.props;
+---
+
+<article class="v-cc" id={`kurs-${course.slug}`} aria-labelledby={`kurs-${course.slug}-title`}>
+  <figure class="v-cc__media">
+    <Image src={image} alt={imageAlt} widths={[480, 960, 1440]} sizes="(max-width: 900px) 90vw, 40vw" loading="lazy" />
+  </figure>
+  <div class="v-cc__body">
+    <h2 class="v-cc__title" id={`kurs-${course.slug}-title`}>{course.title}</h2>
+    <p class="v-cc__intro">{course.intro}</p>
+    <dl class="v-cc__facts">
+      <div class="v-cc__date">
+        <dt>Datum</dt>
+        <dd>
+          {course.dates.length === 0 && "Inga inplanerade just nu"}
+          {course.dates.map((date) => (
+            <span class:list={["v-cc__when", { "v-cc__when--full": !date.open }]}><span class="v-cc__day">{date.date}, {date.time}</span>{!date.open && <span class="v-cc__full"> · fullbokad</span>}</span>
+          ))}
+        </dd>
+      </div>
+      <div><dt>Pris</dt><dd>{course.price}</dd></div>
+      <div><dt>Platser</dt><dd>{spotsLabel(course.spots, course.dates.length > 1)}</dd></div>
+      {course.place && <div><dt>Plats</dt><dd>{course.place}</dd></div>}
+    </dl>
+    <details class="v-cc__more">
+      <summary>Så går det till</summary>
+      <div class="v-cc__more-body">
+        {course.body.map((paragraph) => <p>{paragraph}</p>)}
+        <p class="v-cc__label">I kursavgiften ingår</p>
+        <ul class="v-cc__includes">
+          {course.includes.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </details>
+    <a class="v-btn v-cc__pick" href="#anmalan" data-pick={pick}>Välj den här kursen</a>
+  </div>
+</article>

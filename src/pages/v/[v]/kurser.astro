@@ -1,0 +1,12 @@
+---
+import VFrame from "../../../components/v/VFrame.astro";
+import Courses from "../../../components/v/Courses.astro";
+import { variantPaths } from "../../../components/v/catalog";
+
+export const getStaticPaths = variantPaths;
+const { v } = Astro.params;
+---
+
+<VFrame v={v} title="Kurser" page="kurser">
+  <Courses />
+</VFrame>

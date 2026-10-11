@@ -1,4 +1,5 @@
 ---
+import { linkBase } from "../../config/site";
 // The homepage workshop section, split screen: the photo slider on one half; headline, pitch,
 // dates and button on the other.
 // The private-workshop line sits under the button.
@@ -30,7 +31,7 @@ const copy = {
   titleAccent: "din egen ring?",
   body: "Då och då bjuder jag in till små workshops där vi formar ringar i vax, dricker något gott och äter tillsammans. Efteråt gjuter jag din ring i återvunnet silver, så att du får ett smycke som du har gjort själv.",
 };
-const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const baseUrl = linkBase(Astro.url); // the original site's links stay inside /v/0/ there
 const courseUrl = `${baseUrl}kurser/`;
 const mail = "mailto:tove.watte@gmail.com";
 const hasDates = occasions.length > 0;

@@ -1,0 +1,74 @@
+---
+// The course page in every direction, in two columns: the courses as cards, and the interest form
+// (the same Netlify form as /kurser, so submissions land in the same place). "Välj den här kursen" on
+// a card picks that course in the form and brings the form into view.
+import { openOccasions, type Course } from "../../data/courses";
+import { studyCourses as all } from "./courses";
+import { CONTACT_EMAIL_HREF } from "../../config/site";
+import CourseCard from "./CourseCard.astro";
+
+// One form option per course, worded as on the live page for Netlify.
+const pickValue = (course: Course) => {
+  const open = openOccasions.find((occasion) => occasion.course === course);
+  return open ? `${course.title} — ${open.date.date}` : `${course.title} — nästa tillfälle`;
+};
+const formOptions = all.map(({ course }) => ({ value: pickValue(course), label: course.title }));
+const successUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/kurser/tack/`;
+---
+
+<div class="v-courses v-wrap">
+  <h1 class="v-visually-hidden">Kurser</h1>
+  <div class="v-courses__layout">
+    <section class="v-courses__list" aria-label="Kurser">
+      {all.map(({ course, image, imageAlt }) => (
+        <CourseCard course={course} image={image} imageAlt={imageAlt} pick={pickValue(course)} />
+      ))}
+    </section>
+
+    <section class="v-signup" id="anmalan" aria-labelledby="v-signup-title">
+      <h2 class="v-signup__title" id="v-signup-title">Anmäl intresse</h2>
+      <p class="v-signup__lede">
+        Det här är en intresseanmälan, inte en bokning. Platserna fördelas i tur och ordning, och jag hör av mig med datum och detaljer.
+      </p>
+      <form class="v-form" name="intresseanmalan" method="POST" action={successUrl} data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="intresseanmalan" />
+        <input type="hidden" name="subject" value="Ny intresseanmälan — kurs" />
+        <p class="v-form__bot" aria-hidden="true">
+          <label>Lämna det här fältet tomt <input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
+        </p>
+        <label>
+          <span>Kurs</span>
+          <select name="kurs" required data-course-select>
+            {formOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+          </select>
+        </label>
+        <label><span>Namn</span><input type="text" name="namn" autocomplete="name" required /></label>
+        <label><span>E-post</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span>Telefon (valfritt)</span><input type="tel" name="telefon" autocomplete="tel" /></label>
+        <label><span>Meddelande eller fråga (valfritt)</span><textarea name="meddelande" rows="3"></textarea></label>
+        <div>
+          <button class="v-btn" type="submit">Skicka intresseanmälan</button>
+        </div>
+        <p class="v-signup__privacy">
+          Dina uppgifter används bara för att svara om kursen, raderas när den är över och delas aldrig
+          vidare. Vill du att jag tar bort dem tidigare, <a href={CONTACT_EMAIL_HREF}>mejla mig</a>.
+        </p>
+      </form>
+    </section>
+  </div>
+</div>
+
+<script>
+  // "Välj den här kursen": pick that course in the form, bring the form into view, and start typing.
+  const select = document.querySelector<HTMLSelectElement>("[data-course-select]");
+  document.querySelectorAll<HTMLAnchorElement>("[data-pick]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!select) return;
+      event.preventDefault();
+      select.value = link.dataset.pick ?? select.value;
+      const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("anmalan")?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+      select.closest("form")?.querySelector<HTMLInputElement>('input[name="namn"]')?.focus({ preventScroll: true });
+    });
+  });
+</script>

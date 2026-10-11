@@ -4,14 +4,13 @@
 // card shows the piece's real photo, cropped to fill the card, and the hover stays quiet.
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-import { RING_TRANSITION_CLASS, getProductSlug, ringTransitionName } from "../../config/site";
+import { RING_TRANSITION_CLASS, getProductSlug, priceLabel, ringTransitionName, linkBase } from "../../config/site";
 import floralFrame from "../../assets/img/illustrations/floral-frame.webp";
 
 type Props = { items: CollectionEntry<"jewelry">[]; grid?: boolean; homepage?: boolean; photos?: boolean };
 
 const { items, grid = false, homepage = false, photos = false } = Astro.props;
-const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
-const fmt = new Intl.NumberFormat("sv-SE").format;
+const baseUrl = linkBase(Astro.url); // the original site's links stay inside /v/0/ there
 
 // Items arrive newest-first. Grids show them oldest-first; horizontal strips keep måne last so its
 // short title can stay over its own card and clip cleanly at the carousel edge.
@@ -19,7 +18,7 @@ const products = items
   .map((entry) => ({
     title: entry.data.title,
     transitionName: ringTransitionName(getProductSlug(entry.id)),
-    price: fmt(entry.data.price),
+    price: priceLabel(entry.data.price),
     href: `${baseUrl}smycken/${getProductSlug(entry.id)}/`,
     kind: entry.data.kind,
     // The transparent cutout on the section colour; the first photo if a piece has none.
@@ -49,7 +48,7 @@ if (!grid) products.sort((a, b) => Number(a.title === "måne") - Number(b.title 
           </span>
           <span class="pc__meta">
             <span class="pc__title" data-transition-name={product.transitionName} data-transition-class={RING_TRANSITION_CLASS}>{product.title}</span>
-            <span class="pc__price">{product.price} kr</span>
+            <span class="pc__price">{product.price}</span>
           </span>
         </a>
       </li>

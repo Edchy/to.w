@@ -1,0 +1,12 @@
+{
+  "title": "teddy",
+  "kind": "ring",
+  "price": 950,
+  "sizes": ["17", "18", "19", "20"],
+  "description": "Teddy är helt handgjord och gjuten av återvunnet sterling silver. Den runda plattan är borstad men går även att få helt blank.",
+  "material": "Återvunnet sterling silver (925)",
+  "design": "Rund platta, ca 7 × 7 mm, borstad eller blank",
+  "images": ["./teddy-1.jpg", "./teddy-2.jpg", "./teddy-3.jpg", "./teddy-4.jpg", "./teddy-5.jpg"],
+  "date": "2026-10-10",
+  "nytt": true
+}

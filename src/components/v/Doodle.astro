@@ -1,0 +1,16 @@
+---
+// One of Tove's drawings as a small decoration. Every section carries its drawing; each study's CSS
+// decides which ones show (hidden by default, see base.css).
+import { Image } from "astro:assets";
+import bird from "../../assets/img/illustrations/bird.webp";
+import chair from "../../assets/img/illustrations/chair.webp";
+import cheetah from "../../assets/img/illustrations/cheetah.webp";
+import wateringCan from "../../assets/img/illustrations/watering-can.webp";
+
+/** `place` adds a v-doodle--at-<place> class, for a drawing placed somewhere of its own (the footer). */
+type Props = { name: "bird" | "chair" | "cheetah" | "can"; place?: string };
+const { name, place } = Astro.props;
+const src = { bird, chair, cheetah, can: wateringCan }[name];
+---
+
+<Image class={`v-doodle v-doodle--${name}${place ? ` v-doodle--at-${place}` : ""}`} src={src} alt="" aria-hidden="true" widths={[200, 400]} sizes="8rem" loading="lazy" />

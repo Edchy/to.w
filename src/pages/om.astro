@@ -1,54 +1,9 @@
 ---
-import { Image } from "astro:assets";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SiteFrame from "../components/site/SiteFrame.astro";
-import portrait from "../assets/img/om/portrait.avif";
-import "../styles/pages.css";
+// The live about page (the LIVE study's).
+import VFrame from "../components/v/VFrame.astro";
+import About from "../components/v/About.astro";
 ---
 
-<BaseLayout
-  bare
-  title="Om"
-  description="Om Tove Wätte: handgjorda smycken i återvunnet silver, från Järna."
->
-  <SiteFrame>
-    <div class="pg about">
-      <h1 class="visually-hidden">Om Tove Wätte</h1>
-
-      <section class="about__intro">
-        <div class="about__portrait">
-          <Image
-            src={portrait}
-            alt="Tove Wätte håller händerna framför ansiktet och bär flera silverringar."
-            widths={[640, 1100, 1600]}
-            sizes="(max-width: 900px) 100vw, 55vw"
-            loading="eager"
-            fetchpriority="high"
-          />
-        </div>
-      </section>
-    </div>
-  </SiteFrame>
-</BaseLayout>
-
-<style>
-  /* The portrait keeps the larger share of the row; the text beside it is gone for now. */
-  .about__intro {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    gap: var(--grid-gutter);
-    align-items: start;
-  }
-
-  .about__portrait :global(img) {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius);
-  }
-
-  @media (max-width: 900px) {
-    .about__intro {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+<VFrame v="live" title="Om" page="om" description="Om Tove Wätte: handgjorda smycken i återvunnet silver, från Järna.">
+  <About />
+</VFrame>

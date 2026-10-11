@@ -1,4 +1,5 @@
 ---
+import { linkBase } from "../../config/site";
 // The footer: the TO·W wordmark, the site links, contact, a small credit line and the theme
 // swatches (folded behind a "tema" button), with the cheetah from the old logo standing on the
 // wordmark as a decoration.
@@ -11,7 +12,7 @@ type Props = {
 };
 
 const { themes } = Astro.props;
-const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const baseUrl = linkBase(Astro.url); // the original site's links stay inside /v/0/ there
 const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
 ---
 
@@ -32,7 +33,7 @@ const withBase = (path: string) => `${baseUrl}${path.replace(/^\//, "")}/`;
     <a href="https://instagram.com/tovewatte">@tovewatte</a>
   </div>
 
-  <p class="f10__small">Tove Wätte · © {new Date().getFullYear()} · <a href="https://thinksmall.studio">site by: thinksmall studio</a></p>
+  <p class="f10__small">Tove Wätte · © {new Date().getFullYear()} · site by: <a href="https://thinksmall.studio">thinksmall studio</a></p>
 
   <div class="f10__picker">
     <button class="f10__picker-toggle" type="button" aria-expanded="false" aria-controls="f10-themes">tema</button>

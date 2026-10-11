@@ -1,27 +1,32 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import SiteFrame from "../../components/site/SiteFrame.astro";
-import "../../styles/pages.css";
-
-const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+// Where the course interest form lands after sending (live and in the studies alike). Kept out of
+// search results.
+import VFrame from "../../components/v/VFrame.astro";
+import { vHref } from "../../components/v/catalog";
 ---
 
-<BaseLayout bare title="Tack" description="Tack för din intresseanmälan till kursen." noindex>
-  <SiteFrame>
-    <div class="pg thanks">
-      <h1 class="pg__heading">Tack, din anmälan är <span class="pg__accent">skickad.</span></h1>
-      <p class="pg__text">Jag hör av mig via mejl med bekräftelse och praktiska detaljer.</p>
-      <a class="pg__btn" href={`${baseUrl}kurser/`}>← Tillbaka till kurser</a>
-    </div>
-  </SiteFrame>
-</BaseLayout>
+<VFrame v="live" title="Tack" page="kurser" description="Tack för din intresseanmälan till kursen." noindex>
+  <div class="v-wrap v-thanks">
+    <h1 class="v-thanks__title">Tack, din anmälan är skickad.</h1>
+    <p>Jag hör av mig via mejl med bekräftelse och praktiska detaljer.</p>
+    <a class="v-btn" href={vHref("live", "kurser")}>← Tillbaka till kurser</a>
+  </div>
+</VFrame>
 
 <style>
-  .thanks {
+  .v-thanks {
     display: grid;
     justify-items: start;
     align-content: start;
     gap: var(--space-6);
-    min-height: 80svh;
+    min-height: 60svh;
+    padding-block: var(--space-16);
+  }
+
+  .v-thanks__title {
+    font-family: var(--v-display);
+    font-size: var(--v-size-hero-split);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--v-leading-solid);
   }
 </style>

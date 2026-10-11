@@ -1,0 +1,141 @@
+---
+// The plain handmade silver ring (public/models/plain-ring.glb, built by scripts/make-plain-ring.mjs)
+// turning slowly and tilting gently on two slow rhythms, so it never moves in just one plane; lit
+// by a photographed studio. It can be dragged; with reduced motion it stands still. Size it from
+// outside: it fills its width as a square. Extra attributes land on the element.
+//
+// `finish` tries the refined ring instead: a band with a real ring's section (public/models/
+// band-ring.glb, scripts/make-band-ring.mjs), lit by a soft studio made of its page's colours (paper,
+// and the accent where silver shows dark: public/env/page-*.hdr, scripts/make-page-env.mjs), so it
+// almost melts into the page. Inside it carries hallmarks and a line of Karin Boye's "I rörelse",
+// in Baskerville Italic (17, 18) or IBM Plex Mono Light Italic (16, 19): band-ring-<face>.glb;
+// it starts with the hallmarks facing you and turns slowly, once a minute, so the line passes by.
+// Without it, the first ring (round wire, blue tint, grime) in the photographed studio. Finishes:
+//   clean   neutral silver, lightly polished, a soft shadow under it
+//   satin   neutral, a soft satin sheen, gentler light, a calmer motion
+//   mirror  highly polished, crisp reflections
+//   warm    a warm silver, soft light and shadow
+export type RingFinish = "clean" | "satin" | "mirror" | "warm";
+type Props = { finish?: RingFinish; [key: string]: unknown };
+const { finish, ...rest } = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const studio = `${baseUrl}env/studio_small_09_1k.hdr`;
+const page = (name: string) => `${baseUrl}env/page-${name}.hdr`;
+const looks = {
+  default: { model: "plain-ring", env: studio, exposure: 1.4, shadow: 0 },
+  clean: { model: "band-ring-mono", env: page("warm-blue"), exposure: 1.05, shadow: 0.2 },
+  satin: { model: "band-ring-baskerville", env: page("white-blue"), exposure: 1.05, shadow: 0 },
+  mirror: { model: "band-ring-baskerville", env: page("white-blue"), exposure: 1.05, shadow: 0 },
+  warm: { model: "band-ring-mono", env: page("warm-forest"), exposure: 1.05, shadow: 0.15 },
+};
+const look = looks[finish ?? "default"];
+// The band's hallmarks sit inside at 108° round the ring (scripts/make-band-ring.mjs puts them at
+// 0.3 of the way round); seen from 162° the camera looks across the ring straight at them.
+const orbit = finish ? "162deg 62deg 100%" : "0deg 62deg 100%";
+---
+
+<model-viewer
+  class="v-ring3d"
+  src={`${baseUrl}models/${look.model}.glb`}
+  alt="En tunn rund silverring i 3D. Dra för att vrida."
+  camera-controls
+  disable-zoom
+  touch-action="pan-y"
+  interaction-prompt="none"
+  camera-orbit={orbit}
+  min-camera-orbit="auto 0deg 100%"
+  max-camera-orbit="auto 180deg 100%"
+  environment-image={look.env}
+  tone-mapping={finish ? "neutral" : "agx"}
+  exposure={look.exposure}
+  shadow-intensity={look.shadow}
+  shadow-softness="1"
+  auto-rotate={!finish}
+  auto-rotate-delay="0"
+  rotation-per-second="24deg"
+  data-finish={finish}
+  {...rest}
+></model-viewer>
+
+<style>
+  /* model-viewer gives itself a fixed 150px height and a loading bar; both are overridden here. */
+  .v-ring3d {
+    --poster-color: transparent;
+    --progress-bar-color: transparent;
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--v-ratio-square);
+    cursor: grab;
+  }
+
+  .v-ring3d:active {
+    cursor: grabbing;
+  }
+</style>
+
+<script>
+  import "@google/model-viewer";
+
+  // The tilt: forward and back, and side to side, each on its own slow period (in seconds). The
+  // refined ring tilts less (satin least).
+  const PITCH = { deg: 28, period: 11 };
+  const ROLL = { deg: 16, period: 7 };
+
+  // Each finish's surface: the silver's colour and how rough (matte) the metal is, on top of the
+  // model's own roughness map (dents duller). Colours are linear RGB.
+  const SURFACES: Record<string, { color: [number, number, number, number]; roughness: number }> = {
+    clean: { color: [0.97, 0.97, 0.98, 1], roughness: 0.3 },
+    satin: { color: [0.96, 0.96, 0.97, 1], roughness: 0.6 },
+    mirror: { color: [0.98, 0.98, 0.99, 1], roughness: 0.12 },
+    warm: { color: [0.98, 0.95, 0.9, 1], roughness: 0.32 },
+  };
+  const TILT: Record<string, number> = { clean: 0.45, satin: 0.35, mirror: 0.45, warm: 0.45 };
+
+  type Material = {
+    pbrMetallicRoughness: {
+      baseColorTexture: { setTexture: (texture: null) => void } | null;
+      setBaseColorFactor: (color: [number, number, number, number]) => void;
+      setRoughnessFactor: (roughness: number) => void;
+    };
+  };
+  type RingElement = HTMLElement & { model?: { materials: Material[] } };
+
+  for (const model of document.querySelectorAll<RingElement>(".v-ring3d[data-finish]")) {
+    const surface = SURFACES[model.dataset.finish ?? ""];
+    if (!surface) continue;
+    model.addEventListener("load", () => {
+      for (const material of model.model?.materials ?? []) {
+        material.pbrMetallicRoughness.baseColorTexture?.setTexture(null);
+        material.pbrMetallicRoughness.setBaseColorFactor(surface.color);
+        material.pbrMetallicRoughness.setRoughnessFactor(surface.roughness);
+      }
+    });
+  }
+
+  // The stamped band turns slowly (degrees per second) from its hallmarks, so the poem passes by;
+  // negative so the lettering moves leftwards and reads like a line of text coming in from the right.
+  const TURN = -6;
+
+  const rings = document.querySelectorAll<HTMLElement>(".v-ring3d");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const model of rings) model.removeAttribute("auto-rotate");
+  } else if (rings.length) {
+    const wave = ({ deg, period }: { deg: number; period: number }, t: number) =>
+      deg * Math.sin((2 * Math.PI * t) / period);
+    // Each ring starts tilting once it has loaded; changing it before then makes model-viewer throw.
+    const ready = new Map<HTMLElement, number>(); // ring → when it loaded
+    for (const model of rings) model.addEventListener("load", () => ready.set(model, performance.now()), { once: true });
+    const tilt = (now: number) => {
+      const t = now / 1000;
+      for (const [model, loaded] of ready) {
+        const finish = model.dataset.finish ?? "";
+        const k = TILT[finish] ?? 1;
+        const yaw = finish ? (TURN * (now - loaded)) / 1000 : 0;
+        model.setAttribute("orientation", `${k * wave(ROLL, t)}deg ${k * wave(PITCH, t)}deg ${yaw}deg`);
+      }
+      requestAnimationFrame(tilt);
+    };
+    requestAnimationFrame(tilt);
+  }
+</script>

@@ -1,0 +1,25 @@
+---
+// How ordering works, on the smycken page.
+import { CONTACT_EMAIL_HREF } from "../../config/site";
+
+const steps = [
+  { term: "Välj", text: "Välj smycke och storlek. Storlekarna står på varje smyckes sida." },
+  { term: "Mejla", text: "Skicka ett mejl. Knappen på smyckets sida fyller i det mesta åt dig." },
+  { term: "Svar", text: "Jag bekräftar och skickar betalningsinfo och ungefärlig leveranstid." },
+  { term: "Tillverkning", text: "Smycket görs för hand efter din beställning, och skickas med post eller hämtas i Järna." },
+];
+---
+
+<section class="v-order" aria-labelledby="v-order-title">
+  <h2 class="v-order__title" id="v-order-title">Så beställer du</h2>
+  <ol class="v-order__steps">
+    {steps.map((step, i) => (
+      <li>
+        <span class="v-order__nr">{i + 1}</span>
+        <span class="v-order__term">{step.term}</span>
+        <span class="v-order__text">{step.text}</span>
+      </li>
+    ))}
+  </ol>
+  <a class="v-btn" href={CONTACT_EMAIL_HREF}>Frågor? Mejla mig →</a>
+</section>

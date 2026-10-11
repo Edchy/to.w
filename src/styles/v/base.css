@@ -1,0 +1,701 @@
+/*
+ * Variant studies — what every direction shares: page colours from the --v-* roles, plain layout
+ * helpers, and the floating switcher. Each direction's look is in v1.css – v5.css.
+ */
+
+body:has(.v) {
+  background: var(--v-paper);
+  color: var(--v-fg);
+}
+
+.v {
+  --layout-gutter: var(--v-gutter);
+  --layout-site-width: var(--v-site-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--v-paper);
+  color: var(--v-fg);
+  font-family: var(--v-text);
+  font-size: var(--font-size-base);
+  line-height: var(--font-leading-normal);
+}
+
+.v-main {
+  flex: 1;
+}
+
+.v :where(h1, h2, h3, p, ul, ol, dl, dd, figure) {
+  margin: 0;
+}
+
+.v :where(ul, ol) {
+  padding: 0;
+  list-style: none;
+}
+
+.v img {
+  width: 100%;
+  height: auto;
+}
+
+.v a {
+  text-decoration-thickness: var(--border-width);
+  text-underline-offset: var(--underline-offset);
+}
+
+.v-wrap {
+  width: 100%;
+  max-width: var(--layout-site-width);
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter);
+}
+
+.v-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Header and footer: shared structure, each direction styles the rest. */
+.v-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--layout-site-width);
+  margin-inline: auto;
+  padding: var(--space-6) var(--layout-gutter);
+}
+
+.v-head__mark {
+  text-decoration: none;
+}
+
+.v-head__mark svg {
+  display: block;
+  width: auto;
+  height: var(--v-wordmark-height);
+}
+
+.v-head__nav {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.v-head__nav a {
+  text-decoration: none;
+}
+
+.v-head__nav a[aria-current="page"] {
+  text-decoration: underline;
+}
+
+.v-foot {
+  display: grid;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--layout-site-width);
+  margin: var(--v-section) auto 0;
+  padding: var(--space-12) var(--layout-gutter) calc(var(--space-24) + var(--space-8));
+}
+
+.v-foot > * {
+  min-width: 0;
+}
+
+.v-foot__mail {
+  overflow-wrap: anywhere;
+}
+
+.v-foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+/* A back-to-top link: shown only where a study's footer uses it (10). */
+.v .v-foot__top {
+  display: none;
+}
+
+.v-foot__small {
+  font-size: var(--font-size-xs);
+  opacity: var(--opacity-muted);
+}
+
+@media (max-width: 700px) {
+
+  .v-head__nav {
+    gap: var(--space-4);
+  }
+}
+
+/* ── Homepage sections every direction shares: layout here, look in v1–v5.css ── */
+:is(.v-new, .v-sel, .v-ct, .v-ig) {
+  padding-block: var(--v-section) 0;
+}
+
+.v-ig {
+  padding-bottom: var(--v-section);
+}
+
+.v-new__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+  gap: var(--space-16) var(--grid-gutter);
+  margin-top: var(--space-12);
+}
+
+.v-new__item {
+  display: grid;
+  grid-template-columns: minmax(0, var(--v-new-photo)) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: end;
+}
+
+.v-new__photo img {
+  aspect-ratio: var(--v-ratio-photo);
+  object-fit: cover;
+}
+
+.v-new__text {
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--measure);
+}
+
+.v-new__name a {
+  text-decoration: none;
+}
+
+.v-sel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-12);
+}
+
+.v-sel__arrows {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.v-sel__arrows button {
+  min-width: var(--size-control);
+  min-height: var(--size-control);
+  border: var(--border-width) solid currentColor;
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.v-sel__track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, var(--v-card-w)));
+  gap: var(--space-8) var(--grid-gutter);
+}
+
+.v-sel--carousel .v-sel__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.v-sel--carousel .v-sel__track > li {
+  flex: 0 0 var(--v-card-w);
+  scroll-snap-align: start;
+}
+
+.v-sel__all {
+  display: inline-block;
+  margin-top: var(--space-8);
+}
+
+.v-ct__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-6) var(--grid-gutter);
+  align-items: start;
+}
+
+.v-ct__intro {
+  max-width: var(--measure);
+}
+
+.v-ct__btn {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.v-ig__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-4) var(--space-8);
+  margin-bottom: var(--space-12);
+}
+
+.v-ig__title {
+  grid-column: 1 / -1;
+}
+
+.v-ig__handle {
+  white-space: nowrap;
+}
+
+.v-ig__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  max-width: var(--v-ig-max);
+}
+
+.v-ig__grid img {
+  aspect-ratio: var(--v-ratio-square);
+  object-fit: cover;
+}
+
+/* Product photos never grow past a hand's width or so: cards and the lead photo are capped. */
+/* Card grids: four columns across the full content width, so the outer cards touch its edges;
+   two on phones. */
+.v.v .v-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* The smycken page: first row, how to order, the rest, a section's space apart. */
+.v.v .v-shop {
+  display: grid;
+  gap: var(--v-section);
+}
+
+.v.v .v-shop > .v-order {
+  margin-block: 0;
+}
+
+.v .v-card {
+  max-width: var(--v-card-w);
+}
+
+/* "Nyhet" on a new piece's photo, in the study's accent. */
+.v .v-card__photo {
+  position: relative;
+}
+
+/* The second photo is only shown by studies that use it (13's hover); hidden, it isn't loaded. */
+.v .v-card__alt {
+  display: none;
+}
+
+.v .v-card__badge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--v-accent);
+  color: var(--v-on-accent);
+  font-family: var(--v-text);
+  font-size: var(--font-size-xs);
+  font-style: normal;
+  line-height: var(--font-leading-tight);
+}
+
+.v.v .v-grid .v-card {
+  max-width: none;
+}
+
+.v .v-pd__lead {
+  max-width: var(--v-pd-lead-max);
+}
+
+@media (max-width: 700px) {
+  .v-new__list {
+    gap: var(--space-8);
+  }
+
+  .v-new__item {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: start;
+    gap: var(--space-4);
+  }
+
+  .v-sel__track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-4);
+  }
+
+  .v-sel--carousel .v-sel__track > li {
+    flex-basis: 42vw;
+  }
+
+  .v .v-card {
+    max-width: none;
+  }
+
+  .v.v .v-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v-ct__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .v-ct__btn {
+    grid-column: 1;
+  }
+
+  .v-ig__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* A piece's photo gallery: thumbnails under the large photo; the one shown is outlined. */
+.v .v-pd__thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.v-pd__thumb {
+  display: block;
+  width: var(--v-thumb);
+  outline: var(--border-width) solid transparent;
+  outline-offset: var(--space-1);
+  opacity: var(--opacity-muted);
+  transition: opacity var(--transition-fast), outline-color var(--transition-fast);
+}
+
+.v-pd__thumb img {
+  aspect-ratio: var(--v-ratio-square);
+  object-fit: cover;
+}
+
+.v-pd__thumb:hover,
+.v-pd__thumb[aria-current="true"] {
+  opacity: 1;
+}
+
+.v-pd__thumb[aria-current="true"] {
+  outline-color: currentColor;
+}
+
+/* Tove's drawings: every section carries one, hidden unless a study turns it on. */
+:is(.v-new, .v-ct, .v-ig, .v-foot) {
+  position: relative;
+}
+
+.v .v-doodle {
+  display: none;
+  position: absolute;
+  z-index: var(--z-base);
+  width: var(--v-doodle);
+  height: auto;
+  pointer-events: none;
+}
+
+.v-doodle--bird { top: calc(var(--v-section) - var(--space-8)); right: var(--layout-gutter); }
+.v-doodle--can { top: calc(var(--v-section) - var(--space-4)); right: var(--layout-gutter); rotate: -6deg; }
+.v-doodle--chair { top: calc(var(--v-section) - var(--space-6)); right: calc(var(--layout-gutter) * 2); }
+.v-doodle--cheetah { top: 0; right: var(--layout-gutter); translate: 0 -100%; }
+
+[data-v="2"] :is(.v-doodle--bird, .v-doodle--cheetah),
+[data-v="4"] :is(.v-doodle--can, .v-doodle--chair),
+[data-v="1"] .v-doodle--cheetah {
+  display: block;
+}
+
+/* The footer's bird shows only where a study places it (13 on desktop). */
+.v.v .v-doodle--at-foot {
+  display: none;
+}
+
+/* The menu on phones and tablets: a "Meny" text button in the header (it reads "Stäng" while open) opens a full-screen list of links.
+   The header stays above the open menu so the button can close it. */
+.v-menu-btn {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-control);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.v-menu {
+  position: fixed;
+  z-index: var(--z-overlay);
+  inset: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--space-12);
+  padding: calc(var(--nav-height) + var(--space-8)) var(--layout-gutter) var(--space-12);
+  overflow-y: auto;
+  background: var(--v-paper);
+  color: var(--v-fg);
+}
+
+.v-menu[hidden] {
+  display: none;
+}
+
+.v-menu__links {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.v-menu__links a {
+  font-family: var(--v-display);
+  font-size: var(--font-size-display);
+  line-height: var(--font-leading-tight);
+  text-decoration: none;
+}
+
+.v-menu__links a[aria-current="page"] {
+  color: var(--v-accent);
+}
+
+.v-menu__meta {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 900px) {
+  .v-head {
+    position: relative;
+    z-index: calc(var(--z-overlay) + 1);
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .v-head nav {
+    display: none;
+  }
+
+  .v-menu-btn {
+    display: inline-flex;
+  }
+}
+
+/* Buttons: one shape, coloured by each direction */
+.v-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-control);
+  padding: var(--space-2) var(--space-6);
+  border: 0;
+  background: var(--v-fg);
+  color: var(--v-paper);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+.v-btn:hover {
+  background: var(--v-accent);
+  color: var(--v-on-accent);
+}
+
+/* The secondary button: an outline in the accent, no fill. */
+.v .v-btn.v-btn--secondary {
+  border: var(--border-width) solid var(--v-accent);
+  background: transparent;
+  color: var(--v-accent);
+}
+
+.v .v-btn.v-btn--secondary:hover {
+  background: var(--v-tint);
+  color: var(--v-accent);
+}
+
+.v-order__nr {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── The course page: course cards beside the interest form, which stays in view ── */
+.v-courses {
+  padding-block: var(--space-8) var(--space-16);
+}
+
+.v-courses__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--space-12) var(--grid-gutter);
+  align-items: start;
+}
+
+.v-courses__list {
+  display: grid;
+  gap: var(--space-12);
+}
+
+.v .v-courses .v-signup {
+  position: sticky;
+  top: var(--space-6);
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.v-cc {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.v-cc__media img {
+  aspect-ratio: var(--v-ratio-wide);
+  object-fit: cover;
+}
+
+.v-cc__body {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+}
+
+.v-cc__when {
+  display: block;
+}
+
+.v-cc__facts,
+.v-cc__more {
+  width: 100%;
+}
+
+.v-cc__more summary {
+  cursor: pointer;
+}
+
+.v-cc__more-body {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+/* "Så går det till" slides open and closed, fading in, with its arrow turning. Browsers that can't
+   animate to an auto height simply open it at once. */
+.v-cc__more {
+  interpolate-size: allow-keywords;
+}
+
+.v-cc__more::details-content {
+  height: 0;
+  overflow: clip;
+  opacity: 0;
+  transition:
+    height var(--transition-slow),
+    opacity var(--transition-slow),
+    content-visibility var(--duration-slow) allow-discrete;
+}
+
+.v-cc__more[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+
+.v-cc__more summary {
+  list-style: none;
+}
+
+.v-cc__more summary::-webkit-details-marker {
+  display: none;
+}
+
+.v-cc__more summary::before {
+  display: inline-block;
+  margin-right: var(--space-2);
+  content: "▸";
+  transition: rotate var(--transition-normal);
+}
+
+.v-cc__more[open] summary::before {
+  rotate: 90deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-cc__more::details-content,
+  .v-cc__more summary::before {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .v-courses__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v .v-courses .v-signup {
+    position: static;
+  }
+}
+
+.v-form {
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--layout-content-width);
+}
+
+.v-form label {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.v-form :is(input, select, textarea) {
+  width: 100%;
+  min-height: var(--size-control);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--color-rule-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+}
+
+/* The course select draws its own small chevron, set in from the edge like the text, instead of
+   the browser's arrow pressed against the border. */
+.v-form select {
+  appearance: none;
+  padding-right: calc(var(--space-4) * 2 + var(--space-2));
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(-45deg, transparent 50%, currentColor 50%);
+  background-position:
+    right calc(var(--space-4) + var(--space-1)) center,
+    right var(--space-4) center;
+  background-size: var(--space-1) var(--space-1);
+  background-repeat: no-repeat;
+}
+
+.v-form .v-form__bot {
+  display: none;
+}
+
+/* Phones: no photo takes the whole screen. Lead photos are capped in height, extra photos sit
+   three to a row. */
+@media (max-width: 700px) {
+  .v .v-pd__lead,
+  .v .v-about__portrait img {
+    max-height: var(--v-photo-max-phone);
+    object-fit: cover;
+  }
+
+  .v .v-foot__mail {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* 12, 13 (and its copies) and 14 stay without drawings. */
+.v:is([data-id="12"], [data-base="13"], [data-id="14"]) .v-doodle {
+  display: none;
+}

@@ -1,0 +1,26 @@
+---
+// Direction 2 · Tidning: a magazine. The opener is the headline set huge, with the handmade ring
+// turning in 3D in front of it, then the new pieces as a feature, a carousel of pieces, the course and Instagram.
+import type { Piece } from "./catalog";
+import Hero, { type HeroKind } from "./Hero.astro";
+import TurningRing from "./TurningRing.astro";
+import NewPieces from "./NewPieces.astro";
+import Selection from "./Selection.astro";
+import CourseTeaser from "./CourseTeaser.astro";
+import Insta from "./Insta.astro";
+
+type Props = { v: string; pieces: Piece[]; hero?: HeroKind };
+const { v, pieces, hero } = Astro.props;
+---
+
+{hero ? <Hero v={v} kind={hero} /> : (
+  <section class="t2-ring">
+    <h1 class="t2-ring__title">Handgjorda <em>silversmycken</em></h1>
+    <div class="t2-ring__model"><TurningRing /></div>
+  </section>
+)}
+
+<NewPieces v={v} pieces={pieces} />
+<Selection v={v} pieces={pieces} mode="carousel" />
+<CourseTeaser v={v} />
+<Insta />

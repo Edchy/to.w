@@ -1,0 +1,11 @@
+{
+  "title": "dagg",
+  "kind": "ring",
+  "price": 950,
+  "sizes": ["17", "18", "19", "20"],
+  "description": "Dagg är en liten silverring, först skapad för lillfingret men fin på vilket finger som helst. Helt handgjord och gjuten av återvunnet sterling silver.",
+  "material": "Återvunnet sterling silver (925)",
+  "images": ["./dagg-1.jpg", "./dagg-2.jpg", "./dagg-3.jpg", "./dagg-4.jpg", "./dagg-5.jpg", "./dagg-6.jpg"],
+  "date": "2026-10-10",
+  "nytt": true
+}

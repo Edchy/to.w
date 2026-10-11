@@ -1,10 +1,11 @@
 ---
 import { Image } from "astro:assets";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SiteFrame from "../components/site/SiteFrame.astro";
-import { courses, openOccasions, spotsLabel, spotsWord } from "../data/courses";
-import { CONTACT_EMAIL_HREF } from "../config/site";
-import "../styles/pages.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import VSwitch from "../../../components/v/VSwitch.astro";
+import SiteFrame from "../../../components/site/SiteFrame.astro";
+import { courses, openOccasions, spotsLabel, spotsWord } from "../../../data/courses";
+import { CONTACT_EMAIL_HREF } from "../../../config/site";
+import "../../../styles/pages.css";
 
 // The signup lede names a spot count, which only reads correctly while every open
 // occasion has the same capacity. With mixed capacities, drop the number instead.
@@ -35,7 +36,7 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 const successUrl = `${baseUrl}kurser/tack/`;
 ---
 
-<BaseLayout
+<BaseLayout noindex
   bare
   title="Kurser"
   description="Kurser med Tove Wätte i Järna: forma din egen ring i vax som sedan gjuts i återvunnet sterling silver."
@@ -201,6 +202,7 @@ const successUrl = `${baseUrl}kurser/tack/`;
       </section>
     </div>
   </SiteFrame>
+  <VSwitch current="0" page="kurser" />
 </BaseLayout>
 
 <script is:inline data-astro-rerun>

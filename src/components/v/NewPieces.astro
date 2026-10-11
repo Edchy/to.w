@@ -1,0 +1,31 @@
+---
+// "Nyheter" on every homepage: the new pieces with a small photo, their description and price.
+import { Image } from "astro:assets";
+import { type Piece, vHref } from "./catalog";
+import Doodle from "./Doodle.astro";
+
+type Props = { v: string; pieces: Piece[] };
+const { v, pieces } = Astro.props;
+const fresh = pieces.filter((piece) => piece.nytt);
+---
+
+<section class="v-new" id="nytt" aria-labelledby="v-new-title">
+  <Doodle name="bird" />
+  <div class="v-wrap">
+    <h2 class="v-new__title" id="v-new-title">Nyheter</h2>
+    <ul class="v-new__list">
+      {fresh.map((piece) => (
+        <li class="v-new__item">
+          <a class="v-new__photo" href={vHref(v, `smycken/${piece.slug}`)}>
+            <Image src={piece.images[0]} alt={`${piece.title}, ${piece.kind} i återvunnet silver`} widths={[400, 800]} sizes="(max-width: 700px) 45vw, 20rem" loading="eager" />
+          </a>
+          <div class="v-new__text">
+            <h3 class="v-new__name"><a href={vHref(v, `smycken/${piece.slug}`)}>{piece.title}</a></h3>
+            {piece.description && <p class="v-new__desc">{piece.description}</p>}
+            <p class="v-new__price">{piece.price}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
