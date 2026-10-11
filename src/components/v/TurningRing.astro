@@ -97,6 +97,26 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
   };
   type RingElement = HTMLElement & { model?: { materials: Material[] } };
 
+  // model-viewer bug (4.3.1 and 4.4.0): changing `orientation` calls the AR renderer's onUpdateScene
+  // even when no AR session is running; it throws before asking for a redraw, so the ring never
+  // visibly moves. Make that call do nothing outside AR. The renderer sits behind an internal
+  // symbol; if a later version renames it, this quietly does nothing.
+  type ArRenderer = { isPresenting: boolean; onUpdateScene: () => void; guarded?: boolean };
+  const guardAr = (model: HTMLElement) => {
+    for (let proto = Object.getPrototypeOf(model); proto; proto = Object.getPrototypeOf(proto)) {
+      const key = Object.getOwnPropertySymbols(proto).find((symbol) => symbol.description === "renderer");
+      if (!key) continue;
+      const ar = (model as unknown as Record<symbol, { arRenderer?: ArRenderer }>)[key]?.arRenderer;
+      if (!ar || ar.guarded) return;
+      const update = ar.onUpdateScene;
+      ar.onUpdateScene = () => {
+        if (ar.isPresenting) update();
+      };
+      ar.guarded = true;
+      return;
+    }
+  };
+
   const rings = document.querySelectorAll<RingElement>(".v-ring3d");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ready = new Map<HTMLElement, number>(); // ring → when it loaded
@@ -113,6 +133,7 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
         // Reveal two frames later, so the finished ring has been drawn before it fades in.
         requestAnimationFrame(() => requestAnimationFrame(() => model.classList.add("is-ready")));
         // Start tilting only now; changing it before it has loaded makes model-viewer throw.
+        guardAr(model);
         ready.set(model, performance.now());
       },
       { once: true },
