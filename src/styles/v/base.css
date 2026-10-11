@@ -29,6 +29,7 @@ body:has(.v) {
    ::before spans the header and page rows at full screen height. */
 .v:has(.v-about) {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
 }
 

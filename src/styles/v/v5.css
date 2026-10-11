@@ -199,6 +199,7 @@
   gap: var(--space-4);
   padding-block: var(--space-2);
   border-bottom: var(--a5-rule);
+  overflow-wrap: anywhere; /* the email can break on the smallest phones instead of overflowing */
 }
 
 [data-v="5"] .v-pd__others {
@@ -274,6 +275,11 @@
 }
 
 @media (max-width: 900px) {
+
+  /* Everything stacks here, so one column: twelve columns' gaps alone are wider than a phone. */
+  [data-v="5"] :is(.v-pd, .v-about) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
   [data-v="5"] :is(.v-order__title, .v-order__steps, .v-order .v-btn, .v-pd__media, .v-pd__info, .v-about__portrait, .v-about__text, .v-about__facts) {
     grid-column: 1 / -1;

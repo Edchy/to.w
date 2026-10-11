@@ -67,15 +67,36 @@ const orbit = finish ? "162deg 62deg 100%" : "0deg 62deg 100%";
     height: auto;
     aspect-ratio: var(--v-ratio-square);
     cursor: grab;
+    /* Hidden until loaded, finished and drawn; then it fades in and settles to full size. */
+    opacity: 0;
+    scale: 0.96;
+    transition:
+      opacity var(--duration-reveal) var(--ease-out-quart),
+      scale var(--duration-reveal) var(--ease-out-expo);
+  }
+
+  .v-ring3d.is-ready {
+    opacity: 1;
+    scale: 1;
   }
 
   .v-ring3d:active {
     cursor: grabbing;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .v-ring3d {
+      scale: 1;
+    }
+  }
 </style>
 
 <script>
-  import "@google/model-viewer";
+  import { ModelViewerElement } from "@google/model-viewer";
+
+  // band-ring-baskerville.glb is meshopt-compressed; the decoder (meshoptimizer 0.24.0) is served
+  // from the site itself rather than a CDN. Set before any ring starts loading.
+  ModelViewerElement.meshoptDecoderLocation = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/vendor/meshopt_decoder.js`;
 
   // The tilt: forward and back, and side to side, each on its own slow period (in seconds). The
   // refined ring tilts less (satin least).
@@ -111,6 +132,16 @@ const orbit = finish ? "162deg 62deg 100%" : "0deg 62deg 100%";
         material.pbrMetallicRoughness.setRoughnessFactor(surface.roughness);
       }
     });
+  }
+
+  // Reveal each ring once it has loaded and its finish is applied (the listener above runs first),
+  // two frames later so the finished ring has been drawn before it fades in.
+  for (const model of document.querySelectorAll<HTMLElement>(".v-ring3d")) {
+    model.addEventListener(
+      "load",
+      () => requestAnimationFrame(() => requestAnimationFrame(() => model.classList.add("is-ready"))),
+      { once: true },
+    );
   }
 
   // The stamped band turns slowly (degrees per second) from its hallmarks, so the poem passes by;

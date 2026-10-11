@@ -11,6 +11,8 @@
 // One ring per typeface for the poem (FACES), to compare them; the ring itself is the same in all.
 // Generated from a fixed seed, so every run gives the same ring.
 // Writes public/models/band-ring-<face>.glb. Run: node scripts/make-band-ring.mjs
+// The live ring (baskerville) is then meshopt-compressed (TurningRing loads the decoder):
+//   npx @gltf-transform/cli@4.2.1 meshopt <in>.glb public/models/band-ring-baskerville.glb --level medium
 import sharp from "sharp";
 import { writeGlb } from "./write-glb.mjs";
 import { textPath } from "./font-path.mjs";
