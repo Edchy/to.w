@@ -88,7 +88,7 @@ Vänliga hälsningar,`;
 const orderHref = `${CONTACT_EMAIL_HREF}?subject=${encodeURIComponent(`Beställning: ${title}`)}&body=${encodeURIComponent(orderBody)}`;
 ---
 
-<BaseLayout noindex bare title={pageTitle} description={metaDescription} image={photo?.src} imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`} jsonLd={jsonLd}>
+<BaseLayout noindex title={pageTitle} description={metaDescription} image={photo?.src} imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`} jsonLd={jsonLd}>
   <SiteFrame>
     <div class="pg pd">
       <div class="pd__media" data-product-media>

@@ -49,7 +49,7 @@ const current = page.split("/")[0];
 const { n: id, look, hero, footer, palette, font, of } = getVariant(v);
 ---
 
-<BaseLayout bare noindex={!live || noindex} title={title} description={description} image={image} imageAlt={imageAlt} jsonLd={jsonLd}>
+<BaseLayout noindex={!live || noindex} title={title} description={description} image={image} imageAlt={imageAlt} jsonLd={jsonLd}>
   <div class="v" data-v={look} data-id={id} data-base={of ?? id} data-hero={hero} data-footer={footer} data-palette={palette} data-font={font}>
     <header class="v-head">
       <a class="v-head__mark" href={vHref(v)} aria-label="TO·W – till startsidan"><Wordmark aria-hidden="true" /></a>

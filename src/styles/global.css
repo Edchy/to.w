@@ -112,25 +112,15 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-base);
+  background: var(--study-paper);
   color: var(--color-text-primary);
   font-family: var(--font-display);
   font-size: var(--font-size-base);
   line-height: var(--font-leading-normal);
 }
 
-body.prototype-body {
-  background: var(--study-paper);
-}
-
 main {
   flex: 1;
-}
-
-/* Sentences on the content pages use the text serif. The homepage (body.prototype-body) sets its own. */
-body:not(.prototype-body) main p {
-  font-family: var(--font-text);
-  font-size-adjust: var(--font-text-adjust);
 }
 
 a {
@@ -153,110 +143,4 @@ textarea {
 :focus-visible {
   outline: var(--border-width-thick) solid currentColor;
   outline-offset: var(--space-1);
-}
-
-.reset-header,
-.reset-footer,
-.reset-shell {
-  width: 100%;
-  max-width: var(--layout-site-width);
-  margin-inline: auto;
-  padding-inline: var(--layout-gutter);
-}
-
-.reset-header,
-.reset-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-6);
-  padding-block: var(--space-6);
-}
-
-.reset-wordmark {
-  font-weight: var(--font-weight-semibold);
-  text-decoration: none;
-}
-
-.reset-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin: 0;
-  padding: 0;
-}
-
-.reset-nav a[aria-current="page"] {
-  text-decoration-thickness: var(--border-width-thick);
-}
-
-.reset-shell {
-  display: grid;
-  align-content: start;
-  gap: var(--space-6);
-  min-height: 60vh;
-  padding-block: var(--space-section);
-}
-
-.reset-shell > * {
-  max-width: var(--layout-content-width);
-  margin-block: 0;
-}
-
-.reset-shell h1 {
-  font-size: var(--font-size-display);
-  line-height: var(--font-leading-tight);
-}
-
-.reset-form {
-  display: grid;
-  gap: var(--space-6);
-  width: min(100%, var(--layout-content-width));
-}
-
-.reset-form label {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.reset-form input,
-.reset-form select,
-.reset-form textarea,
-.reset-form button {
-  width: 100%;
-  padding: var(--space-4);
-  color: inherit;
-  background: transparent;
-  border: var(--border-width) solid var(--color-rule-strong);
-  border-radius: var(--radius);
-}
-
-.reset-form button {
-  width: fit-content;
-  cursor: pointer;
-}
-
-.reset-honeypot {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
-@media (max-width: 700px) {
-  .reset-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .reset-wordmark,
-  .reset-nav a,
-  .reset-footer a {
-    display: inline-flex;
-    align-items: center;
-    min-width: var(--size-control);
-    min-height: var(--size-control);
-  }
 }

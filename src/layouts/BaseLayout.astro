@@ -1,14 +1,10 @@
 ---
 import "../styles/global.css";
-import { CONTACT_EMAIL_HREF } from "../config/site";
 
 type Props = {
   title?: string;
   description?: string;
-  noPadding?: boolean;
-  overlayHeader?: boolean;
   noindex?: boolean;
-  bare?: boolean;
   /** Link-preview image (a site path or absolute URL); defaults to the logo card. */
   image?: string;
   imageAlt?: string;
@@ -20,7 +16,6 @@ const {
   title,
   description = "Tove Wättes webbplats.",
   noindex = false,
-  bare = false,
   image,
   imageAlt = "O· ur TO·W-ordmärket över två händer med handgjorda silverringar",
   jsonLd,
@@ -38,16 +33,6 @@ const siteOrigin = Astro.site?.origin ?? "";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
 // Shared image for link previews (the logo on white, 1200×630); must be an absolute URL.
 const ogImageUrl = new URL(image ?? withBase("/og.png"), siteOrigin).href;
-const currentPath = Astro.url.pathname.replace(
-  new URL(baseUrl, "https://example.com").pathname.replace(/\/$/, ""),
-  "",
-) || "/";
-
-const navLinks = [
-  { href: "/smycken", label: "Smycken" },
-  { href: "/kurser", label: "Kurser" },
-  { href: "/om", label: "Om" },
-];
 ---
 
 <!doctype html>
@@ -75,28 +60,9 @@ const navLinks = [
     <meta name="twitter:card" content="summary_large_image" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, "\\u003c")} />}
   </head>
-  <body class:list={{ "prototype-body": bare }}>
-    {!bare && <header class="reset-header">
-      <a class="reset-wordmark" href={baseUrl}>to.w</a>
-      <nav aria-label="Huvudnavigering">
-        <ul class="reset-nav" role="list">
-          {navLinks.map(({ href, label }) => (
-            <li>
-              <a href={withBase(href)} aria-current={currentPath.startsWith(href) ? "page" : undefined}>
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </header>}
-
+  <body>
     <main>
       <slot />
     </main>
-
-    {!bare && <footer class="reset-footer">
-      <a href={CONTACT_EMAIL_HREF}>Kontakt</a>
-    </footer>}
   </body>
 </html>

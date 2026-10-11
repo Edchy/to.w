@@ -74,16 +74,6 @@
   align-self: flex-end;
 }
 
-/* With the hands hero above, the band holds only the new pieces. */
-.s1-band--sheets .s1-band__inner {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.s1-band--sheets .s1-sheet:first-of-type {
-  border-left: 0;
-  padding-left: 0;
-}
-
 .s1-hero__title {
   font-size: clamp(2.25rem, 5vw, 5.5rem);
   font-weight: var(--font-weight-semibold);
