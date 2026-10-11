@@ -15,6 +15,12 @@ const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 // 0.3 of the way round); seen from 162° the camera looks across the ring straight at them.
 ---
 
+{/* Start fetching the model, its light and the decoder at once, instead of after the 3D library has
+    started up (attributes match model-viewer's own requests, so the browser reuses them). */}
+<link rel="preload" href={`${baseUrl}models/band-ring-mono.glb`} as="fetch" crossorigin="anonymous" />
+<link rel="preload" href={`${baseUrl}env/page-warm-blue.hdr`} as="fetch" crossorigin="anonymous" />
+<link rel="preload" href={`${baseUrl}vendor/meshopt_decoder.js`} as="script" />
+
 <model-viewer
   class="v-ring3d"
   src={`${baseUrl}models/band-ring-mono.glb`}
