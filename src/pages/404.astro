@@ -1,0 +1,17 @@
+---
+// Shown for any address that doesn't exist (Netlify serves the built 404.html). Kept out of search
+// results.
+import VFrame from "../components/v/VFrame.astro";
+import { liveHref } from "../components/v/catalog";
+---
+
+<VFrame title="Sidan finns inte" description="Sidan finns inte." noindex>
+  <div class="v-404 v-wrap">
+    <h1 class="v-404__title">Sidan finns inte.</h1>
+    <p>Länken kan vara gammal, eller adressen felstavad.</p>
+    <p class="v-404__links">
+      <a class="v-btn" href={liveHref()}>Till startsidan</a>
+      <a class="v-btn v-btn--secondary" href={liveHref("smycken")}>Alla smycken</a>
+    </p>
+  </div>
+</VFrame>

@@ -294,6 +294,29 @@
   border-left: var(--a5-rule);
 }
 
+/* 404: the same serif headline as About, one line, and two ways on. */
+[data-v="5"] .v-404 {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-6);
+  padding-top: var(--space-8);
+}
+
+[data-v="5"] .v-404__title {
+  font-family: var(--v-display);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-leading-display);
+  letter-spacing: var(--font-tracking-tight);
+}
+
+[data-v="5"] .v-404__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
 @media (max-width: 1100px) {
   [data-v="5"] .v-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
