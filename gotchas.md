@@ -86,3 +86,8 @@ change, and restoring the previous page's offset fights it.
 - When pruning CSS rules for removed classes with a script, never delete a whole rule because a dead class appears inside `:is(...)` or a selector list next to live ones. It silently removed phone layout rules shared by the product and about pages (and Spec's tablet band) and only showed up as sideways scroll on phones. Remove the dead name from the list instead, and re-run the phone overflow check after any prune.
 - In OKLCH, `color-mix()` interpolates hue: mixing a near-white (hue ~95) with blue swung through yellow-green and produced an olive tint. Mix pale tints in `oklab`.
 - model-viewer sets its own `height: 150px` and a loading bar on `:host`; set `height: auto` with an `aspect-ratio`, and `--progress-bar-color: transparent`.
+
+# 2026-10-11 (cleanup)
+
+- Finding unused assets by grepping filenames is not enough. The course photos load through `import.meta.glob` (CoursesTeaser), the 3D models and studio lights go by names built in code (`models/${look.model}.glb`, `env/page-${name}.hdr`, product slugs on /v/0), and the wordmark SVG is only named in a comment because its paths are inlined. Trace those before moving anything, then compare the built page list and every `/models/`, `/env/`, `/video/` path in `dist` against the files on disk.
+- Chrome skips a cross-document view transition when the tab is hidden or when the new page takes more than ~4s. In dev, the first visit to a page is slow while it compiles, so test transitions on a second visit.
