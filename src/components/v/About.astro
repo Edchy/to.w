@@ -1,24 +1,41 @@
 ---
-// The about page in every direction: the portrait and the ways to get in touch.
-import { Image } from "astro:assets";
-import portrait from "../../assets/img/om/portrait.avif";
+// The about page in every direction: the workshop film and the ways to get in touch.
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
 ---
 
 <div class="v-about v-wrap">
   <h1 class="v-visually-hidden">Om Tove Wätte</h1>
   <figure class="v-about__portrait">
-    <Image
-      src={portrait}
-      alt="Tove Wätte håller händerna framför ansiktet och bär flera silverringar."
-      widths={[640, 1100, 1600]}
-      sizes="(max-width: 900px) 100vw, 55vw"
-      loading="eager"
-      fetchpriority="high"
-    />
+    <video
+      src="/video/om-verkstad-960.mp4"
+      poster="/video/om-verkstad-poster.jpg"
+      width="960"
+      height="540"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-label="Tove Wätte arbetar med silver i verkstaden."
+    ></video>
   </figure>
+  <!-- Placeholder: replace with Tove's own about text. -->
+  <div class="v-about__text">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+  </div>
   <dl class="v-about__facts">
     <div><dt>Mejl</dt><dd><a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a></dd></div>
-    <div><dt>Instagram</dt><dd><a class="v-about__ig" href="https://instagram.com/tovewatte">@tovewatte</a></dd></div>
+    <div><dt>Instagram</dt><dd><a href="https://instagram.com/tovewatte">@tovewatte</a></dd></div>
   </dl>
 </div>
+
+<script>
+  // Ambient film: hold on the poster for visitors who prefer reduced motion.
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll<HTMLVideoElement>(".v-about__portrait video").forEach((video) => {
+      video.removeAttribute("autoplay");
+      video.pause();
+    });
+  }
+</script>

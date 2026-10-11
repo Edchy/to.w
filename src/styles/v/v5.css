@@ -249,6 +249,24 @@
   grid-column: 9 / -1;
 }
 
+/* About text stacked above the facts in the right column, both sitting at the film's bottom edge. */
+@media (min-width: 901px) {
+  [data-v="5"] .v-about {
+    grid-template-rows: 1fr auto;
+  }
+
+  [data-v="5"] .v-about__portrait {
+    grid-row: 1 / 3;
+  }
+}
+
+[data-v="5"] .v-about__text {
+  display: grid;
+  gap: var(--space-4);
+  grid-column: 9 / -1;
+  max-width: var(--measure);
+}
+
 @media (max-width: 1100px) {
   [data-v="5"] .v-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -257,7 +275,7 @@
 
 @media (max-width: 900px) {
 
-  [data-v="5"] :is(.v-order__title, .v-order__steps, .v-order .v-btn, .v-pd__media, .v-pd__info, .v-about__portrait, .v-about__facts) {
+  [data-v="5"] :is(.v-order__title, .v-order__steps, .v-order .v-btn, .v-pd__media, .v-pd__info, .v-about__portrait, .v-about__text, .v-about__facts) {
     grid-column: 1 / -1;
   }
 
@@ -536,7 +554,7 @@
 
 /* 13: text links in small capitals: the header, the menu, the footer and links in running text.
    Buttons, product cards and the footer's email keep their own type. */
-.v[data-base="13"] :is(.v-head__nav, .v-menu, .v-foot__links, .v-foot__small, .v-about, .v-pd__text, .v-cc__body, .v-signup) a:not(.v-btn, .v-about__ig) {
+.v[data-base="13"] :is(.v-head__nav, .v-menu, .v-foot__links, .v-foot__small, .v-pd__text, .v-cc__body, .v-signup) a:not(.v-btn) {
   font-variant-caps: all-small-caps;
   letter-spacing: var(--font-tracking-wide);
 }
@@ -561,16 +579,16 @@
     border-color var(--transition-normal);
 }
 
-.v[data-base="13"] :is(.v-head__nav, .v-menu, .v-foot, .v-about, .v-pd__text, .v-cc__body, .v-signup, .v-sel, .v-new) a:not(.v-btn, .v-ig__handle, .v-about__ig, .v-card):hover,
+.v[data-base="13"] :is(.v-head__nav, .v-menu, .v-foot, .v-about, .v-pd__text, .v-cc__body, .v-signup, .v-sel, .v-new) a:not(.v-btn, .v-ig__handle, .v-card):hover,
 .v[data-base="13"] .v-cc__more summary:hover {
   color: var(--v-accent);
 }
 
-.v[data-base="13"] :is(.v-btn, .v-sel__all, .v-ig__handle, .v-about__ig) {
+.v[data-base="13"] :is(.v-btn, .v-sel__all, .v-ig__handle) {
   border-color: transparent;
 }
 
-.v[data-base="13"] :is(.v-btn, .v-sel__all, .v-ig__handle, .v-about__ig):hover {
+.v[data-base="13"] :is(.v-btn, .v-sel__all, .v-ig__handle):hover {
   background: var(--v-accent-deep);
   color: var(--v-on-accent);
 }
@@ -737,7 +755,7 @@
 
 /* 13: every action link is a solid button in the accent with white text, the @tovewatte links too. */
 .v[data-base="13"] :is(.v-btn, .v-sel__all),
-.v[data-base="13"] :is(.v-ig__handle, .v-about__ig) {
+.v[data-base="13"] .v-ig__handle {
   display: inline-flex;
   align-items: center;
   min-height: var(--size-control);
@@ -747,7 +765,7 @@
   text-decoration: none;
 }
 
-.v[data-base="13"] :is(.v-ig__handle, .v-about__ig) {
+.v[data-base="13"] .v-ig__handle {
   font-family: var(--v-text);
   font-size: var(--font-size-sm);
   font-style: normal;

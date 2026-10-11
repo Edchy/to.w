@@ -40,10 +40,43 @@
   navigation: auto;
 }
 
-/* The page itself swaps at once; a cross-fade of two whole pages read as a glitch. */
-::view-transition-old(root),
+/* The page swap: the old page fades out quickly, then the new one fades in and settles up into
+   place. Staggered, not a cross-fade, so two whole pages are never seen on top of each other. */
+::view-transition-old(root) {
+  animation: page-out var(--duration-normal) var(--ease-out-quart) both;
+}
+
 ::view-transition-new(root) {
-  animation: none;
+  animation: page-in var(--duration-slow) var(--ease-out-expo) var(--duration-fast) both;
+}
+
+@keyframes page-out {
+  to { opacity: 0; }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--space-2);
+  }
+}
+
+/* A piece's card photo grows into the large photo on its page (VFrame's script names the card as
+   the page leaves). Both pictures fill the moving frame, cropped, so the square card and the taller
+   page photo blend instead of stretching. */
+.v-pd__lead {
+  view-transition-name: piece-photo;
+}
+
+::view-transition-old(piece-photo),
+::view-transition-new(piece-photo) {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The site header is the same on every page, so it stays put while the page beneath it changes. */
+.v-head {
+  view-transition-name: site-head;
 }
 
 ::view-transition-group(*) {

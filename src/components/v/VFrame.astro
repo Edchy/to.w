@@ -121,4 +121,23 @@ const { n: id, look, hero, footer, palette, font, of } = getVariant(v);
       toggle.focus();
     }
   });
+
+  // Page swaps: a piece's card photo grows into the large photo on its page (global.css styles the
+  // move). The card is named only as the page leaves, so a page showing the same piece twice never
+  // carries the name twice; a leaving piece page drops its own photo's name the same way.
+  type SwapEvent = Event & { viewTransition: ViewTransition | null; activation: { entry: { url: string } } | null };
+  let clicked: HTMLAnchorElement | null = null;
+  let named: HTMLElement | null = null;
+  document.addEventListener("click", (event) => {
+    clicked = (event.target as Element).closest<HTMLAnchorElement>("a.v-card");
+  });
+  window.addEventListener("pageswap", (event) => {
+    const { viewTransition, activation } = event as SwapEvent;
+    document.querySelector<HTMLElement>(".v-pd__lead")?.style.setProperty("view-transition-name", "none");
+    named?.style.removeProperty("view-transition-name");
+    named = null;
+    if (!viewTransition || !clicked || clicked.href !== activation?.entry.url) return;
+    named = clicked.querySelector<HTMLElement>(".v-card__photo");
+    named?.style.setProperty("view-transition-name", "piece-photo");
+  });
 </script>
