@@ -188,12 +188,12 @@
   line-height: var(--font-leading-display);
 }
 
-[data-v="5"] :is(.v-pd__facts, .v-cc__facts, .v-about__facts) {
+[data-v="5"] :is(.v-pd__facts, .v-cc__facts) {
   width: 100%;
   border-top: var(--border-width) solid var(--v-fg);
 }
 
-[data-v="5"] :is(.v-pd__facts, .v-cc__facts, .v-about__facts) > div {
+[data-v="5"] :is(.v-pd__facts, .v-cc__facts) > div {
   display: grid;
   grid-template-columns: var(--v-col-label) 1fr;
   gap: var(--space-4);
@@ -236,7 +236,7 @@
 
 /* About, laid out like a newspaper front page: the greeting as a headline over a double rule, the
    film as the lead picture with the intro beside it, the rest in three ruled columns (the portrait
-   at the head of the last), then the contact details. */
+   at the head of the last). */
 [data-v="5"] .v-about {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -250,7 +250,7 @@
   padding-bottom: var(--space-4);
   border-bottom: calc(var(--border-width-thick) * 2) double var(--v-fg);
   font-family: var(--v-display);
-  font-size: var(--v-size-title);
+  font-size: var(--font-size-display);
   font-weight: var(--font-weight-regular);
   line-height: var(--font-leading-display);
   letter-spacing: var(--font-tracking-tight);
@@ -294,10 +294,6 @@
   border-left: var(--a5-rule);
 }
 
-[data-v="5"] .v-about__facts {
-  grid-column: 1 / 7;
-}
-
 @media (max-width: 1100px) {
   [data-v="5"] .v-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -311,7 +307,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  [data-v="5"] :is(.v-order__title, .v-order__steps, .v-order .v-btn, .v-pd__media, .v-pd__info, .v-about__title, .v-about__film, .v-about__intro, .v-about__cols, .v-about__facts) {
+  [data-v="5"] :is(.v-order__title, .v-order__steps, .v-order .v-btn, .v-pd__media, .v-pd__info, .v-about__title, .v-about__film, .v-about__intro, .v-about__cols) {
     grid-column: 1 / -1;
   }
 

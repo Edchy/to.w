@@ -1,10 +1,9 @@
 ---
 // The about page, laid out like a newspaper front page: Tove's greeting as the headline, the
 // workshop film as the lead picture with the intro beside it, the rest in three ruled columns with
-// her portrait set into the last, then the ways to get in touch.
+// her portrait set into the last. The footer right below carries the email and Instagram.
 import { Image } from "astro:assets";
 import portrait from "../../assets/img/om/portrait.avif";
-import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
 ---
 
 <div class="v-about v-wrap">
@@ -40,10 +39,6 @@ import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
       <p>Välkommen in. Titta runt, och hör gärna av dig om du har frågor eller funderingar kring ett smycke, eller om du vill ha något gjort efter dina egna önskemål.</p>
     </div>
   </div>
-  <dl class="v-about__facts">
-    <div><dt>Mejl</dt><dd><a href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a></dd></div>
-    <div><dt>Instagram</dt><dd><a href="https://instagram.com/tovewatte">@tovewatte</a></dd></div>
-  </dl>
 </div>
 
 <script>
