@@ -1,17 +1,15 @@
 ---
-// A piece's page in every direction: all its photos, the facts, the order mail, and more pieces.
+// A piece's page: all its photos, the facts, the order mail, and more pieces.
 import { Image, getImage } from "astro:assets";
-import { type Piece, getVariant, vHref } from "./catalog";
+import { type Piece, liveHref } from "./catalog";
 import PieceCard from "./PieceCard.astro";
 
-type Props = { v: string; piece: Piece; others: Piece[] };
-const { v, piece, others } = Astro.props;
+type Props = { piece: Piece; others: Piece[] };
+const { piece, others } = Astro.props;
 const [first] = piece.images;
 // With more than one photo: a row of thumbnails under the large photo; choosing one shows it in the
-// large spot (without JS, a thumbnail links to that photo's large file). The magazine look (2 and 7)
-// instead lays the other photos out in a grid under the large one.
-const spread = getVariant(v).look === "2";
-const gallery = piece.images.length > 1 && !spread;
+// large spot (without JS, a thumbnail links to that photo's large file).
+const gallery = piece.images.length > 1;
 const LEAD_WIDTHS = [640, 960, 1440, 1920];
 const LEAD_SIZES = "(max-width: 900px) 100vw, 60vw";
 const leads = await Promise.all(piece.images.map((image) => getImage({ src: image, widths: LEAD_WIDTHS, sizes: LEAD_SIZES })));
@@ -30,15 +28,6 @@ const alt = (i: number) => (i === 0 ? `${piece.title}, ${piece.kind} i återvunn
       fetchpriority="high"
       data-gallery-lead
     />
-    {spread && piece.images.length > 1 && (
-      <ul class="v-pd__more">
-        {piece.images.slice(1).map((image, i) => (
-          <li>
-            <Image src={image} alt={alt(i + 1)} widths={[480, 960]} sizes="(max-width: 900px) 50vw, 30vw" loading="lazy" />
-          </li>
-        ))}
-      </ul>
-    )}
     {gallery && (
       <ul class="v-pd__thumbs" aria-label="Fler bilder">
         {piece.images.map((image, i) => (
@@ -69,14 +58,14 @@ const alt = (i: number) => (i === 0 ? `${piece.title}, ${piece.kind} i återvunn
       {piece.facts.map((fact) => <div><dt>{fact.term}</dt><dd>{fact.value}</dd></div>)}
     </dl>
     <a class="v-btn v-pd__order" href={piece.orderHref}>Beställ via mejl →</a>
-    <a class="v-pd__back" href={vHref(v, "smycken")}>← Alla smycken</a>
+    <a class="v-pd__back" href={liveHref("smycken")}>← Alla smycken</a>
   </div>
 </article>
 
 <section class="v-wrap v-pd__others" aria-labelledby="v-others">
   <h2 class="v-pd__others-title" id="v-others">Fler smycken</h2>
   <ul class="v-grid v-grid--small">
-    {others.slice(0, 4).map((other) => <li><PieceCard piece={other} v={v} /></li>)}
+    {others.slice(0, 4).map((other) => <li><PieceCard piece={other} /></li>)}
   </ul>
 </section>
 

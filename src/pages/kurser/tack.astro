@@ -1,15 +1,14 @@
 ---
-// Where the course interest form lands after sending (live and in the studies alike). Kept out of
-// search results.
+// Where the course interest form lands after sending. Kept out of search results.
 import VFrame from "../../components/v/VFrame.astro";
-import { vHref } from "../../components/v/catalog";
+import { liveHref } from "../../components/v/catalog";
 ---
 
-<VFrame v="live" title="Tack" page="kurser" description="Tack för din intresseanmälan till kursen." noindex>
+<VFrame title="Tack" page="kurser" description="Tack för din intresseanmälan till kursen." noindex>
   <div class="v-wrap v-thanks">
     <h1 class="v-thanks__title">Tack, din anmälan är skickad.</h1>
     <p>Jag hör av mig via mejl med bekräftelse och praktiska detaljer.</p>
-    <a class="v-btn" href={vHref("live", "kurser")}>← Tillbaka till kurser</a>
+    <a class="v-btn" href={liveHref("kurser")}>← Tillbaka till kurser</a>
   </div>
 </VFrame>
 

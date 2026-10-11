@@ -8,15 +8,11 @@
 // Writes public/env/page-<name>.hdr. Run: node scripts/make-page-env.mjs
 import { writeFileSync } from "node:fs";
 
-// Linear RGB, matched by eye to the tokens: --v-warm-paper, --v-white, --logo-blue, --v-forest.
+// Linear RGB, matched by eye to the tokens: --v-warm-paper, --logo-blue.
 const WARM = [0.905, 0.863, 0.776];
-const WHITE = [0.975, 0.973, 0.965];
 const BLUE = [0.0, 0.045, 0.94];
-const FOREST = [0.014, 0.082, 0.04];
 const STUDIOS = {
-  "warm-blue": { paper: WARM, accent: BLUE }, // 16
-  "white-blue": { paper: WHITE, accent: BLUE }, // 17, 18
-  "warm-forest": { paper: WARM, accent: FOREST }, // 19
+  "warm-blue": { paper: WARM, accent: BLUE },
 };
 
 const W = 512, H = 256;

@@ -8,11 +8,11 @@
 //     followed by a line of Karin Boye's "I rörelse" (1927, public domain). Small and shallow, as on
 //     a real ring: you have to catch it in the light to read it. Pressed in: sunk into the metal, a
 //     little darker and duller at the bottom, with the faint rim a punch leaves round each letter.
-// One ring per typeface for the poem (FACES), to compare them; the ring itself is the same in all.
+// The poem is set in IBM Plex Mono Light Italic (FACES), like a laser engraving.
 // Generated from a fixed seed, so every run gives the same ring.
 // Writes public/models/band-ring-<face>.glb. Run: node scripts/make-band-ring.mjs
-// The live ring (baskerville) is then meshopt-compressed (TurningRing loads the decoder):
-//   npx @gltf-transform/cli@4.2.1 meshopt <in>.glb public/models/band-ring-baskerville.glb --level medium
+// It is then meshopt-compressed (TurningRing loads the decoder):
+//   npx @gltf-transform/cli@4.2.1 meshopt <in>.glb public/models/band-ring-mono.glb --level medium
 import sharp from "sharp";
 import { writeGlb } from "./write-glb.mjs";
 import { textPath } from "./font-path.mjs";
@@ -146,8 +146,7 @@ const POEM = ["Nog finns det mål och mening i vår färd", "men det är vägen,
 const POEM_EM = 0.75; // mm: the poem's type size
 const HALLMARK = { text: "S925  O·", font: 'font-family="Helvetica, Arial, sans-serif" font-weight="700" letter-spacing="8"', em: 0.6 };
 const FACES = {
-  baskerville: { font: 'font-family="Baskerville" font-style="italic"' }, // a bookish serif (17, 18)
-  mono: { file: new URL("../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-200-italic.woff", import.meta.url) }, // like a laser engraving (16, 19)
+  mono: { file: new URL("../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-200-italic.woff", import.meta.url) },
 };
 const INSIDE_STRETCH = R0 / (INSIDE / 2);
 // sharp turns one-channel images into three channels on many operations, so every step that

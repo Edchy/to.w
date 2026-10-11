@@ -1,15 +1,15 @@
 ---
 // One piece as a card: photo, name and price, and a "Nyhet" badge on the photo when asked (the
-// smycken page marks new pieces). The piece's second photo rides along, hidden, for studies that
-// cross-fade to it on hover. Every direction styles it.
+// smycken page marks new pieces). The piece's second photo rides along, hidden, and cross-fades in
+// on hover (v5.css).
 import { Image } from "astro:assets";
-import { type Piece, vHref } from "./catalog";
+import { type Piece, liveHref } from "./catalog";
 
-type Props = { piece: Piece; v: string; sizes?: string; eager?: boolean; photo?: number; badge?: boolean };
-const { piece, v, sizes = "(max-width: 700px) 50vw, 25vw", eager = false, photo = 0, badge = false } = Astro.props;
+type Props = { piece: Piece; sizes?: string; eager?: boolean; photo?: number; badge?: boolean };
+const { piece, sizes = "(max-width: 700px) 50vw, 25vw", eager = false, photo = 0, badge = false } = Astro.props;
 ---
 
-<a class="v-card" href={vHref(v, `smycken/${piece.slug}`)}>
+<a class="v-card" href={liveHref(`smycken/${piece.slug}`)}>
   <span class="v-card__photo">
     <Image
       src={piece.images[photo] ?? piece.images[0]}

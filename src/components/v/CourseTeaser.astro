@@ -2,18 +2,13 @@
 // The course on the homepage: an open question as the heading, a line about the courses (and an
 // invitation to ask for something else) and a link to sign up.
 import { CONTACT_EMAIL_HREF } from "../../config/site";
-import { vHref } from "./catalog";
-import Doodle from "./Doodle.astro";
-
-type Props = { v: string };
-const { v } = Astro.props;
+import { liveHref } from "./catalog";
 ---
 
 <section class="v-ct" aria-labelledby="v-ct-title">
-  <Doodle name="can" />
   <div class="v-wrap v-ct__inner">
     <h2 class="v-ct__title" id="v-ct-title">Vill du skapa något eget?</h2>
     <p class="v-ct__intro">Då och då håller jag kurser där vi skapar tillsammans. Under min guidning får du designa och forma ditt eget smycke i återvunnet silver. Vill du göra något annat? <a href={CONTACT_EMAIL_HREF}>Hör av dig</a>, jag är på det mesta.</p>
-    <a class="v-btn v-ct__btn" href={vHref(v, "kurser")}>Anmäl intresse →</a>
+    <a class="v-btn v-ct__btn" href={liveHref("kurser")}>Anmäl intresse →</a>
   </div>
 </section>

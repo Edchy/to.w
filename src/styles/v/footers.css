@@ -1,10 +1,6 @@
 /*
- * Footer types for the studies, picked per study (VARIANTS.footer → data-footer). All three are
- * simple and easy to scan: the email, the page links and the credit, laid out differently. Loaded
- * last, so they win over each direction's own type rules.
- *   row     one line: email · links · credit, wrapping on small screens
- *   split   email and credit at the left, links at the right
- *   center  everything centred and stacked
+ * The footer: the email, the page links and the credit, centred and stacked. Loaded last, so it
+ * wins over the look's own type rules.
  */
 
 .v[data-footer] .v-foot {
@@ -33,26 +29,6 @@
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-6);
 }
-
-/* ── row ── */
-.v[data-footer="row"] .v-foot {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: baseline;
-}
-
-.v[data-footer="row"] .v-foot__links {
-  justify-content: center;
-}
-
-/* ── split ── */
-.v[data-footer="split"] .v-foot {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-}
-
-.v[data-footer="split"] .v-foot__mail { grid-column: 1; grid-row: 1; }
-.v[data-footer="split"] .v-foot__links { grid-column: 2; grid-row: 1; justify-content: end; }
-.v[data-footer="split"] .v-foot__small { grid-column: 1 / -1; grid-row: 2; }
 
 /* ── center ── */
 .v[data-footer="center"] .v-foot {

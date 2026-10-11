@@ -7,15 +7,12 @@
  *   1. Primitives  — raw colours and scales
  *   2. Semantic    — rhythm, type roles, rules, layout
  *   3. Component   — values tied to one part but kept here so they stay in the system
- *
- * The three colour themes (Ren, Supreme, Blå) map these colours onto --t-* roles in SiteFrame.astro.
+ *   4. The site's look — the --v-* roles the pages are drawn with (src/styles/v/)
  *
  * Breakpoints (CSS can't read variables in media queries, so these are the only widths used):
  *   700px  — phone      (max-width: 700px) / (min-width: 701px)
  *   900px  — tablet     (max-width: 900px) / (min-width: 901px)
  *   1100px — desktop    (max-width: 1100px) / (min-width: 1101px)
- * Exception: the homepage hero also switches at 820px, where the letters that sit in front of the
- * fingers change (tuned to the photo; see Home.astro).
  */
 
 :root {
@@ -23,40 +20,13 @@
      1. PRIMITIVES
   ───────────────────────────────────────────────────────── */
 
-  /* Paper and ink (the plain pages outside the site frame) */
-  --off-white: oklch(96% 0.011 88);
-  --relief-paper: oklch(93% 0.013 88); /* Relief theme: off-white, a step darker */
-
-  /* Nature theme palette: a moss page, pale moss display type, deep moss sentences and buttons */
-  --nature-moss: oklch(60% 0.06 140);
-  --nature-moss-light: oklch(82% 0.05 140);
-  --nature-moss-dark: oklch(20% 0.03 140);
-
-  /* Sand, Bark and Fjord themes: the same three roles in beige, brown and grey-blue */
-  --sand: oklch(82% 0.04 80);
-  --sand-light: oklch(94% 0.02 85);
-  --sand-dark: oklch(32% 0.04 70);
-  --bark: oklch(61% 0.06 55);
-  --bark-light: oklch(82% 0.045 60);
-  --bark-dark: oklch(20% 0.03 50);
-  --fjord: oklch(62% 0.05 235);
-  --fjord-light: oklch(84% 0.035 235);
-  --fjord-dark: oklch(20% 0.035 240);
+  /* Ink, and the page colour behind the frame */
   --neutral-950: oklch(20% 0.020 75);
-
-  /* Blå theme palette */
   --study-paper: oklch(94% 0.018 86);
-  --study-paper-bright: oklch(97% 0.010 88);
-  --study-ink: oklch(20% 0.012 70);
-  --study-blue: oklch(46.7% 0.121 248); /* #0D5D9A — Blå theme background */
-  --study-pink: oklch(78% 0.15 350);
 
-  /* Ren and Supreme palette, and the logo's two colours */
-  --pure-black: rgb(0, 0, 0);
+  /* White, and the logo blue */
   --pure-white: rgb(255, 255, 255);
-  --supreme-red: rgb(237, 28, 36);
   --logo-blue: rgb(0, 60, 248);
-  --logo-pink: rgb(250, 36, 140);
 
   /* Spacing scale — 4pt base, each step clearly larger than the last */
   --space-1: 4px;
@@ -67,8 +37,6 @@
   --space-12: 48px;
   --space-16: 64px;
   --space-24: 96px;
-  --space-32: 128px;
-  --space-48: 192px;
 
   /* Fluid type scale — min 320px / max 1400px */
   --step--2: clamp(0.7rem, calc(0.68rem + 0.06vw), 0.75rem);
@@ -77,21 +45,10 @@
   --step-1: clamp(1.13rem, calc(1.07rem + 0.28vw), 1.31rem);
   --step-2: clamp(1.35rem, calc(1.23rem + 0.52vw), 1.64rem);
   --step-3: clamp(2rem, 4vw, 4.5rem);
-  --step-4: clamp(2.5rem, 19vw, 8rem);
 
   /* ─────────────────────────────────────────────────────────
      2. SEMANTIC TOKENS
   ───────────────────────────────────────────────────────── */
-
-  /* Vertical rhythm — the two gaps every page is built from */
-  --space-section: clamp(var(--space-16), 8vw, var(--space-24));   /* between and inside sections: 64 → 96 */
-  --space-page-top: clamp(var(--space-32), 16vw, var(--space-48)); /* clears the floating header: 128 → 192 */
-
-  /* Typography — families */
-  --font-display: "EB Garamond", Georgia, serif;  /* titles and interface */
-  --font-text: "EB Garamond", Georgia, serif;   /* sentences */
-  /* Keep the text-size adjustment explicit for content pages. */
-  --font-text-adjust: 0.46;
 
   /* Typography — sizes */
   --font-size-xs: var(--step--2);      /* uppercase labels, fine print */
@@ -100,12 +57,9 @@
   --font-size-lg: var(--step-1);       /* lead text */
   --font-size-xl: var(--step-2);       /* product names, prices */
   --font-size-display: var(--step-3);  /* section and page headings */
-  --font-size-mega: var(--step-4);     /* the mobile menu's links */
 
   /* Typography — weights */
   --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
   /* Typography — leading */
@@ -116,10 +70,8 @@
   /* Typography — tracking */
   --font-tracking-tight: -0.02em;
   --font-tracking-wide: 0.04em;
-  --font-tracking-wider: 0.09em;
 
-  /* Colour — the plain pages outside the site frame */
-  --color-bg-base: var(--off-white);
+  /* Colour — text outside the site frame */
   --color-text-primary: var(--neutral-950);
 
   /* Colour — rules, mixed from the text colour so they follow every theme */
@@ -129,8 +81,6 @@
 
   /* Opacity — for secondary text and states */
   --opacity-muted: 0.8;     /* labels, secondary details, hover fades */
-  --opacity-subdued: 0.5;   /* booked-out dates, cards stepping back */
-  --opacity-disabled: 0.35;
 
   /* Borders and outlines */
   --border-width: 1px;
@@ -139,26 +89,16 @@
 
   /* Radius */
   --radius: 0;         /* images, cards, buttons, fields */
-  --radius-full: 50%;  /* round swatches */
-
-  /* Shadows — cast by the ring renders onto the page colour */
-  --shadow-object: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 40%, transparent);
-  --shadow-object-soft: 0 var(--space-2) var(--space-6) color-mix(in oklch, var(--study-ink) 20%, transparent);
-  --shadow-text: 0 1px 2px color-mix(in oklch, var(--study-ink) 30%, transparent);
 
   /* Layout */
   --layout-site-width: 1500px;
   --layout-gutter: clamp(var(--space-6), 4vw, var(--space-16));
   /* Inline padding that keeps full-bleed sections' content within the site width. */
-  --layout-edge: max(var(--layout-gutter), calc((100% - var(--layout-site-width)) / 2));
   --grid-gutter: clamp(var(--space-8), 4vw, var(--space-16));
 
   /* Measures — line lengths for running text */
   --measure: 44ch;
   --layout-content-width: 62ch;
-
-  /* Media */
-  --ratio-product: 4 / 5;
 
   /* Motion */
   --duration-fast: 80ms;
@@ -175,7 +115,6 @@
   --z-base: 0;
   --z-raised: 10;
   --z-overlay: 300;
-  --z-modal: 400;
 
   /* ─────────────────────────────────────────────────────────
      3. COMPONENT TOKENS
@@ -184,65 +123,44 @@
   /* Nav */
   --nav-height: 96px;
 
-  /* Square icon buttons (carousel and slider arrows, the menu button): the minimum touch target. */
+  /* The minimum touch target (the menu button, buttons). */
   --size-control: 44px;
 }
 
 /*
  * ─────────────────────────────────────────────────────────
- * 4. VARIANT STUDIES (/v/1 – /v/5)
+ * 4. THE SITE'S LOOK
  * ─────────────────────────────────────────────────────────
- * Five editorial directions, each mapped onto the same --v-* roles. The role tokens sit on the
- * root while that direction's page is open, so the page background follows them too.
- * Remove this block with src/pages/v and src/components/v once a direction is chosen.
+ * The --v-* roles the pages are drawn with (src/styles/v/). The names come from the design studies
+ * the site grew out of. The roles sit on the root while a page is open, so the page background
+ * follows them too.
  */
 :root {
-  /* Primitives used only by the studies */
-  --v-grey-paper: oklch(92.5% 0.002 95);
+  /* Primitives */
   --v-warm-paper: oklch(95.5% 0.016 85);
-  --v-forest: oklch(40% 0.075 158);       /* a deep forest green: palette "forest" (19) */
-  --v-cream: oklch(96% 0.03 95);
-  --v-white: oklch(99% 0.002 95);
   --v-ink: oklch(16% 0.004 270);
-  --v-ink-warm: oklch(21% 0.02 60);
-  --v-sun: oklch(90% 0.17 100);
-
 
   /* Families */
-  --v-font-familjen: "Familjen Grotesk Variable", "Helvetica Neue", sans-serif;
-  --v-font-dm-mono: "DM Mono", ui-monospace, monospace;
   --v-font-instrument: "Instrument Serif", Georgia, serif;
-  --v-font-bricolage: "Bricolage Grotesque Variable", "Helvetica Neue", sans-serif;
   --v-font-plex-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --v-font-nyght: "Nyght Serif", Georgia, serif;
 
-  /* Display sizes the studies share: large headline, and the poster's oversize wordmark */
-  --v-size-hero: clamp(3rem, 7vw, 8.5rem);
+  /* Display sizes */
   --v-wordmark-height: 0.75em;         /* the logo in the header, sized by its font-size */
-  --v-size-poster: clamp(4rem, 13vw, 13rem);    /* poster names, product titles */
-  --v-size-numeral: clamp(4rem, 10vw, 10rem);   /* magazine numerals and titles */
   --v-size-title: clamp(2.5rem, 7vw, 7rem);     /* page titles, pull quotes, footer mail */
-  --v-size-hero-split: clamp(2.25rem, 5vw, 5rem); /* a two-line hero headline beside the ring (16, 18) */
-  --v-size-menu: clamp(3.25rem, 13vw, 6rem);     /* the links in 13's full-screen menu */
+  --v-size-hero-split: clamp(2.25rem, 5vw, 5rem); /* the two-line hero headline beside the ring (/v2/) */
+  --v-size-menu: clamp(3.25rem, 13vw, 6rem);     /* the links in the full-screen menu */
   --v-size-statement: clamp(2.25rem, 5vw, 5.5rem); /* intro statements */
-  --v-weight-black: 800;
   --v-leading-solid: 1;
-  --v-leading-crush: 0.8;
-  --v-hover-zoom: 1.04;
   --v-col-label: 9rem; /* label column in fact lists */
-  --v-leading-hero: 0.84;
-  --v-tracking-hero: -0.045em;
-  --v-tracking-label: 0.06em;
 
   /* Product photos */
   --v-ratio-photo: 4 / 5;
   --v-ratio-wide: 3 / 2;
   --v-ratio-square: 1 / 1;
-  --v-rotate-sticker: -8deg;
   --v-thumb: 4.5rem;
   --v-photo-max-phone: 60svh; /* lead photos on phones stay under ~2/3 of the screen */
-  --v-site-width: 80rem;                     /* the studies' content width: content stops growing here */
-  --v-card-w: clamp(10rem, 18vw, 16rem);    /* one piece in a carousel or grid */
+  --v-site-width: 80rem;                     /* content width: content stops growing here */
+  --v-card-w: clamp(10rem, 18vw, 16rem);    /* one piece in the homepage grid */
   --v-new-photo: 18rem;                      /* a new piece's photo on the homepage */
   --v-pd-lead-max: 28rem;                    /* the lead photo on a piece's page */
   --v-ig-max: 56rem;                         /* the Instagram grid */
@@ -250,100 +168,19 @@
   --v-accent-deep: color-mix(in oklab, var(--v-accent) 82%, var(--v-ink)); /* the accent a shade deeper: hovered buttons */
   --v-fg-muted: color-mix(in oklab, var(--v-fg) 55%, var(--v-paper)); /* small labels, secondary text */
   --v-on-accent-soft: color-mix(in oklab, var(--v-on-accent) 70%, var(--v-accent)); /* hovered links on an accent band */
-  --v-gutter: clamp(1.5rem, 6vw, 7rem);      /* side margins in the studies: wider than the live site */
+  --v-gutter: clamp(1.5rem, 6vw, 7rem);      /* side margins */
   --v-section: clamp(6rem, 12vw, 12rem);     /* room between homepage sections */
-  --v-section-min: clamp(8rem, 18vw, 16rem); /* the same in the minimal studies */
-  --v-min-photo: clamp(9rem, 16vw, 14rem);   /* photos in the minimal studies */
-  --v-ring-3d: min(80vw, 62svh);             /* study 10: the turning 3D ring */
-  --v-doodle: clamp(4.5rem, 9vw, 8rem);      /* Tove's drawings as decorations */
-}
-
-:root:has([data-v="1"]) {
-  --wordmark-o: var(--logo-pink); /* the logo's "O·" in the splash colour */
-  --v-paper: var(--v-grey-paper);
-  --v-fg: var(--v-ink);
-  --v-accent: var(--logo-pink);
-  --v-accent-2: var(--logo-blue);
-  --v-on-accent: var(--pure-white);
-  --v-display: var(--v-font-familjen);
-  --v-text: var(--v-font-familjen);
-  --v-mono: var(--v-font-dm-mono);
-}
-
-:root:has([data-v="2"]) {
-  --v-paper: var(--v-warm-paper);
-  --v-fg: var(--v-ink-warm);
-  --v-accent: var(--logo-blue);
-  --v-accent-2: var(--logo-pink);
-  --v-on-accent: var(--v-warm-paper);
-  --v-display: var(--v-font-instrument);
-  --v-text: var(--font-text);
-  --v-mono: var(--v-font-instrument);
-}
-
-:root:has([data-v="4"]) {
-  --wordmark-o: var(--logo-pink); /* the logo's "O·" in the splash colour */
-  --v-paper: var(--v-cream);
-  --v-fg: var(--v-ink);
-  --v-accent: var(--logo-pink);
-  --v-accent-2: var(--logo-blue);
-  --v-accent-3: var(--supreme-red);
-  --v-accent-4: var(--v-sun);
-  --v-on-accent: var(--pure-white);
-  --v-display: var(--v-font-bricolage);
-  --v-text: var(--v-font-bricolage);
-  --v-mono: var(--v-font-bricolage);
+  --v-section-min: clamp(8rem, 18vw, 16rem); /* extra room around the course block on phones */
+  --v-min-photo: clamp(9rem, 16vw, 14rem);   /* the photo beside a course on the courses page */
+  --v-doodle: clamp(4.5rem, 9vw, 8rem);      /* Tove's bird on the footer */
 }
 
 :root:has([data-v="5"]) {
-  --v-paper: var(--v-white);
+  --v-paper: var(--v-warm-paper);
   --v-fg: var(--v-ink);
   --v-accent: var(--logo-blue);
-  --v-accent-2: var(--logo-blue);
   --v-on-accent: var(--pure-white);
-  --v-display: var(--v-font-nyght);
+  --v-display: var(--v-font-instrument);
   --v-text: var(--v-font-plex-mono);
   --v-mono: var(--v-font-plex-mono);
-}
-
-/* Palette "ink" (12): black on white, the accent black too; buttons black with white text. */
-:root:has([data-palette="ink"]) {
-  --wordmark-o: var(--v-ink);
-  --v-paper: var(--v-white);
-  --v-fg: var(--v-ink);
-  --v-accent: var(--v-ink);
-  --v-accent-2: var(--v-ink);
-  --v-on-accent: var(--v-white);
-}
-
-/* 16: the page on the same warm off-white paper as 19, the blue kept. */
-:root:has([data-id="16"]) {
-  --v-paper: var(--v-warm-paper);
-}
-
-/* Palette "forest" (19): soft black on warm paper, a deep forest green as the one colour. */
-:root:has([data-palette="forest"]) {
-  --wordmark-o: var(--v-ink);
-  --v-paper: var(--v-warm-paper);
-  --v-fg: var(--v-ink);
-  --v-accent: var(--v-forest);
-  --v-accent-2: var(--v-forest);
-  --v-on-accent: var(--v-warm-paper);
-}
-
-/* Palette "bw-blue" (14): black on white with the logo blue as the one colour. */
-:root:has([data-palette="bw-blue"]) {
-  --wordmark-o: var(--logo-blue);
-  --v-paper: var(--v-white);
-  --v-fg: var(--v-ink);
-  --v-accent: var(--logo-blue);
-  --v-accent-2: var(--v-ink);
-  --v-accent-3: var(--v-ink);
-  --v-accent-4: var(--v-white);
-  --v-on-accent: var(--v-white);
-}
-
-/* Font "serif" (13): the magazine serif for display type. */
-:root:has([data-font="serif"]) {
-  --v-display: var(--v-font-instrument);
 }

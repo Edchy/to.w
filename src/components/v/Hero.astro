@@ -1,36 +1,29 @@
 ---
-// The shared heroes a study can pick instead of its direction's own (see VARIANTS in catalog.ts):
-//   ring        the plain handmade ring turning in 3D, the line set in its middle (13)
-//   ring-split  the line as a serif headline at the left, the ring in a pale panel at the right (16)
-//               — with two links under the headline: to the pieces, and to the courses
-//   ring-caption a smaller ring, the line set under it like a caption (17)
-//   ring-bleed  the headline at the left, a large ring running off the right edge (18) — same links
-//   type        the headline alone, set large, no image (12, 14)
+// The homepage hero, in two layouts:
+//   ring-caption a smaller ring, the line set under it like a caption (the homepage)
+//   ring-split   the line as a serif headline at the left, the ring in a pale panel at the right
+//                — with two links under the headline: to the pieces, and to the courses (/v2/)
 import TurningRing from "./TurningRing.astro";
-import { getVariant, vHref } from "./catalog";
+import { liveHref } from "./catalog";
 
-export type HeroKind = "ring" | "ring-split" | "ring-caption" | "ring-bleed" | "type";
-type Props = { kind: HeroKind; v: string };
-const { kind, v } = Astro.props;
-const ring = kind.startsWith("ring");
-const finish = getVariant(v).ring;
-const actions = kind === "ring-split" || kind === "ring-bleed";
+export type HeroKind = "ring-caption" | "ring-split";
+type Props = { kind: HeroKind };
+const { kind } = Astro.props;
+const split = kind === "ring-split";
 ---
 
 <section class:list={["hh", `hh--${kind}`]}>
-  {ring && <div class="hh__media"><TurningRing finish={finish} /></div>}
+  <div class="hh__media"><TurningRing /></div>
   <div class="hh__text">
-    {actions ? (
+    {split ? (
       <h1 class="hh__title"><span class="hh__line">Handgjorda smycken</span> <span class="hh__line">i <em>återvunnet silver</em></span></h1>
-    ) : ring ? (
-      <h1 class="hh__title">Handgjorda smycken i <em>återvunnet silver</em></h1>
     ) : (
-      <h1 class="hh__title">Handgjorda <em>silversmycken</em></h1>
+      <h1 class="hh__title">Handgjorda smycken i <em>återvunnet silver</em></h1>
     )}
-    {actions && (
+    {split && (
       <p class="hh__actions">
-        <a class="v-btn" href={vHref(v, "smycken")}>Se smyckena →</a>
-        <a class="v-btn v-btn--secondary" href={vHref(v, "kurser")}>Kurser</a>
+        <a class="v-btn" href={liveHref("smycken")}>Se smyckena →</a>
+        <a class="v-btn v-btn--secondary" href={liveHref("kurser")}>Kurser</a>
       </p>
     )}
   </div>
@@ -56,38 +49,6 @@ const actions = kind === "ring-split" || kind === "ring-bleed";
     display: grid;
     justify-items: start;
     gap: var(--space-8);
-  }
-
-  /* ring: the ring turning in the middle of the screen, the line in its middle; drags pass through
-     the line to the ring. */
-  .hh--ring {
-    display: grid;
-    place-items: center;
-    min-height: calc(90svh - var(--nav-height));
-  }
-
-  .hh--ring :is(.hh__media, .hh__text) {
-    grid-area: 1 / 1;
-  }
-
-  .hh--ring .hh__media {
-    width: var(--v-ring-3d);
-  }
-
-  .hh--ring .hh__text {
-    position: relative;
-    z-index: var(--z-raised);
-    justify-items: center;
-    max-width: 22ch;
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .hh--ring .hh__title {
-    font-family: var(--v-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-regular);
-    line-height: var(--font-leading-tight);
   }
 
   /* ring-split: the headline at the left, the ring in a pale square panel at the right. */
@@ -120,8 +81,8 @@ const actions = kind === "ring-split" || kind === "ring-bleed";
     grid-row: 1;
   }
 
-  /* ring-split and ring-bleed share the serif headline at a heading size. */
-  :is(.hh--ring-split, .hh--ring-bleed) .hh__title {
+  /* ring-split: the serif headline at a heading size. */
+  .hh--ring-split .hh__title {
     font-family: var(--v-display);
     font-size: var(--v-size-hero-split);
     font-weight: var(--font-weight-regular);
@@ -129,7 +90,7 @@ const actions = kind === "ring-split" || kind === "ring-bleed";
     letter-spacing: var(--font-tracking-tight);
   }
 
-  :is(.hh--ring-split, .hh--ring-bleed) .hh__title em {
+  .hh--ring-split .hh__title em {
     color: inherit;
   }
 
@@ -168,56 +129,9 @@ const actions = kind === "ring-split" || kind === "ring-bleed";
     line-height: var(--font-leading-tight);
   }
 
-  /* ring-bleed: the headline at the left, a large ring running off the right edge of the page. */
-  .hh--ring-bleed {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    align-items: center;
-    max-width: none;
-    padding-right: 0;
-    padding-left: max(var(--layout-gutter), (100% - var(--layout-site-width)) / 2 + var(--layout-gutter));
-  }
-
-  .hh--ring-bleed .hh__media {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    width: min(115%, 80svh);
-    margin-right: -12%;
-  }
-
-  .hh--ring-bleed .hh__text {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  /* type: the headline alone, large, set low in a short screen. */
-  .hh--type {
-    display: grid;
-    align-content: end;
-    min-height: calc(70svh - var(--nav-height));
-    padding-bottom: var(--space-12);
-  }
-
-  .hh--type .hh__title {
-    max-width: 12ch;
-    font-family: var(--v-display);
-    font-size: var(--v-size-poster);
-    line-height: var(--v-leading-crush);
-    letter-spacing: var(--v-tracking-hero);
-  }
-
-  .hh--type .hh__title em {
-    display: block;
-  }
-
   @media (max-width: 700px) {
     .hh {
       padding-block: var(--space-12);
-    }
-
-    .hh--ring {
-      min-height: 70svh;
     }
 
     .hh--ring-split {
@@ -233,22 +147,6 @@ const actions = kind === "ring-split" || kind === "ring-bleed";
     .hh--ring-split .hh__media {
       justify-self: center;
       width: 64%;
-    }
-
-    .hh--ring-bleed {
-      grid-template-columns: minmax(0, 1fr);
-      padding-left: var(--layout-gutter);
-    }
-
-    .hh--ring-bleed :is(.hh__media, .hh__text) {
-      grid-column: 1;
-      grid-row: auto;
-    }
-
-    .hh--ring-bleed .hh__media {
-      justify-self: end;
-      width: 70%;
-      margin-right: -12%;
     }
   }
 </style>

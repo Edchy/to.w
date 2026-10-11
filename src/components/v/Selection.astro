@@ -1,45 +1,22 @@
 ---
 // A selection of pieces on the homepage (not all of them: that is the smycken page), shown as a
-// sideways carousel or a four-up grid, then a link to every piece.
-import { type Piece, vHref } from "./catalog";
+// four-up grid, then a link to every piece.
+import { type Piece, liveHref } from "./catalog";
 import PieceCard from "./PieceCard.astro";
 
-type Props = { v: string; pieces: Piece[]; mode: "carousel" | "grid" };
-const { v, pieces, mode } = Astro.props;
-const count = { carousel: 7, grid: 4 }[mode];
-const picks = pieces.filter((piece) => !piece.nytt).slice(0, count);
+type Props = { pieces: Piece[] };
+const { pieces } = Astro.props;
+const picks = pieces.filter((piece) => !piece.nytt).slice(0, 4);
 ---
 
-<section class:list={["v-sel", `v-sel--${mode}`]} aria-labelledby="v-sel-title" data-carousel={mode === "carousel" ? "" : undefined}>
+<section class="v-sel" aria-labelledby="v-sel-title">
   <div class="v-wrap">
     <div class="v-sel__head">
       <h2 class="v-sel__title" id="v-sel-title">Smycken</h2>
-      {mode === "carousel" && (
-        <div class="v-sel__arrows">
-          <button type="button" data-dir="-1" aria-label="Föregående">←</button>
-          <button type="button" data-dir="1" aria-label="Nästa">→</button>
-        </div>
-      )}
     </div>
-    <ul class="v-sel__track" data-track>
-      {picks.map((piece) => <li><PieceCard piece={piece} v={v} sizes="(max-width: 700px) 45vw, 18rem" /></li>)}
+    <ul class="v-sel__track">
+      {picks.map((piece) => <li><PieceCard piece={piece} sizes="(max-width: 700px) 45vw, 18rem" /></li>)}
     </ul>
-    <a class="v-sel__all" href={vHref(v, "smycken")}>Alla smycken →</a>
+    <a class="v-sel__all" href={liveHref("smycken")}>Alla smycken →</a>
   </div>
 </section>
-
-<script>
-  // Carousel arrows: one card per press. Scrolling by touch or trackpad works without them.
-  for (const root of document.querySelectorAll<HTMLElement>("[data-carousel]")) {
-    const track = root.querySelector<HTMLElement>("[data-track]");
-    if (!track) continue;
-    const smooth = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    for (const button of root.querySelectorAll<HTMLButtonElement>("[data-dir]")) {
-      button.addEventListener("click", () => {
-        const card = track.querySelector("li");
-        const step = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || "0") : track.clientWidth;
-        track.scrollBy({ left: Number(button.dataset.dir) * step, behavior: smooth });
-      });
-    }
-  }
-</script>

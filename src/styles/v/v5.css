@@ -1,7 +1,7 @@
 /*
- * Direction 5 · Arkiv — a museum catalogue. IBM Plex Mono at one small size for nearly everything,
- * the brand's Nyght Serif italic for names, generous white, and colour only in the band of new
- * pieces (logo blue).
+ * The site's look, a museum catalogue: IBM Plex Mono at one small size for nearly everything,
+ * Instrument Serif for names and headings, warm paper with generous room, and colour only in the
+ * band of new pieces (logo blue). Selectors key on the data attributes VFrame sets on .v.
  */
 
 [data-v="5"] {
@@ -785,7 +785,7 @@
     position: relative;
   }
 
-  .v[data-base="13"] .v-foot .v-doodle--at-foot {
+  .v[data-base="13"] .v-foot .v-foot__bird {
     display: block;
     top: 0;
     right: var(--layout-gutter);

@@ -1,12 +1,12 @@
 ---
-// The smycken page in every direction: the first row of pieces, then how to order (so it isn't
-// hidden at the bottom), then the rest. Each direction lays out the same cards its own way.
+// The smycken page: the first row of pieces, then how to order (so it isn't hidden at the
+// bottom), then the rest.
 import type { Piece } from "./catalog";
 import PieceCard from "./PieceCard.astro";
 import OrderSteps from "./OrderSteps.astro";
 
-type Props = { v: string; pieces: Piece[] };
-const { v, pieces } = Astro.props;
+type Props = { pieces: Piece[] };
+const { pieces } = Astro.props;
 const FIRST_ROW = 4;
 ---
 
@@ -14,14 +14,14 @@ const FIRST_ROW = 4;
   <h1 class="v-visually-hidden">Smycken</h1>
 
   <ul class="v-grid">
-    {pieces.slice(0, FIRST_ROW).map((piece) => <li><PieceCard piece={piece} v={v} eager badge={piece.nytt} /></li>)}
+    {pieces.slice(0, FIRST_ROW).map((piece) => <li><PieceCard piece={piece} eager badge={piece.nytt} /></li>)}
   </ul>
 
   <OrderSteps />
 
   {pieces.length > FIRST_ROW && (
     <ul class="v-grid">
-      {pieces.slice(FIRST_ROW).map((piece) => <li><PieceCard piece={piece} v={v} badge={piece.nytt} /></li>)}
+      {pieces.slice(FIRST_ROW).map((piece) => <li><PieceCard piece={piece} badge={piece.nytt} /></li>)}
     </ul>
   )}
 </div>

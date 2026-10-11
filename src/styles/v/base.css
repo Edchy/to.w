@@ -1,6 +1,6 @@
 /*
- * Variant studies — what every direction shares: page colours from the --v-* roles, plain layout
- * helpers, and the floating switcher. Each direction's look is in v1.css – v5.css.
+ * The site's shared structure: page colours from the --v-* roles, plain layout helpers, and each
+ * part's layout. The look (type, colour, details) is in v5.css; the footer in footers.css.
  */
 
 body:has(.v) {
@@ -86,7 +86,7 @@ body:has(.v) {
   white-space: nowrap;
 }
 
-/* Header and footer: shared structure, each direction styles the rest. */
+/* Header and footer: shared structure; v5.css styles the rest. */
 .v-head {
   display: flex;
   justify-content: space-between;
@@ -144,11 +144,6 @@ body:has(.v) {
   gap: var(--space-2) var(--space-6);
 }
 
-/* A back-to-top link: shown only where a study's footer uses it (10). */
-.v .v-foot__top {
-  display: none;
-}
-
 .v-foot__small {
   font-size: var(--font-size-xs);
   opacity: var(--opacity-muted);
@@ -161,7 +156,7 @@ body:has(.v) {
   }
 }
 
-/* ── Homepage sections every direction shares: layout here, look in v1–v5.css ── */
+/* ── Homepage sections: layout here, look in v5.css ── */
 :is(.v-new, .v-sel, .v-ct, .v-ig) {
   padding-block: var(--v-section) 0;
 }
@@ -207,37 +202,10 @@ body:has(.v) {
   margin-bottom: var(--space-12);
 }
 
-.v-sel__arrows {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.v-sel__arrows button {
-  min-width: var(--size-control);
-  min-height: var(--size-control);
-  border: var(--border-width) solid currentColor;
-  border-radius: var(--radius);
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
 .v-sel__track {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, var(--v-card-w)));
   gap: var(--space-8) var(--grid-gutter);
-}
-
-.v-sel--carousel .v-sel__track {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-
-.v-sel--carousel .v-sel__track > li {
-  flex: 0 0 var(--v-card-w);
-  scroll-snap-align: start;
 }
 
 .v-sel__all {
@@ -310,12 +278,12 @@ body:has(.v) {
   max-width: var(--v-card-w);
 }
 
-/* "Nyhet" on a new piece's photo, in the study's accent. */
+/* "Nyhet" on a new piece's photo, in the accent. */
 .v .v-card__photo {
   position: relative;
 }
 
-/* The second photo is only shown by studies that use it (13's hover); hidden, it isn't loaded. */
+/* The second photo is hidden here (so it isn't loaded) and cross-faded in on hover in v5.css. */
 .v .v-card__alt {
   display: none;
 }
@@ -355,10 +323,6 @@ body:has(.v) {
   .v-sel__track {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-6) var(--space-4);
-  }
-
-  .v-sel--carousel .v-sel__track > li {
-    flex-basis: 42vw;
   }
 
   .v .v-card {
@@ -413,34 +377,14 @@ body:has(.v) {
   outline-color: currentColor;
 }
 
-/* Tove's drawings: every section carries one, hidden unless a study turns it on. */
-:is(.v-new, .v-ct, .v-ig, .v-foot) {
-  position: relative;
-}
-
-.v .v-doodle {
+/* Tove's bird on the footer's top line: hidden here, shown on desktop (v5.css). */
+.v .v-foot__bird {
   display: none;
   position: absolute;
   z-index: var(--z-base);
   width: var(--v-doodle);
   height: auto;
   pointer-events: none;
-}
-
-.v-doodle--bird { top: calc(var(--v-section) - var(--space-8)); right: var(--layout-gutter); }
-.v-doodle--can { top: calc(var(--v-section) - var(--space-4)); right: var(--layout-gutter); rotate: -6deg; }
-.v-doodle--chair { top: calc(var(--v-section) - var(--space-6)); right: calc(var(--layout-gutter) * 2); }
-.v-doodle--cheetah { top: 0; right: var(--layout-gutter); translate: 0 -100%; }
-
-[data-v="2"] :is(.v-doodle--bird, .v-doodle--cheetah),
-[data-v="4"] :is(.v-doodle--can, .v-doodle--chair),
-[data-v="1"] .v-doodle--cheetah {
-  display: block;
-}
-
-/* The footer's bird shows only where a study places it (13 on desktop). */
-.v.v .v-doodle--at-foot {
-  display: none;
 }
 
 /* The menu on phones and tablets: a "Meny" text button in the header (it reads "Stäng" while open) opens a full-screen list of links.
@@ -514,7 +458,7 @@ body:has(.v) {
   }
 }
 
-/* Buttons: one shape, coloured by each direction */
+/* Buttons: one shape, coloured in v5.css */
 .v-btn {
   display: inline-flex;
   align-items: center;
@@ -719,9 +663,4 @@ body:has(.v) {
   .v .v-foot__mail {
     font-size: var(--font-size-xl);
   }
-}
-
-/* 12, 13 (and its copies) and 14 stay without drawings. */
-.v:is([data-id="12"], [data-base="13"], [data-id="14"]) .v-doodle {
-  display: none;
 }

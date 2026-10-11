@@ -1,0 +1,14 @@
+---
+// The homepage with the split hero instead: the line as a headline at the left, the ring in a pale
+// panel at the right, with links to the pieces and the courses. Everything else is the homepage,
+// and its links go to the site's own pages. Kept out of search results as a second version.
+import VFrame from "../../components/v/VFrame.astro";
+import Home from "../../components/v/Home.astro";
+import { getPieces } from "../../components/v/catalog";
+
+const pieces = await getPieces();
+---
+
+<VFrame noindex>
+  <Home pieces={pieces} hero="ring-split" />
+</VFrame>

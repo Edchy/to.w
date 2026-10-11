@@ -1,7 +1,6 @@
 ---
-// A live product page (the LIVE study's product page), with the search details the site has always
-// had: a title saying what the piece is, a description cut at a sentence, the photo as link preview,
-// and Product structured data.
+// A product page, with the search details the site has always had: a title saying what the piece
+// is, a description cut at a sentence, the photo as link preview, and Product structured data.
 import { getImage } from "astro:assets";
 import { getCollection } from "astro:content";
 import VFrame from "../../components/v/VFrame.astro";
@@ -58,7 +57,6 @@ const jsonLd = {
 ---
 
 <VFrame
-  v="live"
   title={pageTitle}
   page={`smycken/${piece.slug}`}
   description={metaDescription}
@@ -66,5 +64,5 @@ const jsonLd = {
   imageAlt={`${title}, ${kind ?? "smycke"} i återvunnet silver`}
   jsonLd={jsonLd}
 >
-  <Product v="live" piece={piece} others={others} />
+  <Product piece={piece} others={others} />
 </VFrame>

@@ -1,5 +1,5 @@
-// The courses the studies show: the real ones from src/data/courses.ts, the silver ring course with
-// the hands photo (trying it; before: the bench photo, assets/img/kurser/IMG_3309.jpg).
+// The courses on the course page: the real ones from src/data/courses.ts, the silver ring course with
+// the hands photo (trying it; before: the bench photo, now unused/kurser/IMG_3309.jpg).
 import type { ImageMetadata } from "astro";
 import handsPhoto from "../../assets/img/hero/hands.webp";
 import { courses, type Course } from "../../data/courses";

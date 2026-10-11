@@ -1,44 +1,34 @@
 ---
-// The frame around every variant-study page: header, footer, and the switcher that jumps to the
-// same page in another direction. Each direction's look lives in src/styles/v/v<n>.css.
-// The live site uses it too, with v = "live": the study named by LIVE (catalog.ts), its links at the
-// site root, indexable, and no switcher.
+// The frame around every page: header, the menu on phones and tablets, and the footer.
+// The look lives in src/styles/v/ (base.css, v5.css, footers.css); its selectors key on the data
+// attributes set on .v below, kept from the design studies the site grew out of.
+import { Image } from "astro:assets";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Wordmark from "../site/Wordmark.astro";
-import Doodle from "./Doodle.astro";
-import VSwitch from "./VSwitch.astro";
+import bird from "../../assets/img/illustrations/bird.webp";
 import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../config/site";
-import { getVariant, vHref } from "./catalog";
+import { liveHref } from "./catalog";
 
-import "@fontsource-variable/familjen-grotesk";
-import "@fontsource/dm-mono/400.css";
-import "@fontsource/dm-mono/500.css";
 import "@fontsource/instrument-serif/400.css";
 import "@fontsource/instrument-serif/400-italic.css";
-import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "../../styles/v/base.css";
-import "../../styles/v/v1.css";
-import "../../styles/v/v2.css";
-import "../../styles/v/v4.css";
 import "../../styles/v/v5.css";
 import "../../styles/v/footers.css";
 
 type Props = {
-  v: string;
   title?: string;
   description?: string;
   page?: string;
-  /** Link preview and structured data, passed on to BaseLayout (the live pages set them). */
+  /** Link preview and structured data, passed on to BaseLayout. */
   image?: string;
   imageAlt?: string;
   jsonLd?: Record<string, unknown>;
-  /** Keep a live page out of search results anyway (the form's thank-you page). */
+  /** Keep a page out of search results (the form's thank-you page, /v2/). */
   noindex?: boolean;
 };
-const { v, title, description, page = "", image, imageAlt, jsonLd, noindex = false } = Astro.props;
-const live = v === "live";
+const { title, description, page = "", image, imageAlt, jsonLd, noindex = false } = Astro.props;
 
 const nav = [
   { path: "smycken", label: "Smycken" },
@@ -46,17 +36,16 @@ const nav = [
   { path: "om", label: "Om" },
 ];
 const current = page.split("/")[0];
-const { n: id, look, hero, footer, palette, font, of } = getVariant(v);
 ---
 
-<BaseLayout noindex={!live || noindex} title={title} description={description} image={image} imageAlt={imageAlt} jsonLd={jsonLd}>
-  <div class="v" data-v={look} data-id={id} data-base={of ?? id} data-hero={hero} data-footer={footer} data-palette={palette} data-font={font}>
+<BaseLayout noindex={noindex} title={title} description={description} image={image} imageAlt={imageAlt} jsonLd={jsonLd}>
+  <div class="v" data-v="5" data-base="13" data-font="serif" data-footer="center">
     <header class="v-head">
-      <a class="v-head__mark" href={vHref(v)} aria-label="TO·W – till startsidan"><Wordmark aria-hidden="true" /></a>
+      <a class="v-head__mark" href={liveHref()} aria-label="TO·W – till startsidan"><Wordmark aria-hidden="true" /></a>
       <nav aria-label="Huvudnavigering">
         <ul class="v-head__nav" role="list">
           {nav.map((link) => (
-            <li><a href={vHref(v, link.path)} aria-current={current === link.path ? "page" : undefined}>{link.label}</a></li>
+            <li><a href={liveHref(link.path)} aria-current={current === link.path ? "page" : undefined}>{link.label}</a></li>
           ))}
         </ul>
       </nav>
@@ -68,9 +57,9 @@ const { n: id, look, hero, footer, palette, font, of } = getVariant(v);
     <div class="v-menu" id="v-menu" hidden>
       <nav aria-label="Meny">
         <ul class="v-menu__links" role="list">
-          <li><a href={vHref(v)}>Hem</a></li>
+          <li><a href={liveHref()}>Hem</a></li>
           {nav.map((link) => (
-            <li><a href={vHref(v, link.path)} aria-current={current === link.path ? "page" : undefined}>{link.label}</a></li>
+            <li><a href={liveHref(link.path)} aria-current={current === link.path ? "page" : undefined}>{link.label}</a></li>
           ))}
         </ul>
       </nav>
@@ -85,19 +74,15 @@ const { n: id, look, hero, footer, palette, font, of } = getVariant(v);
     </div>
 
     <footer class="v-foot">
-      <Doodle name="cheetah" />
-      <Doodle name="bird" place="foot" />
+      <Image class="v-foot__bird" src={bird} alt="" aria-hidden="true" widths={[200, 400]} sizes="8rem" loading="lazy" />
       <a class="v-foot__mail" href={CONTACT_EMAIL_HREF}>{CONTACT_EMAIL}</a>
       <ul class="v-foot__links" role="list">
-        {nav.map((link) => <li><a href={vHref(v, link.path)}>{link.label}</a></li>)}
+        {nav.map((link) => <li><a href={liveHref(link.path)}>{link.label}</a></li>)}
         <li class="v-foot__ig"><a href="https://instagram.com/tovewatte">Instagram</a></li>
       </ul>
-      <a class="v-foot__top" href="#">Till toppen ↑</a>
       <p class="v-foot__small">Tove Wätte · © {new Date().getFullYear()} · site by: <a href="https://thinksmall.studio">thinksmall studio</a></p>
     </footer>
   </div>
-
-  {!live && <VSwitch current={v} page={page} />}
 </BaseLayout>
 
 <script>

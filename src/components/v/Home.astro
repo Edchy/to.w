@@ -1,0 +1,19 @@
+---
+// The homepage: the hero (Hero.astro), the new pieces, a selection, the course and Instagram.
+import type { Piece } from "./catalog";
+import Hero, { type HeroKind } from "./Hero.astro";
+import NewPieces from "./NewPieces.astro";
+import Selection from "./Selection.astro";
+import CourseTeaser from "./CourseTeaser.astro";
+import Insta from "./Insta.astro";
+
+type Props = { pieces: Piece[]; hero: HeroKind };
+const { pieces, hero } = Astro.props;
+---
+
+<Hero kind={hero} />
+
+<NewPieces pieces={pieces} />
+<Selection pieces={pieces} />
+<CourseTeaser />
+<Insta />

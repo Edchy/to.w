@@ -1,30 +1,5 @@
 @import "./tokens.css";
 
-@font-face {
-  font-family: "EB Garamond";
-  src: url("../assets/fonts/EBGaramond-Variable.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "EB Garamond";
-  src: url("../assets/fonts/EBGaramond-Italic-Variable.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 400 800;
-  font-display: swap;
-}
-
-/* Nyght Serif, only the weight the homepage hero uses (bold italic). */
-@font-face {
-  font-family: "Nyght Serif";
-  src: url("../assets/fonts/NyghtSerif-BoldItalic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-}
-
 *,
 *::before,
 *::after {
@@ -32,9 +7,8 @@
 }
 
 /*
- * Cross-page view transitions (plain page loads, no client router): a ring's name travels from
- * its card to its product page heading (both carry the same view-transition-name, see
- * ringTransitionName). Browsers without support just navigate.
+ * Cross-page view transitions (plain page loads, no client router). Browsers without support just
+ * navigate.
  */
 @view-transition {
   navigation: auto;
@@ -84,17 +58,6 @@
   animation-timing-function: var(--ease-out-expo);
 }
 
-/* A ring's name travels as one word: only the new page's picture of it is shown, scaling from the
-   card's size, instead of two differently sized pictures cross-fading into a blurred double. */
-::view-transition-old(*.ring-name) {
-  animation: none;
-  opacity: 0;
-}
-
-::view-transition-new(*.ring-name) {
-  animation: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;
@@ -114,7 +77,6 @@ body {
   flex-direction: column;
   background: var(--study-paper);
   color: var(--color-text-primary);
-  font-family: var(--font-display);
   font-size: var(--font-size-base);
   line-height: var(--font-leading-normal);
 }

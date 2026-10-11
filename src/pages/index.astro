@@ -1,15 +1,11 @@
 ---
-// The live homepage: the study named by LIVE (components/v/catalog.ts), with its links at the root.
+// The homepage: the ring with the line under it like a caption. /v2/ is the same page with the
+// split hero.
 import VFrame from "../components/v/VFrame.astro";
-import Home1 from "../components/v/Home1.astro";
-import Home2 from "../components/v/Home2.astro";
-import Home4 from "../components/v/Home4.astro";
-import Home5 from "../components/v/Home5.astro";
-import { getPieces, getVariant } from "../components/v/catalog";
+import Home from "../components/v/Home.astro";
+import { getPieces } from "../components/v/catalog";
 
 const pieces = await getPieces();
-const { look, hero } = getVariant("live");
-const Home = { "1": Home1, "2": Home2, "4": Home4, "5": Home5 }[look];
 
 const site = Astro.site?.href;
 const jsonLd = {
@@ -28,9 +24,8 @@ const jsonLd = {
 ---
 
 <VFrame
-  v="live"
   description="Handgjorda smycken i återvunnet sterling silver av Tove Wätte i Järna. Ringar och hängen efter beställning, och kurser där du formar din egen ring."
   jsonLd={jsonLd}
 >
-  <Home v="live" pieces={pieces} hero={hero} />
+  <Home pieces={pieces} hero="ring-caption" />
 </VFrame>
