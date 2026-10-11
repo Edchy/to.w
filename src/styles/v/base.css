@@ -61,7 +61,7 @@ body:has(.v) {
   height: auto;
 }
 
-.v .v-about__portrait video {
+.v :is(.v-about__film video, .v-about__photo img) {
   filter: grayscale(1);
 }
 
@@ -654,8 +654,7 @@ body:has(.v) {
 /* Phones: no photo takes the whole screen. Lead photos are capped in height, extra photos sit
    three to a row. */
 @media (max-width: 700px) {
-  .v .v-pd__lead,
-  .v .v-about__portrait img {
+  .v .v-pd__lead {
     max-height: var(--v-photo-max-phone);
     object-fit: cover;
   }
