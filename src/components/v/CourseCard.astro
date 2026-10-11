@@ -2,11 +2,11 @@
 // One course as a card on the course page: photo, title, intro, the practical facts, and the rest
 // folded away under "Så går det till". "Välj den här kursen" picks it in the form (see Courses.astro).
 import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
 import { spotsLabel, type Course } from "../../data/courses";
 
-type Props = { course: Course; image: ImageMetadata; imageAlt: string; pick: string };
-const { course, image, imageAlt, pick } = Astro.props;
+type Props = { course: Course; pick: string };
+const { course, pick } = Astro.props;
+const { image, imageAlt } = course;
 ---
 
 <article class="v-cc" id={`kurs-${course.slug}`} aria-labelledby={`kurs-${course.slug}-title`}>

@@ -1,5 +1,5 @@
 import type { ImageMetadata } from "astro";
-import silverringImg from "../assets/img/kurser/silverring-kurs.jpg";
+import handsPhoto from "../assets/img/hero/hands.webp";
 
 /** One occasion of a course. The course itself is described once, and runs on these dates. */
 export type CourseDate = {
@@ -37,8 +37,8 @@ export const courses: Course[] = [
     title: "Skapa din egen silverring",
     intro:
       "Välkommen till en kväll där vi skapar tillsammans. Under min guidning får du designa och forma din egen unika ring.",
-    image: silverringImg,
-    imageAlt: "Två händer som bär flera handgjorda silverringar",
+    image: handsPhoto,
+    imageAlt: "Händer med flera handgjorda silverringar.",
     // No dates planned right now: the homepage shows the empty state and the form takes interest
     // in the next one. Add occasions here when there are new dates.
     dates: [],

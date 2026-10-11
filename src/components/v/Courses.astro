@@ -2,8 +2,7 @@
 // The course page, in two columns: the courses as cards, and the interest form
 // (the same Netlify form as /kurser, so submissions land in the same place). "Välj den här kursen" on
 // a card picks that course in the form and brings the form into view.
-import { openOccasions, type Course } from "../../data/courses";
-import { studyCourses as all } from "./courses";
+import { courses, openOccasions, type Course } from "../../data/courses";
 import { CONTACT_EMAIL_HREF } from "../../config/site";
 import CourseCard from "./CourseCard.astro";
 
@@ -12,7 +11,7 @@ const pickValue = (course: Course) => {
   const open = openOccasions.find((occasion) => occasion.course === course);
   return open ? `${course.title} — ${open.date.date}` : `${course.title} — nästa tillfälle`;
 };
-const formOptions = all.map(({ course }) => ({ value: pickValue(course), label: course.title }));
+const formOptions = courses.map((course) => ({ value: pickValue(course), label: course.title }));
 const successUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/kurser/tack/`;
 ---
 
@@ -20,9 +19,7 @@ const successUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/kurser/tack/`
   <h1 class="v-visually-hidden">Kurser</h1>
   <div class="v-courses__layout">
     <section class="v-courses__list" aria-label="Kurser">
-      {all.map(({ course, image, imageAlt }) => (
-        <CourseCard course={course} image={image} imageAlt={imageAlt} pick={pickValue(course)} />
-      ))}
+      {courses.map((course) => <CourseCard course={course} pick={pickValue(course)} />)}
     </section>
 
     <section class="v-signup" id="anmalan" aria-labelledby="v-signup-title">
